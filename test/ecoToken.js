@@ -1,17 +1,17 @@
 const assert = require('assert').strict;
 
-var _name = 'Treasure';
-var _symbol = 'TRSR';
+var _name = 'Emerald';
+var _symbol = 'ECO';
 var _decimals = 18;
 var _totalSupply = 100000;
 
-const TrsrToken = artifacts.require('TrsrToken');
+const ECOToken = artifacts.require('ECOToken');
 
-contract('TrsrToken', accounts => {
+contract('ECOToken', accounts => {
     
 
     it('Mints total supply upon deployment and gives it to administrator.', async () => {
-        let instance = await TrsrToken.deployed();
+        let instance = await ECOToken.deployed();
         let balance = await instance.totalSupply();
         let adminBalance = await instance.balanceOf(accounts[0]);
         assert.strictEqual(balance.toNumber(), _totalSupply, 'Must = 1,000,000.');
@@ -20,7 +20,7 @@ contract('TrsrToken', accounts => {
 
 
     it('Initializes contract with correct values.', async () => {
-        let instance = await TrsrToken.deployed();
+        let instance = await ECOToken.deployed();
         let name = await instance.name();
         let symbol = await instance.symbol();
         let decimals = await instance.decimals();
@@ -32,8 +32,8 @@ contract('TrsrToken', accounts => {
 
     it('Transfers value from admin to -> user using transfer() function.', async () => {
         // Get instance of deployed contract
-        let instance = await TrsrToken.deployed();
-        let trsr = instance;
+        let instance = await ECOToken.deployed();
+        let ecoToken = instance;
         let value = 100;
         let high_value = 55555555;
 
@@ -42,18 +42,18 @@ contract('TrsrToken', accounts => {
         let user_account = accounts[1];
 
         // Get starting balances
-        let balance = await trsr.balanceOf(admin_account);
+        let balance = await ecoToken.balanceOf(admin_account);
         let admin_balance_start = balance.toNumber();
-        balance = await trsr.balanceOf(user_account);
+        balance = await ecoToken.balanceOf(user_account);
         let user_balance_start = balance.toNumber();
 
         // Transfer value
-        let transfer_event = await trsr.transfer(user_account, value);
+        let transfer_event = await ecoToken.transfer(user_account, value);
 
         // Get ending balances
-        balance = await trsr.balanceOf(admin_account);
+        balance = await ecoToken.balanceOf(admin_account);
         let admin_balance_end = balance.toNumber();
-        balance = await trsr.balanceOf(user_account);
+        balance = await ecoToken.balanceOf(user_account);
         let user_balance_end = balance.toNumber();    
 
         // Assert starting balances +/- value transfer = ending balances
@@ -64,20 +64,20 @@ contract('TrsrToken', accounts => {
         // console.log(transfer_event.logs[0]);
         assert.equal(transfer_event.logs.length, 1, 'Triggers a single event.');
         assert.equal(transfer_event.logs[0].event, 'Transfer', 'Should return Transfer event.');
-        assert.equal(transfer_event.logs[0].args.from, admin_account, 'Logs the account from which the tokens are transferred from.');
+        assert.equal(transfer_event.logs[0].args.source, admin_account, 'Logs the account from which the tokens are transferred from.');
         assert.equal(transfer_event.logs[0].args.to, user_account, 'Logs the account from which the tokens are transferred to.');
-        assert.equal(transfer_event.logs[0].args.value.toNumber(), value, 'Logs the amount of tokens transferred.');
+        assert.equal(transfer_event.logs[0].args.amount.toNumber(), value, 'Logs the amount of tokens transferred.');
 
         // Transfer value higher than balance
         try {
-            await trsr.transfer(user_account, value);
+            await ecoToken.transfer(user_account, value);
         } catch (err) {
             assert(err.message.indexOf('revert') >= 0, 'Transferring more value than in balance.');
         }
 
         // Transfer signed integer
         try {
-            await trsr.transfer(user_account, -50);
+            await ecoToken.transfer(user_account, -50);
         } catch (err) {
             assert(err.message.indexOf('revert') >= 0, 'Transfering signed integers is an invalid input.');
         }
@@ -87,7 +87,7 @@ contract('TrsrToken', accounts => {
 
     it('Approves tokens for delegated transfer.', async () => {
         // Approve an account
-        let instance = await TrsrToken.deployed();
+        let instance = await ECOToken.deployed();
         let address = accounts[1];
         let allowance_amt = 55;
         let approve_call = await instance.approve.call(address, allowance_amt);
@@ -98,8 +98,8 @@ contract('TrsrToken', accounts => {
         assert.equal(approve_event.logs.length, 1, 'Triggers a single event.');
         assert.equal(approve_event.logs[0].event, 'Approval', 'Should trigger approval event.');
         assert.equal(approve_event.logs[0].args.owner, accounts[0], 'Authorized account should be account[0].');
-        assert.equal(approve_event.logs[0].args.to, accounts[1], 'Authorized spender should be accounts[1].');
-        assert.equal(approve_event.logs[0].args.value.toNumber(), allowance_amt, 'Should be equal to allowance amt.');
+        assert.equal(approve_event.logs[0].args.spender, accounts[1], 'Authorized spender should be accounts[1].');
+        assert.equal(approve_event.logs[0].args.amount.toNumber(), allowance_amt, 'Should be equal to allowance amt.');
 
         // Set Allowance for an account to spend a spender's value.
         let allowance = await instance.allowance(accounts[0], address);
@@ -111,7 +111,7 @@ contract('TrsrToken', accounts => {
 
     it('Handles a delegated token transfer.', async () => {
         // Setup
-        let instance = await TrsrToken.deployed();
+        let instance = await ECOToken.deployed();
         let value = 100;
         let approved_value = 12;
         let user_account = accounts[2];
@@ -148,9 +148,9 @@ contract('TrsrToken', accounts => {
         // Check logs to confirm they match
         assert.equal(approved_transfer.logs.length, 1, 'Triggers a single event.');
         assert.equal(approved_transfer.logs[0].event, 'Transfer', 'Should return Transfer event.');
-        assert.equal(approved_transfer.logs[0].args.from, user_account, 'Logs the account from which the tokens are transferred from.');
+        assert.equal(approved_transfer.logs[0].args.source, user_account, 'Logs the account from which the tokens are transferred from.');
         assert.equal(approved_transfer.logs[0].args.to, receiving_account, 'Logs the account from which the tokens are transferred to.');
-        assert.equal(approved_transfer.logs[0].args.value.toNumber(), approved_value - 1, 'Logs the amount of tokens transferred.');
+        assert.equal(approved_transfer.logs[0].args.amount.toNumber(), approved_value - 1, 'Logs the amount of tokens transferred.');
 
         // Get balances after transfer
         let user_balance_end = (await instance.balanceOf(user_account)).toNumber();
@@ -166,43 +166,3 @@ contract('TrsrToken', accounts => {
 
 
 })
-
-
-//const TrsrToken = artifacts.require("./TrsrToken.sol");
-//
-//contract('TrsrToken', function(accounts){
-//    it('initializes contract with correct initial values', function(){
-//        return TrsrToken.deployed().then(function(instance){
-//            tokenInstance = instance;
-//            return tokenInstance.name();
-//        }).then(function(name){
-//            assert.strictEqual(name, 'Treasure', 'has correct name.');
-//            return tokenInstance.symbol();
-//        }).then(function(symbol){
-//            assert.strictEqual(symbol, 'TRSR', 'has correct symbol.');
-//            return tokenInstance.decimals();
-//        }).then(function(decimals){
-//            assert.strictEqual(decimals.toNumber(), 18, 'has the same decimals');
-//        });
-//    })
-//   
-//    it('mints total supply upon deployment and gives it to administrator', () =>
-//    TrsrToken.deployed()
-//    .then( instance => instance.totalSupply())
-//    .then( balance => {
-//                assert.strictEqual(balance.toNumber(), _totalSupply, 'Must equal 1,000,000 total supply.');
-//            }));
-//    
-//    
-//    it('mints total supply upon deployment and gives it to administrator', function(){
-//        return TrsrToken.deployed().then(function(instance){
-//            tokenInstance = instance;
-//            return tokenInstance.totalSupply();
-//        }).then(function(totalSupply){
-//            assert.strictEqual(totalSupply.toNumber(),1000000, 'Sets the total supply to 1,000,000.');
-//            return tokenInstance.balanceOf(accounts[0]);
-//        }).then(function(adminBalance){
-//            assert.strictEqual(adminBalance.toNumber(), 1000000, 'Allocates initial supply to administrative account.');
-//        });
-//    });
-//})
