@@ -1,0 +1,64 @@
+/* Navbar */
+.navbar   {
+    background-color: #1f1f1f;
+    border-color: rgba(34, 34, 34, 0.05);
+    transition: all .35s;
+    font-family: 'Catamaran', 'Helvetica', 'Arial', 'sans-serif';
+    font-weight: 200;
+    letter-spacing: 1px;
+    line-height: 45px;
+}
+
+#mainNav {
+    border-color: rgba(34, 34, 34, 0.05);
+    transition: all .35s;
+    font-family: 'Catamaran', 'Helvetica', 'Arial', 'sans-serif';
+    font-weight: 200;
+    letter-spacing: 1px;
+  }
+  
+  #mainNav .navbar-brand {
+    color: #ffffff;
+    font-family: 'Catamaran', 'Helvetica', 'Arial', 'sans-serif';
+    font-weight: 200;
+    letter-spacing: 2px;
+    font-size: large;
+  }
+  
+  #mainNav .navbar-brand:hover, #mainNav .navbar-brand:focus {
+    color: #fcbd20;
+  }
+  
+  #mainNav .navbar-toggler {
+    font-size: 12px;
+    padding: 8px 10px;
+    color: #222222;
+  }
+  
+  #mainNav .navbar-nav > li > a {
+    font-size: 11px;
+    font-family: 'Lato', 'Helvetica', 'Arial', 'sans-serif';
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  
+  #mainNav .navbar-nav > li > a.active {
+    color: #fdcc52 !important;
+    background-color: transparent;
+  }
+  
+  #mainNav .navbar-nav > li > a.active:hover {
+    background-color: transparent;
+  }
+  
+  #mainNav .navbar-nav > li > a,
+  #mainNav .navbar-nav > li > a:focus {
+    color: #ebebeb;
+  }
+  
+  #mainNav .navbar-nav > li > a:hover,
+  #mainNav .navbar-nav > li > a:focus:hover {
+    color: #fdcc52;
+  }
+  
+/* Site */

@@ -1,0 +1,15 @@
+slate gray
+2f4858
+rgb: 47, 72, 88
+teal
+4acbe8
+rgb: 74, 203, 232
+yellow
+f4d35e
+rgb: 244, 211, 94
+ornge
+ee964b
+rgb: 238, 150, 75
+red
+f95738
+rgb: 249, 87, 56

@@ -1,0 +1,19 @@
+body {
+  width: 95%;
+  height: 95%;
+  margin: 0px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  position: relative;
+  font-family: 'Catamaran', 'Helvetica', 'Arial', 'sans-serif';
+  font-size: 14pt;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+}
+.text-primary {
+  font-size: 14pt;
+}
