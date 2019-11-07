@@ -1,6 +1,12 @@
 # @notice Implementation of an American Call Option on the Ethereum Network
 # @author Alexander Angel
 
+contract Account():
+    def deposit() -> bool: modifying
+    def withdraw() -> bool: modifying
+    def authorize(accountAddress: address, timeAmount: uint256) -> bool: modifying
+    def isAuthorized(accountAddress: address) -> bool: constant
+    def _owner(): constant
 
 # @notice Events
 
@@ -15,17 +21,18 @@ Error: event({message: string[50]})
 # @notice Variables
 
 # Owner
-_owner: address
+owner: address
 
 # Contract
 active: bool
 completed: bool
+account: Account
 
 # Users and Accounts
 buyer: address
 seller: address
-buyerAccount: address
-sellerAccount: address
+_buyerAccount: Account
+_sellerAccount: Account
 
 # Underlying Asset Details
 underlyingPrice: wei_value
@@ -38,15 +45,9 @@ timeToExpiry: timedelta
 startTime: timestamp
 
 
-@private
-def ECO() {
-    active = False
-    completed = False
-}
-
-@private
+@public
 def _owner():
-    _owner = msg.sender
+    self.owner = msg.sender
 
 
 # @notice Initializer
@@ -55,26 +56,38 @@ def _owner():
 @public
 def __init__(
     buyerAccount: address, 
-    sellerAccount: address, 
-    underlier: wei_value, 
-    strikePrice: wei_value, 
-    notional: wei_value, 
-    maturity: timedelta
+    sellerAccount: address,
+    _strikePrice: uint256,
+    _notional: uint256,
+    _maturity: timedelta,
     ):
 
     # Set up accounts
-    buyerAccount =
-    buyer = buyerAccount
-    sellerAccount =
-    seller = sellerAccount._owner()
+    self._buyerAccount = Account(buyerAccount)
+    self.buyer = self._buyerAccount.msg.sender
+    self._sellerAccount = Account(sellerAccount)
+    self.seller = self._sellerAccount.msg.sender
 
-    self.strikePrice = strikePrice
-    self.notional = notional
-    self.timeToExpiry = maturity
+    self.strikePrice = _strikePrice
+    self.notional = _notional
+    self.timeToExpiry = _maturity
     self.startTime = block.timestamp
 
-    # Authorize account of caller
-    authorizeAccount()
+    self.active = False
+    self.completed = False
+
+# @notice Utility Functions
+
+@private
+def inTheMoney() -> bool:
+    value: wei_value = self.strikePrice - self.underlyingPrice
+    if(value > 0):
+        return True
+    else:
+        return False
+@public
+def initiatedFrom(source: address) -> bool:
+    return msg.sender == source
 
 
 # @notice Authorize Accounts
@@ -85,27 +98,30 @@ def authorizeAccount() -> bool:
     vendee: bool = True
     # seller authorized variable
     vendor: bool = True
-    if(initiatedFrom(buyer)):
-        vendee = buyerAccount.authorize(this)
+    if(initiatedFrom(self.buyer)):
+        vendee = buyerAccount.authorize(self)
         log.Authorization(msg.sender, vendee)
-    if(initiatedFrom(seller)):
-        vendor = sellerAccount.authorize(this)
+    if(initiatedFrom(self.seller)):
+        vendor = sellerAccount.authorize(self)
         log.Authorization(msg.sender, vendor)
-    return vendee & vendor
+    return vendee and vendor
 
 
 # @notice Validate the Emerald Call Option
 @public
 def validate() -> bool:
-    if(active OR completed):
+    if(active or completed):
         log.Error('Must be inactive')
         return True
     
     # Authorize counterparty
     authorizeAccount()
     # Check for Authorized Accounts
-    if(!buyerAccount.isAuthorized(this) OR !sellerAccount.isAuthorized(this)):
-        log.Error('Need authorized accounts')
+    if(not buyerAccount.isAuthorized(this)):
+        log.Error('Need authorized buyer')
+        return False
+    if(not sellerAccount.isAuthorized(this)):
+        log.Error('Need authorized seller')
         return False
     active = True
     log.Validate(address(this), active)
@@ -114,31 +130,19 @@ def validate() -> bool:
 # @notice Buyer Exercises the Contract
 @public
 def exercise() -> bool:
-    if(!initiatedFrom(buyer)):
+    if(not initiatedFrom(buyer)):
         log.Error('Must be buyer')
         return False
     
-    if(!inTheMoney):
+    if(not inTheMoney):
         log.Error('Must be ITM')
         return False
     if(this.balance > 0):
-        log.Settlement(address(this), _owner, this.balance)
-        _owner.send(this.balance)
+        log.Settlement(address(this), owner, this.balance)
+        owner.send(this.balance)
 
         
 
 # @notice Cash Settled to Accounts
 
 
-# @notice Utility Functions
-
-@private
-def inTheMoney() -> bool:
-    value: wei_value = strikePrice - underlyingPrice
-    if(value > 0):
-        return True
-    else:
-        return False
-@private
-def initiatedFrom(source: address) -> bool:
-    return msg.sender == source
