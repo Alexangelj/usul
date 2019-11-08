@@ -97,29 +97,48 @@ contract('Account Testing', accounts => {
         let sellerAcc = await fac.getAccount(seller)
         let _buyer = await fac.getUser(buyerAcc)
         let _seller = await fac.getUser(sellerAcc)
-        let acc = await Account.deployed()
+        let acc = await Account.at(sellerAcc)
+        let acct = await Account.new(sellerAcc)
+        console.log(acc)
 
-        let amount = 1 //in wei
+        let amount = 1*10**18 //in wei
+        let wei = 10**18
+
+        //let dpst = await acct.deposit(sellerAcc, {from: seller, value: amount})
+        //console.log('dpst: ', dpst.receipt)
 
         let seller_user_bal = await web3.eth.getBalance(_seller)
-        console.log('seller user balance: ', seller_user_bal)
-        
-        let deposit = await acc.deposit(amount, sellerAcc)
-        await acc.send(amount, {from: seller})
-        console.log('deposit made from seller user')
-        console.log('seller user balance: ', seller_user_bal)
-        
+        console.log('SUSER Bal: ', seller_user_bal / wei)
+        console.log('\n')
+
+        let deposit = await acc.deposit(sellerAcc, {from: seller, value: amount})
+        console.log('SUSER DEPOSIT\n')
+
+        let seller_user_bal_after = await web3.eth.getBalance(_seller)
+        console.log('SUSER Bal After: ', seller_user_bal_after / wei)
+        console.log('DELTA Bal: ', (seller_user_bal - seller_user_bal_after) / wei)
+        console.log('\n')
+
         let addr = await acc.address
-        let bal = await acc.accountBalance()
+        let bal = await web3.eth.getBalance(acc.address)
         
-        console.log('acc from: ', deposit.receipt.from)
-        console.log('deposit event: ', deposit.receipt.logs[0].event)
-        console.log('deposit args: ', deposit.receipt.logs[0].args)
-        console.log('seller acc address: ', addr)
-        console.log('actual seller acc address: ', sellerAcc)
-        console.log('seller user balance: ', seller_user_bal)
-        console.log('seller Acc balance: ', bal.toNumber())
-        
+        console.log('deposit: ', deposit)
+        console.log('deposit call from: ', deposit.receipt.from)
+        console.log('deposit call to: ', deposit.receipt.to)
+        //console.log('dpst call to: ', dpst.receipt.to)
+        console.log('\n')
+        //console.log('deposit event: ', deposit.receipt.logs[0].event)
+        //console.log('deposit amount: ', deposit.receipt.logs[0].args.amount.toNumber())
+        console.log('SACCOUNT Address: ', addr)
+        console.log('REAL  SACCOUNT ', sellerAcc)
+        console.log('SUSER Bal: ', seller_user_bal / wei)
+        console.log('SACCOUNT Bal: ', bal / wei)
+
+        let withdraw = await acct.withdraw(bal + 1)
+        console.log('withdraw: ', withdraw)
+
+        let bal_after = await web3.eth.getBalance(acct.address)
+        console.log('SACCOUNT Bal after: ', bal_after / wei)
     });
     
     

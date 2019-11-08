@@ -1,5 +1,5 @@
 # @notice Accounts created mint tokens at a 1:1 ratio to ether which are then authorized to trade the option
-# @author Alexander Angel
+# @author Alexander
 
 contract Factory():
     def getAccount(user_addr: address) -> address:constant
@@ -34,9 +34,10 @@ def authorize(userAcc: address) -> bool:
 
 @public
 @payable
-def deposit(amount: wei_value, addr: address) -> bool:
+def deposit( addr: address) -> bool:
+    log.AccountDeposit(msg.sender, addr, msg.value, True)
     if(self.authorized[addr]):
-        log.AccountDeposit(msg.sender, addr, amount, True)
+        log.AccountDeposit(msg.sender, addr, msg.value, True)
         return True
     else:
         log.Error('Deposit must be authorized')
