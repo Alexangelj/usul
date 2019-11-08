@@ -2,20 +2,23 @@
 # @author Alexander Angel
 
 contract Account():
-    def deposit() -> bool: modifying
-    def withdraw() -> bool: modifying
-    def authorize(accountAddress: address, timeAmount: uint256) -> bool: modifying
+    def deposit(amount: wei_value) -> bool: modifying
+    def withdraw(amount: wei_value) -> bool: modifying
+    def authorize(accountAddress: address) -> bool: modifying
     def isAuthorized(accountAddress: address) -> bool: constant
-    def _owner(): constant
+    def _owner() -> address: modifying
+    def accountAddresses() -> address: modifying
 
 # @notice Events
 
+Initialized: event({owner: indexed(address), strike: wei_value})
 Authorization: event({owner: indexed(address), outcome: bool})
 Validation: event({owner: indexed(address), outcome: bool})
 Withdrawal: event({owner: indexed(address), outcome: bool})
 Exercise: event({owner: indexed(address), outcome: bool})
 Settlement: event({source: indexed(address), to: indexed(address), amount: wei_value})
 
+Payment: event({amount: wei_value, source: indexed(address)})
 Error: event({message: string[50]})
 
 # @notice Variables
@@ -27,12 +30,17 @@ owner: address
 active: bool
 completed: bool
 account: Account
+deposit: wei_value
 
 # Users and Accounts
 buyer: address
 seller: address
 _buyerAccount: Account
 _sellerAccount: Account
+# buyer authorized variable
+vendee: bool
+# seller authorized variable
+vendor: bool
 
 # Underlying Asset Details
 underlyingPrice: wei_value
@@ -54,17 +62,19 @@ def _owner():
 # @params buyer:address, seller:address, underlier:wei, strikePrice:wei, notional:wei, maturity:timedelta
 
 @public
+@payable
 def __init__(
     buyerAccount: address, 
     sellerAccount: address,
-    _strikePrice: uint256,
-    _notional: uint256,
+    _strikePrice: wei_value,
+    _notional: wei_value,
     _maturity: timedelta,
+    _deposit: wei_value
     ):
 
     # Set up accounts
     self._buyerAccount = Account(buyerAccount)
-    self.buyer = self._buyerAccount.msg.sender
+    self.buyer = self._buyerAccount.accountAddresses()
     self._sellerAccount = Account(sellerAccount)
     self.seller = self._sellerAccount.msg.sender
 
@@ -72,19 +82,64 @@ def __init__(
     self.notional = _notional
     self.timeToExpiry = _maturity
     self.startTime = block.timestamp
+    self.underlyingPrice = 10
 
     self.active = False
     self.completed = False
 
+    self.vendee = False
+    self.vendor = False
+
+    self.deposit = _deposit
+    #send(self, self.deposit)
+
+    log.Initialized(msg.sender, self.strikePrice)
 # @notice Utility Functions
 
-@private
+@public
+@payable
+def __default__():
+    log.Payment(msg.value, msg.sender)
+
+
+@public
+@constant
+def strike() -> wei_value:
+    return self.strikePrice
+
+@public
+@constant
+def notionalValue() -> wei_value:
+    return self.notional
+
+@public
+@constant
+def _buyer() -> address:
+    return self.buyer
+
+@public
+@constant
+def buyerAcc() -> address:
+    return self._buyerAccount
+
+@public
+@constant
+def _seller() -> address:
+    return self.seller
+
+@public
+@constant
+def sellerAcc() -> address:
+    return self._sellerAccount
+
+@public
 def inTheMoney() -> bool:
-    value: wei_value = self.strikePrice - self.underlyingPrice
-    if(value > 0):
+    value: wei_value = self.underlyingPrice - self.strikePrice
+    if(value >= 0):
         return True
     else:
         return False
+
 @public
 def initiatedFrom(source: address) -> bool:
     return msg.sender == source
@@ -94,52 +149,72 @@ def initiatedFrom(source: address) -> bool:
 
 @public
 def authorizeAccount() -> bool:
-    # buyer authorized variable
-    vendee: bool = True
-    # seller authorized variable
-    vendor: bool = True
-    if(initiatedFrom(self.buyer)):
-        vendee = buyerAccount.authorize(self)
-        log.Authorization(msg.sender, vendee)
-    if(initiatedFrom(self.seller)):
-        vendor = sellerAccount.authorize(self)
-        log.Authorization(msg.sender, vendor)
-    return vendee and vendor
+    self.vendee = True
+    self.vendor = True
+
+    # vendee = self._buyerAccount.authorize(self)
+    log.Authorization(msg.sender, self.vendee)
+    # vendor = self._sellerAccount.authorize(self)
+    log.Authorization(msg.sender, self.vendor)
+
+    return self.vendee and self.vendor
 
 
 # @notice Validate the Emerald Call Option
 @public
 def validate() -> bool:
-    if(active or completed):
+    if(self.active or self.completed):
         log.Error('Must be inactive')
         return True
     
     # Authorize counterparty
-    authorizeAccount()
+
+
     # Check for Authorized Accounts
-    if(not buyerAccount.isAuthorized(this)):
+    if(not self.vendee):
         log.Error('Need authorized buyer')
         return False
-    if(not sellerAccount.isAuthorized(this)):
+    if(not self.vendor):
         log.Error('Need authorized seller')
         return False
-    active = True
-    log.Validate(address(this), active)
+    self.active = True
+    log.Validation(self, self.active)
+    return True
 
 
 # @notice Buyer Exercises the Contract
 @public
 def exercise() -> bool:
-    if(not initiatedFrom(buyer)):
+    if(not msg.sender == self.buyer):
         log.Error('Must be buyer')
         return False
     
-    if(not inTheMoney):
+    if(not self.underlyingPrice - self.strikePrice >= 0):
         log.Error('Must be ITM')
         return False
-    if(this.balance > 0):
-        log.Settlement(address(this), owner, this.balance)
-        owner.send(this.balance)
+    if(self.balance > 0):
+        log.Settlement(self, self.owner, self.balance)
+        send(self.owner, self.balance)
+
+    #self._buyerAccount.deposit(self.strikePrice)
+    #self._sellerAccount.deposit(self.underlyingPrice)
+    
+    #send(self._buyerAccount, self.underlyingPrice)
+    #send(self._sellerAccount, self.strikePrice)
+    ## self._buyerAccount.withdraw(as_wei_value(1, 'wei'))
+    ## log.Settlement(self._buyerAccount, self._sellerAccount, self.balance)
+    ## self._sellerAccount.deposit()
+## 
+    ## self._sellerAccount.withdraw(as_wei_value(1, 'wei'))
+    ## log.Settlement(self._sellerAccount, self._buyerAccount, self.balance)
+    ## self._buyerAccount.deposit()   
+
+    self.active = False
+    self.completed = True
+
+    log.Exercise(self, self.completed)
+
+    return True
 
         
 

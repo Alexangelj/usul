@@ -1,38 +1,49 @@
-# @notice Accounts used to trading the ECO
+# @notice Accounts created mint tokens at a 1:1 ratio to ether which are then authorized to trade the option
 # @author Alexander Angel
 
-struct AuthTimePeriod:
-    timeAmount: uint256
-    startTime: uint256
+contract Factory():
+    def getAccount(user_addr: address) -> address:constant
+    def getUser(userAcc: address) -> address:constant
 
 Error: event({message: string[50]})
+AccountCreated: event({user: indexed(address), userAcc: indexed(address), outcome: bool})
+AccountAuthorized: event({user: indexed(address), userAcc: indexed(address), outcome: bool})
+AccountDeposit: event({user: indexed(address), userAcc: indexed(address), amount: wei_value, outcome: bool})
+AccountWithdrawal: event({user: indexed(address), userAcc: indexed(address), amount: wei_value, outcome: bool})
 
-authorized: map(address, bool)
-addresses: address
-owner: address
+accounts: map(address, address)
+authorized: public(map(address, bool))
+factory: Factory
+owner: public(address)
+user: address
 
-@public
-def _owner():
-    self.owner = msg.sender
-
-@public
-def Account():
-    pass
-
-@public
-def isAuthorized(accountAddress: address) -> bool:
-    return self.authorized[accountAddress]
 
 @public
-def deposit() -> bool:
-    if(msg.sender == self.owner or self.authorized[msg.sender]):
+def setup(user_addr: address):
+    assert(self.factory == ZERO_ADDRESS and self.user == ZERO_ADDRESS) and user_addr != ZERO_ADDRESS
+    self.factory = Factory(msg.sender)
+    self.user = user_addr
+    self.owner = user_addr
+    log.AccountCreated(user_addr, self, True)
+
+@public
+def authorize(userAcc: address) -> bool:
+    self.authorized[userAcc] = True
+    log.AccountAuthorized(self.factory, userAcc, True)
+    return True
+
+@public
+@payable
+def deposit(amount: wei_value, addr: address) -> bool:
+    if(self.authorized[addr]):
+        log.AccountDeposit(msg.sender, addr, amount, True)
         return True
     else:
         log.Error('Deposit must be authorized')
         return False
 
 @public
-def withdraw(amount: uint256) -> bool:
+def withdraw(amount: wei_value) -> bool:
     if(amount > self.balance):
         log.Error('Exceeds balance')
         return False
@@ -41,16 +52,30 @@ def withdraw(amount: uint256) -> bool:
         return True
     return False
 
-@public
-def authorize(accountAddress: address, timeAmount: uint256) -> bool:
-    if(tx.origin != self.owner):
-        log.Error('Authorization must be from owner')
-        return False
-    if(timeAmount == 0):
-        log.Error('Authorization must have > 0 time amount')
-        return False
-    self.authorized[accountAddress] = True
-    return True
 
+@public
+@constant
+def userAddress() -> address:
+    return self.user
+
+@public
+@constant
+def factoryAddress() -> address:
+    return self.factory
+
+@public
+@constant 
+def ownerAddress() -> address:
+    return self.owner
+
+@public
+@constant
+def authorizedAccount(userAcc_addr: address) -> bool:
+    return self.authorized[userAcc_addr]
+ 
+@public
+@constant
+def accountBalance() -> wei_value:
+    return self.balance
 
     

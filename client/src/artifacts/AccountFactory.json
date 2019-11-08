@@ -1,0 +1,168 @@
+{
+  "contractName": "AccountFactory",
+  "abi": [
+    {
+      "name": "NewAccount",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "user",
+          "indexed": true
+        },
+        {
+          "type": "address",
+          "name": "userAcc",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Error",
+      "inputs": [
+        {
+          "type": "string",
+          "name": "message",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "outputs": [],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "template"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "constructor"
+    },
+    {
+      "name": "createAccount",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "user"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 118034
+    },
+    {
+      "name": "getAccount",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "user"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 735
+    },
+    {
+      "name": "getUser",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "userAcc"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 765
+    },
+    {
+      "name": "userAccTemplate",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 641
+    }
+  ],
+  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05260206103e06101403934156100a157600080fd5b60206103e060c03960c05160205181106100ba57600080fd5b50600054156100c857600080fd5b600061014051186100d857600080fd5b610140516000556103c856600436101561000d576102de565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052639859387b60005114156102285734156100ba57600080fd5b60043560205181106100cb57600080fd5b506000600435186100db57600080fd5b6000600054186100ea57600080fd5b600160043560e05260c052604060c020541561010557600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061017757600080fd5b61014052610140513b61018957600080fd5b61014051301861019857600080fd5b6000600060246366d38203610200526004356102205261021c6000610140515af16101c257600080fd5b61014051600160043560e05260c052604060c0205560043560026101405160e05260c052604060c02055610140516004357f14cb25cca821184a88389fa7823ef6a4cd65897a89cbdcf5169542b8d790478b60006000a36101405160005260206000f350005b63fbcbc0f1600051141561026f57341561024157600080fd5b600435602051811061025257600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b60005114156102b657341561028857600080fd5b600435602051811061029957600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63d4b0745160005114156102dd5734156102cf57600080fd5b60005460005260206000f350005b5b60006000fd5b6100e46103c8036100e46000396100e46103c8036000f3",
+  "deployedBytecode": "0x600436101561000d576102de565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052639859387b60005114156102285734156100ba57600080fd5b60043560205181106100cb57600080fd5b506000600435186100db57600080fd5b6000600054186100ea57600080fd5b600160043560e05260c052604060c020541561010557600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061017757600080fd5b61014052610140513b61018957600080fd5b61014051301861019857600080fd5b6000600060246366d38203610200526004356102205261021c6000610140515af16101c257600080fd5b61014051600160043560e05260c052604060c0205560043560026101405160e05260c052604060c02055610140516004357f14cb25cca821184a88389fa7823ef6a4cd65897a89cbdcf5169542b8d790478b60006000a36101405160005260206000f350005b63fbcbc0f1600051141561026f57341561024157600080fd5b600435602051811061025257600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b60005114156102b657341561028857600080fd5b600435602051811061029957600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63d4b0745160005114156102dd5734156102cf57600080fd5b60005460005260206000f350005b5b60006000fd",
+  "source": "contract Account():\r\n    def setup(user_addr: address): modifying\r\n\r\nNewAccount: event({user: indexed(address), userAcc: indexed(address)})\r\nError: event({message: string[50]})\r\n\r\nuserAccTemplate: public(address)\r\nuser_to_account: map(address, address)\r\naccount_to_user: map(address, address)\r\n\r\n\r\n@public\r\ndef __init__(template: address):\r\n    assert self.userAccTemplate == ZERO_ADDRESS\r\n    assert template != ZERO_ADDRESS\r\n    self.userAccTemplate = template\r\n\r\n@public\r\ndef createAccount(user: address) -> address:\r\n    assert user != ZERO_ADDRESS\r\n    assert self.userAccTemplate != ZERO_ADDRESS\r\n    assert self.user_to_account[user] == ZERO_ADDRESS\r\n    userAcc: address = create_forwarder_to(self.userAccTemplate)\r\n    Account(userAcc).setup(user)\r\n    self.user_to_account[user] = userAcc\r\n    self.account_to_user[userAcc] = user\r\n    log.NewAccount(user, userAcc)\r\n    return userAcc\r\n\r\n@public\r\n@constant\r\ndef getAccount(user: address) -> address:\r\n    return self.user_to_account[user]\r\n\r\n@public\r\n@constant\r\ndef getUser(userAcc: address) -> address:\r\n    return self.account_to_user[userAcc]",
+  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/AccountFactory.vy",
+  "compiler": {
+    "name": "vyper",
+    "version": "0.1.0b13+commit.375fb27"
+  },
+  "networks": {
+    "5777": {
+      "events": {
+        "0x14cb25cca821184a88389fa7823ef6a4cd65897a89cbdcf5169542b8d790478b": {
+          "name": "NewAccount",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "user",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "userAcc",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x14cb25cca821184a88389fa7823ef6a4cd65897a89cbdcf5169542b8d790478b"
+        },
+        "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa": {
+          "name": "Error",
+          "inputs": [
+            {
+              "type": "string",
+              "name": "message",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa"
+        }
+      },
+      "links": {},
+      "address": "0x3988587fc8A1b247c41F2F39bf4A00d15aE5EDC4",
+      "transactionHash": "0x5bd8a872a7bcb28661388918afd775e46acc4c3744f9d9809e239402081f6f81"
+    }
+  },
+  "schemaVersion": "3.0.17",
+  "updatedAt": "2019-11-08T04:04:08.834Z",
+  "networkType": "ethereum"
+}
