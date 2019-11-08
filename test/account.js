@@ -3,14 +3,16 @@ const AccountFactory = artifacts.require('AccountFactory')
 const Account = artifacts.require('Account')
 
 contract('Account Testing', accounts => {
-
+    
 
     it('Creates Account Factory Contract', async () => {
+        console.log('\n')
         let fac = await AccountFactory.deployed()
         console.log('fac: ', fac.address)
     });
 
     it('Creates New User Account', async () => {
+        console.log('\n')
         let fac = await AccountFactory.deployed()
         let user_addr = accounts[0]
         let acc = await fac.createAccount(user_addr)
@@ -20,6 +22,7 @@ contract('Account Testing', accounts => {
     });
 
     it('Creates Second User Account', async () => {
+        console.log('\n')
         let fac = await AccountFactory.deployed()
         let user_addr = accounts[1]
         let acc = await fac.createAccount(user_addr)
@@ -29,6 +32,7 @@ contract('Account Testing', accounts => {
     });
 
     it('Can Access Users and their Accounts', async () => {
+        console.log('\n')
         let fac = await AccountFactory.deployed()
         let buyer = accounts[1]
         let seller = accounts[0]
@@ -44,6 +48,7 @@ contract('Account Testing', accounts => {
 
 
     it('Can Authorize Accounts and Check Authorized Accounts', async () => {
+        console.log('\n')
         let fac = await AccountFactory.deployed()
         let buyer = accounts[1]
         let seller = accounts[0]
@@ -51,7 +56,7 @@ contract('Account Testing', accounts => {
         let sellerAcc = await fac.getAccount(seller)
         let _buyer = await fac.getUser(buyerAcc)
         let _seller = await fac.getUser(sellerAcc)
-        let acc = await Account.deployed()
+        let acc = await Account.at(sellerAcc)
         
         let auth_seller = await acc.authorize(sellerAcc)
         let auth_seller_address = await auth_seller.receipt.logs[0].args.userAcc
@@ -90,6 +95,7 @@ contract('Account Testing', accounts => {
 
 
     it('Can Deposit Funds', async () => {
+        console.log('\n')
         let fac = await AccountFactory.deployed()
         let buyer = accounts[1]
         let seller = accounts[0]
@@ -98,18 +104,12 @@ contract('Account Testing', accounts => {
         let _buyer = await fac.getUser(buyerAcc)
         let _seller = await fac.getUser(sellerAcc)
         let acc = await Account.at(sellerAcc)
-        let acct = await Account.new(sellerAcc)
-        console.log(acc)
 
         let amount = 1*10**18 //in wei
         let wei = 10**18
 
-        //let dpst = await acct.deposit(sellerAcc, {from: seller, value: amount})
-        //console.log('dpst: ', dpst.receipt)
-
         let seller_user_bal = await web3.eth.getBalance(_seller)
         console.log('SUSER Bal: ', seller_user_bal / wei)
-        console.log('\n')
 
         let deposit = await acc.deposit(sellerAcc, {from: seller, value: amount})
         console.log('SUSER DEPOSIT\n')
@@ -117,33 +117,65 @@ contract('Account Testing', accounts => {
         let seller_user_bal_after = await web3.eth.getBalance(_seller)
         console.log('SUSER Bal After: ', seller_user_bal_after / wei)
         console.log('DELTA Bal: ', (seller_user_bal - seller_user_bal_after) / wei)
-        console.log('\n')
 
         let addr = await acc.address
         let bal = await web3.eth.getBalance(acc.address)
         
-        console.log('deposit: ', deposit)
+        //console.log('deposit: ', deposit)
         console.log('deposit call from: ', deposit.receipt.from)
         console.log('deposit call to: ', deposit.receipt.to)
-        //console.log('dpst call to: ', dpst.receipt.to)
-        console.log('\n')
-        //console.log('deposit event: ', deposit.receipt.logs[0].event)
-        //console.log('deposit amount: ', deposit.receipt.logs[0].args.amount.toNumber())
+        console.log('deposit event: ', deposit.receipt.logs[0].event)
+        console.log('deposit amount: ', deposit.receipt.logs[0].args.amount.toString() / wei)
         console.log('SACCOUNT Address: ', addr)
         console.log('REAL  SACCOUNT ', sellerAcc)
         console.log('SUSER Bal: ', seller_user_bal / wei)
         console.log('SACCOUNT Bal: ', bal / wei)
 
-        let withdraw = await acct.withdraw(bal + 1)
-        console.log('withdraw: ', withdraw)
-
-        let bal_after = await web3.eth.getBalance(acct.address)
-        console.log('SACCOUNT Bal after: ', bal_after / wei)
     });
     
     
     it('Can Withdraw Funds', async () => {
-        let acc = await Account.deployed()
+        console.log('\n')
+        let fac = await AccountFactory.deployed()
+        let buyer = accounts[1]
+        let seller = accounts[0]
+        let buyerAcc = await fac.getAccount(buyer)
+        let sellerAcc = await fac.getAccount(seller)
+        let acc = await Account.at(sellerAcc)
+        let addr = await acc.address
+        let bal = await web3.eth.getBalance(acc.address)
+        let amount = 1*10**18 //in wei
+        let wei = 10**18
+
+        let withdraw = await acc.withdraw(sellerAcc, bal + 1)
+        console.log('*** Attempt Withdraw > Balance ***')
+        console.log('withdraw: ', withdraw.receipt.logs[0].args.message)
+        assert.strictEqual(withdraw.receipt.logs[0].args.message, 'Exceeds balance', 'Cannot withdraw more than balance')
+
+        let bal_after = await web3.eth.getBalance(acc.address)
+        console.log('SACCOUNT Bal after: ', bal_after / wei)
+
+        let user_bal = await web3.eth.getBalance(seller)
+        let withdrawal = await acc.withdraw(sellerAcc, bal)
+        console.log('*** Withdraw < Balance ***')
+        console.log('seller Account: ', sellerAcc)
+        console.log('withdrawal from: ', withdrawal.receipt.to) // sends tx TO contract to withdraw from
+        console.log('seller: ', seller)
+        console.log('withdrawal to: ', withdrawal.receipt.from) // sends tx FROM contract to withdraw to
+        console.log('Bal Before Withdraw: User ', user_bal / wei)
+        console.log('Bal Before Withdraw: Account ', bal_after / wei)
+        console.log('withdrawal: ', withdrawal.receipt.logs[0].args.amount.toString() / wei)
+        assert.strictEqual(withdrawal.receipt.to, sellerAcc.toLowerCase(), 'Tx to Seller Acc should match')
+        assert.strictEqual(withdrawal.receipt.from, seller.toLowerCase(), 'Seller and tx from should match')
+        assert.strictEqual(withdrawal.receipt.logs[0].args.amount.toString() / wei, 1, 'Amount should be withdraw amount')
+        assert.strictEqual(bal_after / wei, amount / wei, 'Balance Should be amount deposited')
+        assert.strictEqual(withdrawal.receipt.logs[0].event, 'AccountWithdrawal', 'Should trigger AccountWithdrawal event')
+        
+        let bal_withdraw = await web3.eth.getBalance(acc.address)
+        let user_bal_withdraw = await web3.eth.getBalance(seller)
+        console.log('Bal After Withdraw: Account ', bal_withdraw / wei)
+        console.log('Bal After Withdraw: User ', user_bal_withdraw / wei)
+        assert.strictEqual(bal_withdraw / wei, 0, 'Balance should subtract amount')
     });
 
 })

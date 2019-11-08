@@ -35,7 +35,6 @@ def authorize(userAcc: address) -> bool:
 @public
 @payable
 def deposit( addr: address) -> bool:
-    log.AccountDeposit(msg.sender, addr, msg.value, True)
     if(self.authorized[addr]):
         log.AccountDeposit(msg.sender, addr, msg.value, True)
         return True
@@ -44,13 +43,15 @@ def deposit( addr: address) -> bool:
         return False
 
 @public
-def withdraw(amount: wei_value) -> bool:
+def withdraw(addr: address, amount: wei_value) -> bool:
     if(amount > self.balance):
         log.Error('Exceeds balance')
         return False
-    if(msg.sender == self.owner or self.authorized[msg.sender]):
+    if(self.authorized[addr]):
+        log.AccountWithdrawal(msg.sender, addr, amount, True)
         send(msg.sender, amount)
         return True
+    log.Error('Withdraw Unsuccessful')
     return False
 
 
