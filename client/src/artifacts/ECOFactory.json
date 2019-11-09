@@ -1,0 +1,306 @@
+{
+  "contractName": "ECOFactory",
+  "abi": [
+    {
+      "name": "NewEco",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "eco",
+          "indexed": true
+        },
+        {
+          "type": "address",
+          "name": "buyer",
+          "indexed": true
+        },
+        {
+          "type": "address",
+          "name": "vendee",
+          "indexed": true
+        },
+        {
+          "type": "uint256",
+          "name": "strike",
+          "indexed": false,
+          "unit": "wei"
+        },
+        {
+          "type": "uint256",
+          "name": "notional",
+          "indexed": false,
+          "unit": "wei"
+        },
+        {
+          "type": "uint256",
+          "name": "maturity",
+          "indexed": false,
+          "unit": "sec"
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Error",
+      "inputs": [
+        {
+          "type": "string",
+          "name": "message",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Payment",
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "amount",
+          "indexed": false,
+          "unit": "wei"
+        },
+        {
+          "type": "address",
+          "name": "_from",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "outputs": [],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "template"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "constructor"
+    },
+    {
+      "name": "createEco",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "buyer"
+        },
+        {
+          "type": "address",
+          "name": "vendee"
+        },
+        {
+          "type": "address",
+          "name": "seller"
+        },
+        {
+          "type": "address",
+          "name": "vendor"
+        },
+        {
+          "type": "uint256",
+          "unit": "wei",
+          "name": "strike"
+        },
+        {
+          "type": "uint256",
+          "unit": "wei",
+          "name": "notional"
+        },
+        {
+          "type": "uint256",
+          "unit": "sec",
+          "name": "maturity"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 261137
+    },
+    {
+      "name": "getEco",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "user"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 735
+    },
+    {
+      "name": "getUser",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "account"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 765
+    },
+    {
+      "name": "getAccount",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "user"
+        },
+        {
+          "type": "address",
+          "name": "eco"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 949
+    },
+    {
+      "constant": false,
+      "payable": true,
+      "type": "fallback"
+    },
+    {
+      "name": "ecoTemplate",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 671
+    }
+  ],
+  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052602061055e6101403934156100a157600080fd5b602061055e60c03960c05160205181106100ba57600080fd5b50600054156100c857600080fd5b600061014051186100d857600080fd5b6101405160005561054656600436101561000d57610434565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052637700bbfe60005114156103175734156100ba57600080fd5b60043560205181106100cb57600080fd5b5060243560205181106100dd57600080fd5b5060443560205181106100ef57600080fd5b50606435602051811061010157600080fd5b5060006004351861011157600080fd5b60006000541861012057600080fd5b600160043560e05260c052604060c020541561013b57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806101ad57600080fd5b610140526101405161020052610140513b6101c757600080fd5b6101405130186101d657600080fd5b6000600060e463aeb65715610220526004356102405260243561026052604435610280526064356102a0526084356102c05260a4356102e05260c4356103005261023c6000610140515af161022a57600080fd5b61014051600160043560e05260c052604060c02055600435600260243560e05260c052604060c02055602435600360043560e05260c052604060c0206101405160e05260c052604060c0205561020051600160443560e05260c052604060c02055604435600260643560e05260c052604060c02055606435600360443560e05260c052604060c0206101405160e05260c052604060c020556084356103605260a4356103805260c4356103a052602435600435610140517f225c2035d98fcdbbae9d6dfd06aec2c9f9449b5e01a31e142aadf931333b0e836060610360a46101405160005260206000f350005b63c205dcc5600051141561035e57341561033057600080fd5b600435602051811061034157600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b60005114156103a557341561037757600080fd5b600435602051811061038857600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63fd590847600051141561040c5734156103be57600080fd5b60043560205181106103cf57600080fd5b5060243560205181106103e157600080fd5b50600360043560e05260c052604060c02060243560e05260c052604060c0205460005260206000f350005b63433c64b8600051141561043357341561042557600080fd5b60005460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a25b6100e4610546036100e46000396100e4610546036000f3",
+  "deployedBytecode": "0x600436101561000d57610434565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052637700bbfe60005114156103175734156100ba57600080fd5b60043560205181106100cb57600080fd5b5060243560205181106100dd57600080fd5b5060443560205181106100ef57600080fd5b50606435602051811061010157600080fd5b5060006004351861011157600080fd5b60006000541861012057600080fd5b600160043560e05260c052604060c020541561013b57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806101ad57600080fd5b610140526101405161020052610140513b6101c757600080fd5b6101405130186101d657600080fd5b6000600060e463aeb65715610220526004356102405260243561026052604435610280526064356102a0526084356102c05260a4356102e05260c4356103005261023c6000610140515af161022a57600080fd5b61014051600160043560e05260c052604060c02055600435600260243560e05260c052604060c02055602435600360043560e05260c052604060c0206101405160e05260c052604060c0205561020051600160443560e05260c052604060c02055604435600260643560e05260c052604060c02055606435600360443560e05260c052604060c0206101405160e05260c052604060c020556084356103605260a4356103805260c4356103a052602435600435610140517f225c2035d98fcdbbae9d6dfd06aec2c9f9449b5e01a31e142aadf931333b0e836060610360a46101405160005260206000f350005b63c205dcc5600051141561035e57341561033057600080fd5b600435602051811061034157600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b60005114156103a557341561037757600080fd5b600435602051811061038857600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63fd590847600051141561040c5734156103be57600080fd5b60043560205181106103cf57600080fd5b5060243560205181106103e157600080fd5b50600360043560e05260c052604060c02060243560e05260c052604060c0205460005260206000f350005b63433c64b8600051141561043357341561042557600080fd5b60005460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a2",
+  "source": "contract Eco():\r\n    def setup(  buyer: address, \r\n                vendee: address,\r\n                seller: address,\r\n                vendor: address,\r\n                strike: wei_value,\r\n                notional: wei_value,\r\n                maturity: timedelta\r\n                ): modifying\r\n\r\nNewEco: event({\r\n                eco: indexed(address), \r\n                buyer: indexed(address), \r\n                vendee: indexed(address), \r\n                strike: wei_value,\r\n                notional: wei_value,\r\n                maturity: timedelta\r\n                })\r\nError: event({message: string[50]})\r\nPayment: event({amount: wei_value, _from: indexed(address)})\r\n\r\necoTemplate: public(address)\r\nuser_to_eco: map(address, address)\r\naccount_to_user: map(address, address)\r\nuser_to_eco_to_account: map(address, map(address, address))\r\n\r\n\r\n@public\r\ndef __init__(template: address):\r\n    assert self.ecoTemplate == ZERO_ADDRESS\r\n    assert template != ZERO_ADDRESS\r\n    self.ecoTemplate = template\r\n\r\n@public\r\ndef createEco(  buyer: address, \r\n                vendee: address,\r\n                seller: address,\r\n                vendor: address,\r\n                strike: wei_value,\r\n                notional: wei_value,\r\n                maturity: timedelta\r\n                ) -> address:\r\n    assert buyer != ZERO_ADDRESS\r\n    assert self.ecoTemplate != ZERO_ADDRESS\r\n    assert self.user_to_eco[buyer] == ZERO_ADDRESS\r\n    eco: address = create_forwarder_to(self.ecoTemplate)\r\n    _eco: address = eco\r\n    Eco(eco).setup( buyer,\r\n                    vendee,\r\n                    seller,\r\n                    vendor,\r\n                    strike,\r\n                    notional,\r\n                    maturity\r\n                    )\r\n    self.user_to_eco[buyer] = eco\r\n    self.account_to_user[vendee] = buyer\r\n    self.user_to_eco_to_account[buyer][eco] = vendee\r\n    self.user_to_eco[seller] = _eco\r\n    self.account_to_user[vendor] = seller\r\n    self.user_to_eco_to_account[seller][eco] = vendor\r\n    log.NewEco(     eco,\r\n                    buyer,\r\n                    vendee,\r\n                    strike,\r\n                    notional,\r\n                    maturity\r\n                    )\r\n    return eco\r\n\r\n@public\r\n@constant\r\ndef getEco(user: address) -> address:\r\n    return self.user_to_eco[user]\r\n\r\n@public\r\n@constant\r\ndef getUser(account: address) -> address:\r\n    return self.account_to_user[account]\r\n\r\n@public\r\n@constant\r\ndef getAccount(user: address, eco: address) -> address:\r\n    return self.user_to_eco_to_account[user][eco]\r\n\r\n@public\r\n@payable\r\ndef __default__():\r\n    log.Payment(msg.value, msg.sender)",
+  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/ECOFactory.vy",
+  "compiler": {
+    "name": "vyper",
+    "version": "0.1.0b13+commit.375fb27"
+  },
+  "networks": {
+    "5777": {
+      "events": {
+        "0x225c2035d98fcdbbae9d6dfd06aec2c9f9449b5e01a31e142aadf931333b0e83": {
+          "name": "NewEco",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "buyer",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "vendee",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "uint256",
+              "name": "notional",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "uint256",
+              "name": "maturity",
+              "indexed": false,
+              "unit": "sec"
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x225c2035d98fcdbbae9d6dfd06aec2c9f9449b5e01a31e142aadf931333b0e83"
+        },
+        "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa": {
+          "name": "Error",
+          "inputs": [
+            {
+              "type": "string",
+              "name": "message",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa"
+        },
+        "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e": {
+          "name": "Payment",
+          "inputs": [
+            {
+              "type": "uint256",
+              "name": "amount",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "address",
+              "name": "_from",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e"
+        }
+      },
+      "links": {},
+      "address": "0xc9b875B17BF45F985c6e81A4f386891513B1166f",
+      "transactionHash": "0x76d17d9a9b0c247d995a6cb0758e0ed29065b381afac0e74db0d2c28642b8e2e"
+    }
+  },
+  "schemaVersion": "3.0.17",
+  "updatedAt": "2019-11-09T06:55:13.872Z",
+  "networkType": "ethereum"
+}

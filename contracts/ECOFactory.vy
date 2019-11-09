@@ -4,7 +4,7 @@ contract Eco():
                 seller: address,
                 vendor: address,
                 strike: wei_value,
-                notional: wei_value,
+                notional: uint256,
                 maturity: timedelta
                 ): modifying
 
@@ -13,10 +13,11 @@ NewEco: event({
                 buyer: indexed(address), 
                 vendee: indexed(address), 
                 strike: wei_value,
-                notional: wei_value,
+                notional: uint256,
                 maturity: timedelta
                 })
 Error: event({message: string[50]})
+Payment: event({amount: wei_value, _from: indexed(address)})
 
 ecoTemplate: public(address)
 user_to_eco: map(address, address)
@@ -31,12 +32,13 @@ def __init__(template: address):
     self.ecoTemplate = template
 
 @public
+@payable
 def createEco(  buyer: address, 
                 vendee: address,
                 seller: address,
                 vendor: address,
                 strike: wei_value,
-                notional: wei_value,
+                notional: uint256,
                 maturity: timedelta
                 ) -> address:
     assert buyer != ZERO_ADDRESS
@@ -50,7 +52,7 @@ def createEco(  buyer: address,
                     vendor,
                     strike,
                     notional,
-                    maturity
+                    maturity,
                     )
     self.user_to_eco[buyer] = eco
     self.account_to_user[vendee] = buyer
@@ -81,3 +83,8 @@ def getUser(account: address) -> address:
 @constant
 def getAccount(user: address, eco: address) -> address:
     return self.user_to_eco_to_account[user][eco]
+
+@public
+@payable
+def __default__():
+    log.Payment(msg.value, msg.sender)

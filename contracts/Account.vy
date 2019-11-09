@@ -49,9 +49,10 @@ def withdraw(addr: address, amount: wei_value) -> bool:
         return False
     if(self.authorized[addr]):
         log.AccountWithdrawal(msg.sender, addr, amount, True)
-        send(msg.sender, amount)
+        log.Error('Authorized, continue to withdraw')
+        send(msg.sender, 1)
         return True
-    log.Error('Withdraw Unsuccessful')
+    log.Error('Withdraw Unsuccessful, User Unauthorized')
     return False
 
 
