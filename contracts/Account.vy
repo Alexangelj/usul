@@ -5,17 +5,25 @@ contract Factory():
     def getAccount(user_addr: address) -> address:constant
     def getUser(userAcc: address) -> address:constant
 
+contract Eco():
+    def exercise() -> bool:modifying
+
 Error: event({message: string[50]})
 AccountCreated: event({user: indexed(address), userAcc: indexed(address), outcome: bool})
 AccountAuthorized: event({user: indexed(address), userAcc: indexed(address), outcome: bool})
 AccountDeposit: event({user: indexed(address), userAcc: indexed(address), amount: wei_value, outcome: bool})
 AccountWithdrawal: event({user: indexed(address), userAcc: indexed(address), amount: wei_value, outcome: bool})
+Log: event({addr: indexed(address)})
+Payment: event({addr_from: indexed(address), val: wei_value})
 
 accounts: map(address, address)
 authorized: public(map(address, bool))
 factory: Factory
 owner: public(address)
 user: address
+ecos: map(address, map(address, bool))
+eco: Eco
+
 
 
 @public
@@ -27,8 +35,16 @@ def setup(user_addr: address):
     log.AccountCreated(user_addr, self, True)
 
 @public
+@payable
+def __default__():
+    log.Payment(msg.sender, msg.value)
+
+@public
 def authorize(userAcc: address) -> bool:
     self.authorized[userAcc] = True
+    self.authorized[msg.sender] = True
+    self.ecos[userAcc][msg.sender] = True
+    self.eco = Eco(msg.sender)
     log.AccountAuthorized(self.factory, userAcc, True)
     return True
 
@@ -47,14 +63,18 @@ def withdraw(addr: address, amount: wei_value) -> bool:
     if(amount > self.balance):
         log.Error('Exceeds balance')
         return False
-    if(self.authorized[addr]):
-        log.AccountWithdrawal(msg.sender, addr, amount, True)
+    if(msg.sender == self.owner or self.authorized[addr]):
+        log.AccountWithdrawal(self.owner, self, amount, True)
         log.Error('Authorized, continue to withdraw')
-        send(msg.sender, 1)
+        log.Log(addr)
+        send(addr, amount)
         return True
     log.Error('Withdraw Unsuccessful, User Unauthorized')
     return False
 
+@public
+def exerciseContract() -> bool:
+    return self.eco.exercise()
 
 @public
 @constant
@@ -81,4 +101,12 @@ def authorizedAccount(userAcc_addr: address) -> bool:
 def accountBalance() -> wei_value:
     return self.balance
 
+@public
+@constant
+def authorizedEco(user_acc: address, eco_addr: address) -> bool:
+    return self.ecos[user_acc][eco_addr]
     
+@public
+def pay(val: wei_value) -> bool:
+    send(msg.sender, val)
+    return True

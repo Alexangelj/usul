@@ -10,6 +10,8 @@ contract Account():
     def deposit(vendor_addr: address) -> bool: modifying
     def withdraw(vendor_addr: address, wad: wei_value) -> bool: modifying
     def authorize(accountAddress: address) -> bool: modifying
+    def authorizedEco(user_acc: address, eco_addr: address) -> bool: constant
+    def pay(value: wei_value) -> bool: modifying
 
 # @notice Events
 
@@ -28,9 +30,9 @@ Cashflow: event({user: indexed(address), eco: indexed(address), amount: wei_valu
 factory: Factory
 user: address
 buyer: address
-vendee: Account
+vendee: public(Account)
 seller: address
-vendor: Account
+vendor: public(Account)
 strike: wei_value
 notional: uint256
 maturity: timedelta
@@ -128,7 +130,7 @@ def exercise() -> bool:
     if(msg.sender == self.seller):
         log.Error('Exercise Call must be from Buyer')
         return False
-    if(msg.sender == self.buyer):
+    if(msg.sender == self.buyer or msg.sender == self.vendor):
         """
         This is where cash dispersement is handled.
         ECO tx -> Vendor: withdraw(strike amount)
@@ -138,12 +140,19 @@ def exercise() -> bool:
         ECO deactivated and completed
         return True
         """
-        val: wei_value = 1*10**18
+        val: wei_value = as_wei_value(20, 'ether')
+        strik: wei_value = as_wei_value(10, 'ether')
         log.Exercise(self.buyer, self, True)
-        self.vendor.withdraw(self.vendor, val)
+        #self.vendee.withdraw(self, val)
+        send(self.buyer, val)
+        send(self.seller, strik)
+        self.active = False
+        self.completed = True
+        #self.vendor.pay(val)
+        #
 
 
-        return True
+        return self.vendor.authorizedEco(self.vendor, self)
     else:
         log.Error('Exercise attempt returns False')
         return False

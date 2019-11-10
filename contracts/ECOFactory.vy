@@ -24,6 +24,10 @@ user_to_eco: map(address, address)
 account_to_user: map(address, address)
 user_to_eco_to_account: map(address, map(address, address))
 
+@public
+@payable
+def __default__():
+    log.Payment(msg.value, msg.sender)
 
 @public
 def __init__(template: address):
@@ -84,7 +88,3 @@ def getUser(account: address) -> address:
 def getAccount(user: address, eco: address) -> address:
     return self.user_to_eco_to_account[user][eco]
 
-@public
-@payable
-def __default__():
-    log.Payment(msg.value, msg.sender)

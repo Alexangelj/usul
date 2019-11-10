@@ -51,7 +51,7 @@ contract('ECO', accounts => {
                                             strike, 
                                             notional, 
                                             maturity,
-                                            {value: 1}
+                                            {value: notional*2*10**18}
                                             )
         console.log('*** PARAMETERS ***\n')
         for (var i = 0; i < params.length; i++){
@@ -181,14 +181,16 @@ contract('ECO', accounts => {
         let logs = await exercise_seller.receipt.logs[0]
         let vendee = await eco_fac.getAccount(buyer, eco_address)
         let vendor = await eco_fac.getAccount(seller, eco_address)
-        await web3.eth.sendTransaction({from: seller, to: _eco.address, value: 1*10**18})
-
+        await web3.eth.sendTransaction({from: seller, to: _eco.address, value: 20*10**18})
+        let strike = 1*10**18
+        let notional = 10
+        let underlier = 2*10**18
         console.log('Exercise from seller: ', logs.event)
         assert.strictEqual(logs.event, 'Error', 'Should not be able to exercise as Seller')
-        let exercise_buyer = await _eco.exercise({from: buyer})
-        let _logs = await exercise_buyer.receipt.logs[0]
-        assert.strictEqual(_logs.args.outcome, true, 'Should be able to exercise as buyer')
-        assert.strictEqual(exercise_buyer.receipt.logs[1].args.message, 'Exceeds balance', 'Should not withdraw from unfunded Account')
+        //let exercise_buyer = await _eco.exercise({from: buyer})
+        //let _logs = await exercise_buyer.receipt.logs[0]
+        //assert.strictEqual(_logs.args.outcome, true, 'Should be able to exercise as buyer')
+        //assert.strictEqual(exercise_buyer.receipt.logs[1].args.message, 'Exceeds balance', 'Should not withdraw from unfunded Account')
 
         console.log('*** Balances of Accounts Before ***')
         async function checkBalances(){
@@ -219,6 +221,7 @@ contract('ECO', accounts => {
         let acc_or = await Account.at(vendor)
         let acc_ee = await Account.at(vendee)
         let capital = 20*10**18
+        let strk = 10*10**18
         let fund_or = await acc_or.deposit(vendor, {value: capital})
         let logs_or = await fund_or.receipt.logs[0]
         console.log('Event: ', logs_or.event)
@@ -227,7 +230,7 @@ contract('ECO', accounts => {
         let bal_ee = await web3.eth.getBalance(vendor)/10**18
         console.log('Vendor Balance: ', bal_ee)
         console.log('*** Fund Vendee ***')
-        let fund_ee = await acc_ee.deposit(vendee, {value: capital})
+        let fund_ee = await acc_ee.deposit(vendee, {from: buyer, value: capital})
         let logs_ee = await fund_ee.receipt.logs[0]
         console.log('Event: ', logs_ee.event)
         for(var i=0;i<logs_ee.args.__length__-2;i++){console.log(event_args[i], logs_ee.args[i])}
@@ -243,10 +246,14 @@ contract('ECO', accounts => {
         
         //let fund_or_exercise = await _eco.exercise({from: buyer})
         console.log('vendor: ', vendor)
-        let fund_or_exercise = await _eco.exercise({from: buyer})
-        console.log(fund_or_exercise.tx)
+        //let acc_vendor = await Account.at(vendor)
+        //let exe = await acc_vendor.exerciseContract()
+        //console.log(exe)
+        let fund_or_exercise = await _eco.exercise({from: buyer, value: strk})
         let vendor_exercise_logs = await fund_or_exercise.receipt.logs[1]
-        console.log(vendor_exercise_logs.args)
+        //console.log(fund_or_exercise.receipt)
+        //console.log(fund_or_exercise.receipt.logs[0].args)
+        //console.log(vendor_exercise_logs)
         await checkBalances()
     });
 

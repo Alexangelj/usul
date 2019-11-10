@@ -3,6 +3,7 @@ contract Account():
 
 NewAccount: event({user: indexed(address), userAcc: indexed(address)})
 Error: event({message: string[50]})
+Payment: event({amount: wei_value, _from: indexed(address)})
 
 userAccTemplate: public(address)
 user_to_account: map(address, address)
@@ -26,6 +27,11 @@ def createAccount(user: address) -> address:
     self.account_to_user[userAcc] = user
     log.NewAccount(user, userAcc)
     return userAcc
+
+@public
+@payable
+def __default__():
+    log.Payment(msg.value, msg.sender)
 
 @public
 @constant
