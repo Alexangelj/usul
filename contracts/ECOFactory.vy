@@ -1,28 +1,26 @@
 contract Eco():
     def setup(  buyer: address, 
-                vendee: address,
                 seller: address,
-                vendor: address,
                 strike: wei_value,
                 notional: uint256,
-                maturity: timedelta
+                maturity: timedelta,
+                margin: wei_value
                 ): modifying
 
 NewEco: event({
                 eco: indexed(address), 
                 buyer: indexed(address), 
-                vendee: indexed(address), 
                 strike: wei_value,
                 notional: uint256,
-                maturity: timedelta
+                maturity: timedelta,
+                margin: wei_value
                 })
 Error: event({message: string[50]})
 Payment: event({amount: wei_value, _from: indexed(address)})
 
 ecoTemplate: public(address)
 user_to_eco: map(address, address)
-account_to_user: map(address, address)
-user_to_eco_to_account: map(address, map(address, address))
+eco_to_user: map(address, address)
 
 @public
 @payable
@@ -38,12 +36,11 @@ def __init__(template: address):
 @public
 @payable
 def createEco(  buyer: address, 
-                vendee: address,
                 seller: address,
-                vendor: address,
                 strike: wei_value,
                 notional: uint256,
-                maturity: timedelta
+                maturity: timedelta,
+                margin: wei_value
                 ) -> address:
     assert buyer != ZERO_ADDRESS
     assert self.ecoTemplate != ZERO_ADDRESS
@@ -51,25 +48,22 @@ def createEco(  buyer: address,
     eco: address = create_forwarder_to(self.ecoTemplate)
     _eco: address = eco
     Eco(eco).setup( buyer,
-                    vendee,
                     seller,
-                    vendor,
                     strike,
                     notional,
                     maturity,
+                    margin
                     )
     self.user_to_eco[buyer] = eco
-    self.account_to_user[vendee] = buyer
-    self.user_to_eco_to_account[buyer][eco] = vendee
     self.user_to_eco[seller] = _eco
-    self.account_to_user[vendor] = seller
-    self.user_to_eco_to_account[seller][eco] = vendor
+    self.eco_to_user[eco] = buyer
+    self.eco_to_user[_eco] = seller
     log.NewEco(     eco,
                     buyer,
-                    vendee,
                     strike,
                     notional,
-                    maturity
+                    maturity,
+                    margin
                     )
     return eco
 
@@ -80,11 +74,6 @@ def getEco(user: address) -> address:
 
 @public
 @constant
-def getUser(account: address) -> address:
-    return self.account_to_user[account]
-
-@public
-@constant
-def getAccount(user: address, eco: address) -> address:
-    return self.user_to_eco_to_account[user][eco]
+def getUser(eco: address) -> address:
+    return self.eco_to_user[eco]
 
