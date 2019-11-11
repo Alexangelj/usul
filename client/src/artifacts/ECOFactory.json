@@ -15,11 +15,6 @@
           "indexed": true
         },
         {
-          "type": "address",
-          "name": "vendee",
-          "indexed": true
-        },
-        {
           "type": "uint256",
           "name": "strike",
           "indexed": false,
@@ -35,6 +30,17 @@
           "name": "maturity",
           "indexed": false,
           "unit": "sec"
+        },
+        {
+          "type": "uint256",
+          "name": "margin",
+          "indexed": false,
+          "unit": "wei"
+        },
+        {
+          "type": "address",
+          "name": "_oracle_address",
+          "indexed": false
         }
       ],
       "anonymous": false,
@@ -81,6 +87,10 @@
         {
           "type": "address",
           "name": "template"
+        },
+        {
+          "type": "address",
+          "name": "_oracle_address"
         }
       ],
       "constant": false,
@@ -102,15 +112,7 @@
         },
         {
           "type": "address",
-          "name": "vendee"
-        },
-        {
-          "type": "address",
           "name": "seller"
-        },
-        {
-          "type": "address",
-          "name": "vendor"
         },
         {
           "type": "uint256",
@@ -125,12 +127,17 @@
           "type": "uint256",
           "unit": "sec",
           "name": "maturity"
+        },
+        {
+          "type": "uint256",
+          "unit": "wei",
+          "name": "margin"
         }
       ],
       "constant": false,
       "payable": true,
       "type": "function",
-      "gas": 261047
+      "gas": 191687
     },
     {
       "name": "getEco",
@@ -162,36 +169,13 @@
       "inputs": [
         {
           "type": "address",
-          "name": "account"
-        }
-      ],
-      "constant": true,
-      "payable": false,
-      "type": "function",
-      "gas": 765
-    },
-    {
-      "name": "getAccount",
-      "outputs": [
-        {
-          "type": "address",
-          "name": "out"
-        }
-      ],
-      "inputs": [
-        {
-          "type": "address",
-          "name": "user"
-        },
-        {
-          "type": "address",
           "name": "eco"
         }
       ],
       "constant": true,
       "payable": false,
       "type": "function",
-      "gas": 949
+      "gas": 765
     },
     {
       "name": "ecoTemplate",
@@ -205,18 +189,158 @@
       "constant": true,
       "payable": false,
       "type": "function",
+      "gas": 641
+    },
+    {
+      "name": "oracle_address",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
       "gas": 671
     }
   ],
-  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05260206105536101403934156100a157600080fd5b602061055360c03960c05160205181106100ba57600080fd5b50600054156100c857600080fd5b600061014051186100d857600080fd5b6101405160005561053b56600436101561000d57610429565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052637700bbfe600051141561030c5760043560205181106100c057600080fd5b5060243560205181106100d257600080fd5b5060443560205181106100e457600080fd5b5060643560205181106100f657600080fd5b5060006004351861010657600080fd5b60006000541861011557600080fd5b600160043560e05260c052604060c020541561013057600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806101a257600080fd5b610140526101405161020052610140513b6101bc57600080fd5b6101405130186101cb57600080fd5b6000600060e463aeb65715610220526004356102405260243561026052604435610280526064356102a0526084356102c05260a4356102e05260c4356103005261023c6000610140515af161021f57600080fd5b61014051600160043560e05260c052604060c02055600435600260243560e05260c052604060c02055602435600360043560e05260c052604060c0206101405160e05260c052604060c0205561020051600160443560e05260c052604060c02055604435600260643560e05260c052604060c02055606435600360443560e05260c052604060c0206101405160e05260c052604060c020556084356103605260a4356103805260c4356103a052602435600435610140517f225c2035d98fcdbbae9d6dfd06aec2c9f9449b5e01a31e142aadf931333b0e836060610360a46101405160005260206000f350005b63c205dcc5600051141561035357341561032557600080fd5b600435602051811061033657600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561039a57341561036c57600080fd5b600435602051811061037d57600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63fd59084760005114156104015734156103b357600080fd5b60043560205181106103c457600080fd5b5060243560205181106103d657600080fd5b50600360043560e05260c052604060c02060243560e05260c052604060c0205460005260206000f350005b63433c64b8600051141561042857341561041a57600080fd5b60005460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a25b6100e461053b036100e46000396100e461053b036000f3",
-  "deployedBytecode": "0x600436101561000d57610429565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052637700bbfe600051141561030c5760043560205181106100c057600080fd5b5060243560205181106100d257600080fd5b5060443560205181106100e457600080fd5b5060643560205181106100f657600080fd5b5060006004351861010657600080fd5b60006000541861011557600080fd5b600160043560e05260c052604060c020541561013057600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806101a257600080fd5b610140526101405161020052610140513b6101bc57600080fd5b6101405130186101cb57600080fd5b6000600060e463aeb65715610220526004356102405260243561026052604435610280526064356102a0526084356102c05260a4356102e05260c4356103005261023c6000610140515af161021f57600080fd5b61014051600160043560e05260c052604060c02055600435600260243560e05260c052604060c02055602435600360043560e05260c052604060c0206101405160e05260c052604060c0205561020051600160443560e05260c052604060c02055604435600260643560e05260c052604060c02055606435600360443560e05260c052604060c0206101405160e05260c052604060c020556084356103605260a4356103805260c4356103a052602435600435610140517f225c2035d98fcdbbae9d6dfd06aec2c9f9449b5e01a31e142aadf931333b0e836060610360a46101405160005260206000f350005b63c205dcc5600051141561035357341561032557600080fd5b600435602051811061033657600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561039a57341561036c57600080fd5b600435602051811061037d57600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63fd59084760005114156104015734156103b357600080fd5b60043560205181106103c457600080fd5b5060243560205181106103d657600080fd5b50600360043560e05260c052604060c02060243560e05260c052604060c0205460005260206000f350005b63433c64b8600051141561042857341561041a57600080fd5b60005460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a2",
-  "source": "contract Eco():\r\n    def setup(  buyer: address, \r\n                vendee: address,\r\n                seller: address,\r\n                vendor: address,\r\n                strike: wei_value,\r\n                notional: uint256,\r\n                maturity: timedelta\r\n                ): modifying\r\n\r\nNewEco: event({\r\n                eco: indexed(address), \r\n                buyer: indexed(address), \r\n                vendee: indexed(address), \r\n                strike: wei_value,\r\n                notional: uint256,\r\n                maturity: timedelta\r\n                })\r\nError: event({message: string[50]})\r\nPayment: event({amount: wei_value, _from: indexed(address)})\r\n\r\necoTemplate: public(address)\r\nuser_to_eco: map(address, address)\r\naccount_to_user: map(address, address)\r\nuser_to_eco_to_account: map(address, map(address, address))\r\n\r\n@public\r\n@payable\r\ndef __default__():\r\n    log.Payment(msg.value, msg.sender)\r\n\r\n@public\r\ndef __init__(template: address):\r\n    assert self.ecoTemplate == ZERO_ADDRESS\r\n    assert template != ZERO_ADDRESS\r\n    self.ecoTemplate = template\r\n\r\n@public\r\n@payable\r\ndef createEco(  buyer: address, \r\n                vendee: address,\r\n                seller: address,\r\n                vendor: address,\r\n                strike: wei_value,\r\n                notional: uint256,\r\n                maturity: timedelta\r\n                ) -> address:\r\n    assert buyer != ZERO_ADDRESS\r\n    assert self.ecoTemplate != ZERO_ADDRESS\r\n    assert self.user_to_eco[buyer] == ZERO_ADDRESS\r\n    eco: address = create_forwarder_to(self.ecoTemplate)\r\n    _eco: address = eco\r\n    Eco(eco).setup( buyer,\r\n                    vendee,\r\n                    seller,\r\n                    vendor,\r\n                    strike,\r\n                    notional,\r\n                    maturity,\r\n                    )\r\n    self.user_to_eco[buyer] = eco\r\n    self.account_to_user[vendee] = buyer\r\n    self.user_to_eco_to_account[buyer][eco] = vendee\r\n    self.user_to_eco[seller] = _eco\r\n    self.account_to_user[vendor] = seller\r\n    self.user_to_eco_to_account[seller][eco] = vendor\r\n    log.NewEco(     eco,\r\n                    buyer,\r\n                    vendee,\r\n                    strike,\r\n                    notional,\r\n                    maturity\r\n                    )\r\n    return eco\r\n\r\n@public\r\n@constant\r\ndef getEco(user: address) -> address:\r\n    return self.user_to_eco[user]\r\n\r\n@public\r\n@constant\r\ndef getUser(account: address) -> address:\r\n    return self.account_to_user[account]\r\n\r\n@public\r\n@constant\r\ndef getAccount(user: address, eco: address) -> address:\r\n    return self.user_to_eco_to_account[user][eco]\r\n\r\n",
+  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05260406104da6101403934156100a157600080fd5b60206104da60c03960c05160205181106100ba57600080fd5b50602060206104da0160c03960c05160205181106100d757600080fd5b50600054156100e557600080fd5b600061014051186100f557600080fd5b61014051600055610160516003556104c256600436101561000d5761038c565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052639093423360005114156102af5760043560205181106100c057600080fd5b5060243560205181106100d257600080fd5b506000600435186100e257600080fd5b6000600054186100f157600080fd5b600160043560e05260c052604060c020541561010c57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061017e57600080fd5b610140526101405161020052610140513b61019857600080fd5b6101405130186101a757600080fd5b6000600060e46393df599a610220526004356102405260243561026052604435610280526064356102a0526084356102c05260a4356102e0526003546103005261023c6000610140515af16101fb57600080fd5b61014051600160043560e05260c052604060c0205561020051600160243560e05260c052604060c0205560043560026101405160e05260c052604060c0205560243560026102005160e05260c052604060c0205560443561036052606435610380526084356103a05260a4356103c0526003546103e052600435610140517fd3a50cb13406b87936d3bcc815259de55cc0aa9e88b3e88845c8ce8871945ae460a0610360a36101405160005260206000f350005b63c205dcc560005114156102f65734156102c857600080fd5b60043560205181106102d957600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561033d57341561030f57600080fd5b600435602051811061032057600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63433c64b8600051141561036457341561035657600080fd5b60005460005260206000f350005b637e0c1792600051141561038b57341561037d57600080fd5b60035460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a25b6101086104c2036101086000396101086104c2036000f3",
+  "deployedBytecode": "0x600436101561000d5761038c565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052639093423360005114156102af5760043560205181106100c057600080fd5b5060243560205181106100d257600080fd5b506000600435186100e257600080fd5b6000600054186100f157600080fd5b600160043560e05260c052604060c020541561010c57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061017e57600080fd5b610140526101405161020052610140513b61019857600080fd5b6101405130186101a757600080fd5b6000600060e46393df599a610220526004356102405260243561026052604435610280526064356102a0526084356102c05260a4356102e0526003546103005261023c6000610140515af16101fb57600080fd5b61014051600160043560e05260c052604060c0205561020051600160243560e05260c052604060c0205560043560026101405160e05260c052604060c0205560243560026102005160e05260c052604060c0205560443561036052606435610380526084356103a05260a4356103c0526003546103e052600435610140517fd3a50cb13406b87936d3bcc815259de55cc0aa9e88b3e88845c8ce8871945ae460a0610360a36101405160005260206000f350005b63c205dcc560005114156102f65734156102c857600080fd5b60043560205181106102d957600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561033d57341561030f57600080fd5b600435602051811061032057600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63433c64b8600051141561036457341561035657600080fd5b60005460005260206000f350005b637e0c1792600051141561038b57341561037d57600080fd5b60035460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a2",
+  "source": "contract Eco():\r\n    def setup(  buyer: address, \r\n                seller: address,\r\n                strike: wei_value,\r\n                notional: uint256,\r\n                maturity: timedelta,\r\n                margin: wei_value,\r\n                _oracle_address: address\r\n                ): modifying\r\n\r\nNewEco: event({\r\n                eco: indexed(address), \r\n                buyer: indexed(address), \r\n                strike: wei_value,\r\n                notional: uint256,\r\n                maturity: timedelta,\r\n                margin: wei_value,\r\n                _oracle_address: address\r\n                })\r\nError: event({message: string[50]})\r\nPayment: event({amount: wei_value, _from: indexed(address)})\r\n\r\necoTemplate: public(address)\r\nuser_to_eco: map(address, address)\r\neco_to_user: map(address, address)\r\noracle_address: public(address)\r\n\r\n@public\r\n@payable\r\ndef __default__():\r\n    log.Payment(msg.value, msg.sender)\r\n\r\n@public\r\ndef __init__(template: address, _oracle_address: address):\r\n    assert self.ecoTemplate == ZERO_ADDRESS\r\n    assert template != ZERO_ADDRESS\r\n    self.ecoTemplate = template\r\n    self.oracle_address = _oracle_address\r\n\r\n@public\r\n@payable\r\ndef createEco(  buyer: address, \r\n                seller: address,\r\n                strike: wei_value,\r\n                notional: uint256,\r\n                maturity: timedelta,\r\n                margin: wei_value\r\n                ) -> address:\r\n    assert buyer != ZERO_ADDRESS\r\n    assert self.ecoTemplate != ZERO_ADDRESS\r\n    assert self.user_to_eco[buyer] == ZERO_ADDRESS\r\n    eco: address = create_forwarder_to(self.ecoTemplate)\r\n    _eco: address = eco\r\n    Eco(eco).setup( buyer,\r\n                    seller,\r\n                    strike,\r\n                    notional,\r\n                    maturity,\r\n                    margin,\r\n                    self.oracle_address\r\n                    )\r\n    self.user_to_eco[buyer] = eco\r\n    self.user_to_eco[seller] = _eco\r\n    self.eco_to_user[eco] = buyer\r\n    self.eco_to_user[_eco] = seller\r\n    log.NewEco(     eco,\r\n                    buyer,\r\n                    strike,\r\n                    notional,\r\n                    maturity,\r\n                    margin,\r\n                    self.oracle_address\r\n                    )\r\n    return eco\r\n\r\n@public\r\n@constant\r\ndef getEco(user: address) -> address:\r\n    return self.user_to_eco[user]\r\n\r\n@public\r\n@constant\r\ndef getUser(eco: address) -> address:\r\n    return self.eco_to_user[eco]\r\n\r\n",
   "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/ECOFactory.vy",
   "compiler": {
     "name": "vyper",
     "version": "0.1.0b13+commit.375fb27"
   },
   "networks": {
+    "4": {
+      "events": {
+        "0xee8a571547322e6a089c2033d23e95ced9645bd9c20fec73dfb138c3e56610c6": {
+          "name": "NewEco",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "buyer",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "uint256",
+              "name": "notional",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "maturity",
+              "indexed": false,
+              "unit": "sec"
+            },
+            {
+              "type": "uint256",
+              "name": "margin",
+              "indexed": false,
+              "unit": "wei"
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xee8a571547322e6a089c2033d23e95ced9645bd9c20fec73dfb138c3e56610c6"
+        },
+        "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa": {
+          "name": "Error",
+          "inputs": [
+            {
+              "type": "string",
+              "name": "message",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa"
+        },
+        "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e": {
+          "name": "Payment",
+          "inputs": [
+            {
+              "type": "uint256",
+              "name": "amount",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "address",
+              "name": "_from",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e"
+        },
+        "0xd3a50cb13406b87936d3bcc815259de55cc0aa9e88b3e88845c8ce8871945ae4": {
+          "name": "NewEco",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "buyer",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "uint256",
+              "name": "notional",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "maturity",
+              "indexed": false,
+              "unit": "sec"
+            },
+            {
+              "type": "uint256",
+              "name": "margin",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "address",
+              "name": "_oracle_address",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xd3a50cb13406b87936d3bcc815259de55cc0aa9e88b3e88845c8ce8871945ae4"
+        }
+      },
+      "links": {},
+      "address": "0xCC3b3D1161878ba9EF6C27b86315D70c00DB6F01",
+      "transactionHash": "0xb3fcc8393cc6423393282e38c520f06b31c76bd676a98ede1f200433b569d719"
+    },
     "5777": {
       "events": {
         "0x225c2035d98fcdbbae9d6dfd06aec2c9f9449b5e01a31e142aadf931333b0e83": {
@@ -291,14 +415,101 @@
           "anonymous": false,
           "type": "event",
           "signature": "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e"
+        },
+        "0xee8a571547322e6a089c2033d23e95ced9645bd9c20fec73dfb138c3e56610c6": {
+          "name": "NewEco",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "buyer",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "uint256",
+              "name": "notional",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "maturity",
+              "indexed": false,
+              "unit": "sec"
+            },
+            {
+              "type": "uint256",
+              "name": "margin",
+              "indexed": false,
+              "unit": "wei"
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xee8a571547322e6a089c2033d23e95ced9645bd9c20fec73dfb138c3e56610c6"
+        },
+        "0xd3a50cb13406b87936d3bcc815259de55cc0aa9e88b3e88845c8ce8871945ae4": {
+          "name": "NewEco",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "buyer",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "uint256",
+              "name": "notional",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "maturity",
+              "indexed": false,
+              "unit": "sec"
+            },
+            {
+              "type": "uint256",
+              "name": "margin",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "address",
+              "name": "_oracle_address",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xd3a50cb13406b87936d3bcc815259de55cc0aa9e88b3e88845c8ce8871945ae4"
         }
       },
       "links": {},
-      "address": "0x5963341b50d771ebC2d3465eA3b9d84372CFD6a3",
-      "transactionHash": "0xe8a24d7b165d1ec53827c744a7b42841937f74980300fd968aa2ee76ef5f2cf9"
+      "address": "0xD8c7a528bb7e62c0135A095944B06193997fA9A1",
+      "transactionHash": "0x04160cf7498beeebe2f8c634c5d705302ba620cf060461707572429509cdb374"
     }
   },
   "schemaVersion": "3.0.17",
-  "updatedAt": "2019-11-09T23:40:05.030Z",
+  "updatedAt": "2019-11-11T03:19:23.184Z",
   "networkType": "ethereum"
 }

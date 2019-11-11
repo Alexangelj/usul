@@ -1,15 +1,21 @@
 # @title Emerald Covered Call Option
+# 
 # @notice Implementation of an American Call Option on the Ethereum Network
+# 
 # @author Alexander Angel
-# @dev Uses a factory to initialize option contracts
+# 
+# @dev Uses a factory to initialize and deploy option contracts
 
 contract Factory():
     def getEco(user_addr: address) -> address:constant
     def getUser(eco: address) -> address:constant
 
+contract Oracle():
+    def currentAnswer() -> int128:constant
+    def updatedHeight() -> uint256:constant
+
 Error: event({message: string[50]})
 Initialized: event({eco: indexed(address), buyer: indexed(address), seller: indexed(address), outcome: bool})
-Authorization: event({user: indexed(address), eco: indexed(address), outcome: bool})
 Validation: event({eco: indexed(address), buyer: indexed(address), seller: indexed(address), outcome: bool})
 Purchaser: event({user: indexed(address), eco: indexed(address), amount: wei_value, outcome: bool})
 Writer: event({user: indexed(address), eco: indexed(address), amount: wei_value, outcome: bool})
@@ -19,37 +25,48 @@ Settlement: event({user: indexed(address), eco: indexed(address), amount: wei_va
 Payment: event({amount: wei_value, source: indexed(address)})
 Cashflow: event({user: indexed(address), eco: indexed(address), amount: wei_value, outcome: bool})
 Mature: event({eco: indexed(address), stamp: timestamp, outcome: bool})
+Oracle: event({user: indexed(address), eco: indexed(address), oracle_address: indexed(address), spot_price: wei_value, outcome: bool})
 
 
 factory: Factory
+oracle: Oracle
 user: address
+
+# ECO parameters
 buyer: public(address)
 seller: public(address)
 strike: public(wei_value)
 notional: public(uint256)
 maturity: public(timedelta)
 margin: public(wei_value)
+
+strikepot: public(wei_value) # strike price * notional -> wei
+jackpot: public(wei_value) # spot price * notional -> wei
+stub: public(wei_value) # margin - jackpot + strikepot -> wei, sent to writer
 active: public(bool)
 completed: public(bool)
 isAuthed: map(address, bool)
 claimedBalance: public(map(address, wei_value))
 premium: public(wei_value)
 expiration: public(timestamp)
+spot: public(wei_value)
+oracle_address: public(address)
+raw_value: bytes[32]
 
 
 @public
 @payable
 def __default__():
     log.Payment(msg.value, msg.sender)
-# @notice Initializer
-# @params buyer:address, seller:address, underlier:wei, strikePrice:wei, notional:uint256, maturity:timedelta
+
 @public
 def setup(  _buyer: address, 
             _seller: address,
             _strike: wei_value,
             _notional: uint256,
             _maturity: timedelta,
-            _margin: wei_value
+            _margin: wei_value,
+            _oracle_address: address
             ):
     """
     @notice Setup is called from the factory contract using an ECO contract template address
@@ -57,18 +74,25 @@ def setup(  _buyer: address,
     """
     assert(self.factory == ZERO_ADDRESS and self.user == ZERO_ADDRESS) and msg.sender != ZERO_ADDRESS
     self.factory = Factory(msg.sender)
+    self.oracle_address = _oracle_address
     self.buyer = _buyer
     self.seller = _seller
     self.strike = _strike
     self.notional = _notional
     self.maturity = _maturity
     self.margin = _margin
+
+    self.premium = as_wei_value(0.1, 'ether')
+    self.expiration = block.timestamp + (60 * 60 * 24 * self.maturity)
+    self.strikepot = self.strike * self.notional
+    self.jackpot = as_wei_value(4, 'ether')
+    self.stub = self.margin - self.jackpot + self.strikepot
+
     self.active = False
     self.completed = False
     self.claimedBalance[self.buyer] = 0
     self.claimedBalance[self.seller] = 0
-    self.premium = as_wei_value(3, 'ether')
-    self.expiration = block.timestamp + (60 * 60 * 24 * self.maturity)
+
     log.Initialized(self, self.buyer, self.seller, True)
 
 @public
@@ -82,6 +106,13 @@ def isMature() -> bool:
     else:
         log.Mature(self, self.expiration, False)
         return False
+
+@public
+def getSpotPrice() -> wei_value:
+    self.raw_value = raw_call(self.oracle_address, method_id('getLatestUpdatedHeight()', bytes[4]), outsize=32, gas=msg.gas)
+    self.spot = as_wei_value(convert(self.raw_value, int128), 'ether')
+    log.Oracle(msg.sender, self, self.oracle_address, self.spot, True)
+    return self.spot
 
 @public
 @payable
@@ -146,7 +177,7 @@ def exercise() -> bool:
     if(msg.sender == self.seller):
         log.Error('Exercise Call must be from Buyer')
         return False
-    if(msg.sender == self.buyer):
+    if(msg.sender == self.buyer and self.jackpot >= self.strikepot):
         """
         This is where cash dispersement is handled
         ECO tx -> send buyer: current price * notional
@@ -154,13 +185,11 @@ def exercise() -> bool:
         ECO deactivated and completed
         """
         assert self.active
-        val: wei_value = as_wei_value(20, 'ether')
-        strik: wei_value = as_wei_value(10, 'ether')
         log.Exercise(self.buyer, self, True)
-        log.Cashflow(self.buyer, self, val, True)
-        send(self.buyer, val)
-        log.Cashflow(self.seller, self, self.margin - val + as_wei_value(self.strike, 'ether'), True)
-        send(self.seller, self.margin - val + as_wei_value(self.strike, 'ether'))
+        log.Cashflow(self.buyer, self, self.jackpot, True)
+        send(self.buyer, self.jackpot)
+        log.Cashflow(self.seller, self, self.stub, True)
+        send(self.seller, self.stub)
         self.active = False
         self.completed = True
         return True

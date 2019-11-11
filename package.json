@@ -19,6 +19,7 @@
     },
     "dependencies": {
         "@truffle/contract": "^4.0.36",
+        "chainlink": "^0.7.9",
         "create-react": "0.0.0",
         "dotenv": "^8.2.0",
         "drizzle": "^1.4.0",

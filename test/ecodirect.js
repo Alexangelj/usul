@@ -1,9 +1,27 @@
 const assert = require('assert').strict;
 const ECO = artifacts.require('ECO')
 const ECOFactory = artifacts.require('ECOFactory')
+const ECOPriceOracle = artifacts.require('ECOPriceOracle')
 
 contract('ECO', accounts => {
-
+    var buyer = accounts[1]
+    var seller = accounts[0]
+    var strk = 1 // in uint256
+    var strike = web3.utils.toWei(strk.toString(), 'ether') // strike in wei (ether)
+    var notional = 2 // uint256 this is amount the contract handles
+    var maturity = 10 // time in seconds?
+    var margin_multiplier = 3 // 300% margin for a 150% covered call option writer
+    var margin_deposit = strk * notional * margin_multiplier // uint256 required margin from writer
+    var margin = web3.utils.toWei(margin_deposit.toString(), 'ether') // margin in wei (ether)
+    var underlying = 2
+    var underlying_value = underlying * notional
+    var underlying_value_wei = web3.utils.toWei(underlying_value.toString(), 'ether')
+    var premium_multipler = 0.1
+    var premium = strk * premium_multipler
+    var premium_wei = web3.utils.toWei(premium.toString(), 'ether')
+    var strike_value = strk * notional
+    var strike_value_wei = web3.utils.toWei(strike_value.toString(), 'ether')
+    var wei = 10**18
 
     it('Creates ECO Factory Contract', async () => {
         console.log('\n')
@@ -11,18 +29,8 @@ contract('ECO', accounts => {
         console.log('fac: ', eco_fac.address)
     });
 
-
     it('Creates New ECO', async () => {
         console.log('\n')
-        let buyer = accounts[1]
-        let seller = accounts[0]
-        let strike = 10
-        let notional = 10
-        let maturity = 10
-        let margin_multiplier = 1.5
-        let margin_deposit = strike * notional * margin_multiplier
-        let margin = await web3.utils.toWei(margin_deposit.toString(), 'Ether')
-        
         var params = [
             ['buyer: ', buyer],
             ['seller: ', seller],
@@ -51,21 +59,35 @@ contract('ECO', accounts => {
             ['notional: ', notional],
             ['maturity: ', maturity],
             ['margin: ', margin],
+            ['Oracle Address: ']
         ]
         for (var i = 0; i < eco.logs[0].args.__length__; i++){
-            console.log(args[i], eco.logs[0].args[i])
+            console.log(args[i][0], eco.logs[0].args[i])
         }
-        for (var i = 0; i < eco.logs[0].args.__length__; i++){
+        for (var i = 0; i < eco.logs[0].args.__length__-1; i++){
             assert.strictEqual((eco.logs[0].args[i]).toString(), args[i][1].toString(), 'Params incorrect')
         }
     });
 
-    it('Authorizes the ECO to use Account', async () => {
+
+    it('Checks Oracle Functionality', async () => {
+        console.log('\n')
         let eco_fac = await ECOFactory.deployed()
-        let buyer = accounts[1]
-        let seller = accounts[0]
         let eco_address = await eco_fac.getEco(buyer)
         let _eco = await ECO.at(eco_address)
+        let oracle_address = await _eco.oracle_address.call()
+        //let spot = await _eco.getSpotPrice()
+        //console.log('SPOT PRICE: ', spot)
+    });
+
+
+    it('Authorizes the ECO to use Account', async () => {
+        let eco_fac = await ECOFactory.deployed()
+        let eco_address = await eco_fac.getEco(buyer)
+        let _eco = await ECO.at(eco_address)
+        let oracle = await ECOPriceOracle.deployed()
+        console.log('Oracle address: ', oracle.address)
+        //console.log('ORACLE SPOT PRICE: ', oracle)
 
         async function checkBalances(){
             var bal_before = [
@@ -82,13 +104,8 @@ contract('ECO', accounts => {
                 console.log(bal_before[i], await web3.eth.getBalance(acc_list[i])/10**18)
             }
         }
-        let strike = 10
-        let notional = 10
-        let margin_multiplier = 1.5
-        let margin_deposit = strike * notional * margin_multiplier
-        let margin = await web3.utils.toWei(margin_deposit.toString(), 'Ether')
         let auth_or = await _eco.write({value: margin})
-        let auth_ee = await _eco.purchase({ from: buyer, value: 3*10**18 })
+        let auth_ee = await _eco.purchase({ from: buyer, value: premium_wei })
 
         var args = [
             'Buyer/Seller: ',
@@ -106,8 +123,6 @@ contract('ECO', accounts => {
 
     it('Validates the Emerald Call Option', async () => {
         let eco_fac = await ECOFactory.deployed()
-        let buyer = accounts[1]
-        let seller = accounts[0]
         let eco_address = await eco_fac.getEco(buyer)
         let _eco = await ECO.at(eco_address)
         
@@ -128,15 +143,8 @@ contract('ECO', accounts => {
 
     it('Exercises the Contract and Divests Balance', async () => {
         let eco_fac = await ECOFactory.deployed()
-        let buyer = accounts[1]
-        let seller = accounts[0]
         let eco_address = await eco_fac.getEco(buyer)
         let _eco = await ECO.at(eco_address)
-        
-        let strk = 10
-        let underlying = 20
-        let wei = 10**18
-
         async function checkBalances(){
             var bal_before = [
                 'Buyer: ',
@@ -163,9 +171,9 @@ contract('ECO', accounts => {
         let exercise_seller = await _eco.exercise()
         assert.strictEqual(exercise_seller.receipt.logs[0].event, 'Error', 'Cannot exercise as seller')
 
-        console.log('*** Should have a net difference of: ', (underlying-strk))
+        console.log('*** Should have a net difference of: ', (underlying * notional - strk * notional))
         await checkBalances()
-        let exercise = await _eco.exercise({from: buyer, value: strk*wei})
+        let exercise = await _eco.exercise({from: buyer, value: strike_value_wei})
         await checkBalances()
 
         for(var i = 0; i<4;i++){console.log(cashflow[i], (exercise.receipt.logs[1].args[i]).toString())}

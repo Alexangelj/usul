@@ -4,7 +4,8 @@ contract Eco():
                 strike: wei_value,
                 notional: uint256,
                 maturity: timedelta,
-                margin: wei_value
+                margin: wei_value,
+                _oracle_address: address
                 ): modifying
 
 NewEco: event({
@@ -13,7 +14,8 @@ NewEco: event({
                 strike: wei_value,
                 notional: uint256,
                 maturity: timedelta,
-                margin: wei_value
+                margin: wei_value,
+                _oracle_address: address
                 })
 Error: event({message: string[50]})
 Payment: event({amount: wei_value, _from: indexed(address)})
@@ -21,6 +23,7 @@ Payment: event({amount: wei_value, _from: indexed(address)})
 ecoTemplate: public(address)
 user_to_eco: map(address, address)
 eco_to_user: map(address, address)
+oracle_address: public(address)
 
 @public
 @payable
@@ -28,10 +31,11 @@ def __default__():
     log.Payment(msg.value, msg.sender)
 
 @public
-def __init__(template: address):
+def __init__(template: address, _oracle_address: address):
     assert self.ecoTemplate == ZERO_ADDRESS
     assert template != ZERO_ADDRESS
     self.ecoTemplate = template
+    self.oracle_address = _oracle_address
 
 @public
 @payable
@@ -52,7 +56,8 @@ def createEco(  buyer: address,
                     strike,
                     notional,
                     maturity,
-                    margin
+                    margin,
+                    self.oracle_address
                     )
     self.user_to_eco[buyer] = eco
     self.user_to_eco[seller] = _eco
@@ -63,7 +68,8 @@ def createEco(  buyer: address,
                     strike,
                     notional,
                     maturity,
-                    margin
+                    margin,
+                    self.oracle_address
                     )
     return eco
 
