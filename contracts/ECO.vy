@@ -14,6 +14,9 @@ contract Oracle():
     def currentAnswer() -> int128:constant
     def updatedHeight() -> uint256:constant
 
+contract Slate():
+    def purchase(_option: address, prm: uint256) -> bool:modifying
+
 Error: event({message: string[50]})
 Initialized: event({eco: indexed(address), buyer: indexed(address), seller: indexed(address), outcome: bool})
 Validation: event({eco: indexed(address), buyer: indexed(address), seller: indexed(address), outcome: bool})
@@ -30,6 +33,7 @@ Oracle: event({user: indexed(address), eco: indexed(address), oracle_address: in
 
 factory: Factory
 oracle: Oracle
+slate: public(Slate)
 user: address
 
 # ECO parameters
@@ -52,6 +56,9 @@ expiration: public(timestamp)
 spot: public(wei_value)
 oracle_address: public(address)
 raw_value: bytes[32]
+gas_test: uint256
+gas_test2: uint256
+gas_test3: uint256
 
 
 @public
@@ -66,11 +73,11 @@ def setup(  _buyer: address,
             _notional: uint256,
             _maturity: timedelta,
             _margin: wei_value,
-            _oracle_address: address
+            _oracle_address: address,
+            _slate_address: address
             ):
     """
     @notice Setup is called from the factory contract using an ECO contract template address
-    @params buyer:address, seller:address, underlier:wei, strikePrice:wei, notional:uint256, maturity:timedelta
     """
     assert(self.factory == ZERO_ADDRESS and self.user == ZERO_ADDRESS) and msg.sender != ZERO_ADDRESS
     self.factory = Factory(msg.sender)
@@ -93,7 +100,14 @@ def setup(  _buyer: address,
     self.claimedBalance[self.buyer] = 0
     self.claimedBalance[self.seller] = 0
 
+    self.gas_test = 10
+    self.gas_test2 = 20
+
     log.Initialized(self, self.buyer, self.seller, True)
+
+
+    # New
+    self.slate = Slate(_slate_address)
 
 @public
 def isMature() -> bool:
@@ -116,19 +130,21 @@ def getSpotPrice() -> wei_value:
 
 @public
 @payable
-def purchase() -> bool:
+def purchase(addr: address, prm: uint256) -> bool:
     """
     @notice Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized
     """
-    if(msg.sender == self.buyer):
-        self.isAuthed[self.buyer] = True
-        self.claimedBalance[self.seller] = msg.value
-        log.Cashflow(self.buyer, self, msg.value, True)
-        log.Purchaser(self.buyer, self, msg.value, True)
-        return self.isAuthed[self.buyer]
-    else:
-        log.Error('Msg.sender != Buyer')
-        return False
+    return self.slate.purchase(addr, prm)
+
+    #if(msg.sender == self.buyer):
+    #    self.isAuthed[self.buyer] = True
+    #    self.claimedBalance[self.seller] = msg.value
+    #    log.Cashflow(self.buyer, self, msg.value, True)
+    #    log.Purchaser(self.buyer, self, msg.value, True)
+    #    return self.isAuthed[self.buyer]
+    #else:
+    #    log.Error('Msg.sender != Buyer')
+    #    return False
 
 @public
 @payable
