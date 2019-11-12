@@ -15,50 +15,60 @@ contract Oracle():
     def updatedHeight() -> uint256:constant
 
 contract Slate():
+    def bought(addr: address) -> address:constant
+    def premium(addr: address) -> uint256:constant
+    def write(_option: address, prm: uint256, margin: uint256) -> bool:modifying
     def purchase(_option: address, prm: uint256) -> bool:modifying
+    def withdraw(val: uint256) -> bool:modifying
 
-Error: event({message: string[50]})
-Initialized: event({eco: indexed(address), buyer: indexed(address), seller: indexed(address), outcome: bool})
-Validation: event({eco: indexed(address), buyer: indexed(address), seller: indexed(address), outcome: bool})
-Purchaser: event({user: indexed(address), eco: indexed(address), amount: wei_value, outcome: bool})
-Writer: event({user: indexed(address), eco: indexed(address), amount: wei_value, outcome: bool})
-Withdrawal: event({user: indexed(address), eco: indexed(address), amount: wei_value, outcome: bool})
-Exercise: event({user: indexed(address), eco: indexed(address), outcome: bool})
-Settlement: event({user: indexed(address), eco: indexed(address), amount: wei_value, outcome: bool})
+contract Stash():
+    def fund(addr: address) -> uint256:constant
+    def deposit(_writer: address, margin: uint256) -> bool:modifying
+    def withdraw(val: uint256) -> bool:modifying
+    
+contract Wax():
+    def timeToExpiry(time: timestamp) -> bool:modifying
+    
+
+
+Valid: event({eco: indexed(address)})
+Buy: event({eco: indexed(address)})
+Write: event({eco: indexed(address)})
+Exercise: event({eco: indexed(address)})
+Mature: event({eco: indexed(address)})
+Oracle: event({spot_price: uint256})
 Payment: event({amount: wei_value, source: indexed(address)})
-Cashflow: event({user: indexed(address), eco: indexed(address), amount: wei_value, outcome: bool})
-Mature: event({eco: indexed(address), stamp: timestamp, outcome: bool})
-Oracle: event({user: indexed(address), eco: indexed(address), oracle_address: indexed(address), spot_price: wei_value, outcome: bool})
 
 
 factory: Factory
 oracle: Oracle
+
+# New
 slate: public(Slate)
+stash: public(Stash)
+wax: public(Wax)
+
+
 user: address
 
 # ECO parameters
 buyer: public(address)
 seller: public(address)
-strike: public(wei_value)
+strike: public(uint256)
 notional: public(uint256)
 maturity: public(timedelta)
-margin: public(wei_value)
+margin: public(uint256)
 
-strikepot: public(wei_value) # strike price * notional -> wei
-jackpot: public(wei_value) # spot price * notional -> wei
-stub: public(wei_value) # margin - jackpot + strikepot -> wei, sent to writer
+strikepot: public(uint256) # strike price * notional -> wei
+jackpot: public(uint256) # spot price * notional -> wei
+stub: public(uint256) # margin - jackpot + strikepot -> wei, sent to writer
 active: public(bool)
 completed: public(bool)
-isAuthed: map(address, bool)
-claimedBalance: public(map(address, wei_value))
-premium: public(wei_value)
 expiration: public(timestamp)
-spot: public(wei_value)
+spot: public(uint256)
 oracle_address: public(address)
+stash_address: public(address)
 raw_value: bytes[32]
-gas_test: uint256
-gas_test2: uint256
-gas_test3: uint256
 
 
 @public
@@ -69,12 +79,14 @@ def __default__():
 @public
 def setup(  _buyer: address, 
             _seller: address,
-            _strike: wei_value,
+            _strike: uint256,
             _notional: uint256,
             _maturity: timedelta,
-            _margin: wei_value,
+            _margin: uint256,
             _oracle_address: address,
-            _slate_address: address
+            _slate_address: address,
+            _stash_address: address,
+            _wax_address: address,
             ):
     """
     @notice Setup is called from the factory contract using an ECO contract template address
@@ -89,56 +101,57 @@ def setup(  _buyer: address,
     self.maturity = _maturity
     self.margin = _margin
 
-    self.premium = as_wei_value(0.1, 'ether')
     self.expiration = block.timestamp + (60 * 60 * 24 * self.maturity)
     self.strikepot = self.strike * self.notional
-    self.jackpot = as_wei_value(4, 'ether')
+    self.jackpot = self.notional * self.strike
     self.stub = self.margin - self.jackpot + self.strikepot
 
     self.active = False
     self.completed = False
-    self.claimedBalance[self.buyer] = 0
-    self.claimedBalance[self.seller] = 0
-
-    self.gas_test = 10
-    self.gas_test2 = 20
-
-    log.Initialized(self, self.buyer, self.seller, True)
-
 
     # New
     self.slate = Slate(_slate_address)
+    self.stash = Stash(_stash_address)
+    self.wax = Wax(_wax_address)
 
 @public
 def isMature() -> bool:
     """
     @notice ECOs have a time to expiration, this checks if it has expired
     """
-    if(block.timestamp >= self.expiration):
-        log.Mature(self, self.expiration, True)
-        return True
-    else:
-        log.Mature(self, self.expiration, False)
-        return False
+    #if(block.timestamp >= self.expiration):
+    #    log.Mature(self)
+    #    return True
+    #else:
+    #    log.Mature(self)
+    #    return False
+    
+    # New
+    return self.wax.timeToExpiry(self.expiration)
+
 
 @public
-def getSpotPrice() -> wei_value:
+def getSpotPrice() -> uint256:
     self.raw_value = raw_call(self.oracle_address, method_id('getLatestUpdatedHeight()', bytes[4]), outsize=32, gas=msg.gas)
-    self.spot = as_wei_value(convert(self.raw_value, int128), 'ether')
-    log.Oracle(msg.sender, self, self.oracle_address, self.spot, True)
+    self.spot = convert(self.raw_value, uint256)
+    log.Oracle(self.spot)
     return self.spot
 
 @public
 @payable
-def purchase(addr: address, prm: uint256) -> bool:
+def purchase(_option: address, prm: uint256) -> bool:
     """
     @notice Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized
     """
-    return self.slate.purchase(addr, prm)
+    send(self.slate, msg.value)
+    log.Buy(self)
+    return self.slate.purchase(_option, prm)
 
+    #````
+    # CAN DELETE
     #if(msg.sender == self.buyer):
     #    self.isAuthed[self.buyer] = True
-    #    self.claimedBalance[self.seller] = msg.value
+    #    ```self.claimedBalance[self.seller] = msg.value
     #    log.Cashflow(self.buyer, self, msg.value, True)
     #    log.Purchaser(self.buyer, self, msg.value, True)
     #    return self.isAuthed[self.buyer]
@@ -148,40 +161,55 @@ def purchase(addr: address, prm: uint256) -> bool:
 
 @public
 @payable
-def write() -> bool:
+def write(_option: address, prm: uint256, _margin: uint256) -> bool:
     """
     @notice Seller writes ECO Contract, Deposits margin, Seller is authorized
     """
-    if(msg.sender == self.seller and msg.value == self.margin):
-        log.Cashflow(self.seller, self, msg.value, True)
-        self.isAuthed[self.seller] = True
-        log.Writer(self.seller, self, msg.value, True)
-        return self.isAuthed[self.seller]
-    else:
-        log.Error('Msg.sender != Buyer')
-        return False
+    send(self.stash, msg.value)
+    log.Write(self)
+    return self.slate.write(_option, prm, _margin)
+    
+    #````
+    # CAN DELETE
+    #if(msg.sender == self.seller and msg.value == self.margin):
+    #    log.Cashflow(self.seller, self, msg.value, True)
+    #    self.isAuthed[self.seller] = True
+    #    log.Writer(self.seller, self, msg.value, True)
+    #    return self.isAuthed[self.seller]
+    #else:
+    #    log.Error('Msg.sender != Buyer')
+    #    return False
 
 @public
 def validate() -> bool:
     """
     @notice Checks if inactive, Checks Buyer & Seller's Authorization, Sends Premium to Seller, Activates Contract
     """
-    if(self.active or self.completed):
-        log.Error('Should be Inactive Log')
-        return True
-    
-    if(not self.isAuthed[self.buyer]):
-        log.Error('Need Authorized buyer')
-        return False
-    
-    if(not self.isAuthed[self.seller]):
-        log.Error('Need Authorized seller')
-        return False
-    if(self.claimedBalance[self.seller] > 0):
-        log.Cashflow(self.seller, self, self.claimedBalance[self.seller], True)
-        send(self.seller, self.claimedBalance[self.seller])
+    #```` CAN DELETE
+    # if(self.active or self.completed):
+    #    log.Error('Should be Inactive Log')
+    #    return True
+    # 
+    # if(not self.isAuthed[self.buyer]):
+    #     log.Error('Need Authorized buyer')
+    #     return False
+    # 
+    # if(not self.isAuthed[self.seller]):
+    #     log.Error('Need Authorized seller')
+    #     return False
+    #```if(self.claimedBalance[self.seller] > 0):
+    #    log.Cashflow(self.seller, self, self.claimedBalance[self.seller], True)
+    #    send(self.seller, self.claimedBalance[self.seller])
+
+    # New
+    assert not self.active, 'Should be inactive'
+    assert not self.completed, 'Shouldnt be completed'
+    assert self.stash.fund(self.seller) >= self.margin
+    assert self.slate.bought(self) == self.buyer
+    assert self.slate.premium(self.buyer) >= 1 # fix the '1' with premium
+
     self.active = True
-    log.Validation(self, self.buyer, self.seller, True)
+    log.Valid(self)
     return True
 
 @public
@@ -190,25 +218,41 @@ def exercise() -> bool:
     """
     @notice If called from Buyer, Sends price * notional Ether to Buyer, Sends strike * notional to Seller, Completes
     """
-    if(msg.sender == self.seller):
-        log.Error('Exercise Call must be from Buyer')
-        return False
-    if(msg.sender == self.buyer and self.jackpot >= self.strikepot):
-        """
-        This is where cash dispersement is handled
-        ECO tx -> send buyer: current price * notional
-        ECO tx -> send seller: strike * notional + margin
-        ECO deactivated and completed
-        """
-        assert self.active
-        log.Exercise(self.buyer, self, True)
-        log.Cashflow(self.buyer, self, self.jackpot, True)
-        send(self.buyer, self.jackpot)
-        log.Cashflow(self.seller, self, self.stub, True)
-        send(self.seller, self.stub)
-        self.active = False
-        self.completed = True
-        return True
-    else:
-        log.Error('Exercise attempt returns False')
-        return False
+    
+    # ``` CAN DELETE`
+    # if(msg.sender == self.seller):
+    #     log.Error('Exercise Call must be from Buyer')
+    #     return False
+    #if(msg.sender == self.buyer and self.jackpot >= self.strikepot):
+    #    """
+    #    This is where cash dispersement is handled
+    #    ECO tx -> send buyer: current price * notional
+    #    ECO tx -> send seller: strike * notional + margin
+    #    ECO deactivated and completed
+    #    """
+    #    assert self.active
+    #    log.Exercise(self.buyer, self, True)
+    #    log.Cashflow(self.buyer, self, self.jackpot, True)
+    #    send(self.buyer, self.jackpot)
+    #    log.Cashflow(self.seller, self, self.stub, True)
+    #    send(self.seller, self.stub)
+    #    self.active = False
+    #    self.completed = True
+    #    return True
+    #else:
+    #    log.Error('Exercise attempt returns False')
+    #    return False
+
+    # New
+    assert self.active
+    assert not msg.sender == self.seller
+    assert msg.sender == self.buyer
+    assert self.jackpot >= self.strikepot
+
+    self.slate.withdraw(1) # this val is jackpot
+    self.stash.withdraw(3) # this val is stub
+
+    self.active = False
+    self.completed = True
+    log.Exercise(self)
+    return True

@@ -1,12 +1,14 @@
 contract Eco():
     def setup(  buyer: address, 
                 seller: address,
-                strike: wei_value,
+                strike: uint256,
                 notional: uint256,
                 maturity: timedelta,
-                margin: wei_value,
+                margin: uint256,
                 _oracle_address: address,
-                _slate_address: address
+                _slate_address: address,
+                _stash_address: address,
+                _wax_address: address,
                 ): modifying
 
 NewEco: event({
@@ -26,6 +28,8 @@ user_to_eco: map(address, address)
 eco_to_user: map(address, address)
 oracle_address: public(address)
 slate_address: public(address)
+stash_address: public(address)
+wax_address: public(address)
 
 @public
 @payable
@@ -33,21 +37,23 @@ def __default__():
     log.Payment(msg.value, msg.sender)
 
 @public
-def __init__(template: address, _oracle_address: address, _slate_address: address):
+def __init__(template: address, _oracle_address: address, _slate_address: address, _stash_address: address, _wax_address: address):
     assert self.ecoTemplate == ZERO_ADDRESS
     assert template != ZERO_ADDRESS
     self.ecoTemplate = template
     self.oracle_address = _oracle_address
     self.slate_address = _slate_address
+    self.stash_address = _stash_address
+    self.wax_address = _wax_address
 
 @public
 @payable
 def createEco(  buyer: address, 
                 seller: address,
-                strike: wei_value,
+                strike: uint256,
                 notional: uint256,
                 maturity: timedelta,
-                margin: wei_value
+                margin: uint256
                 ) -> address:
     assert buyer != ZERO_ADDRESS
     assert self.ecoTemplate != ZERO_ADDRESS
@@ -61,7 +67,9 @@ def createEco(  buyer: address,
                     maturity,
                     margin,
                     self.oracle_address,
-                    self.slate_address
+                    self.slate_address,
+                    self.stash_address,
+                    self.wax_address,
                     )
     self.user_to_eco[buyer] = eco
     self.user_to_eco[seller] = _eco

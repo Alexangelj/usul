@@ -1,0 +1,115 @@
+{
+  "contractName": "Wax",
+  "abi": [
+    {
+      "name": "Waxing",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "eco",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Waning",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "eco",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "timeToExpiry",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "uint256",
+          "unit": "sec",
+          "name": "time"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 36799
+    },
+    {
+      "name": "expiration",
+      "outputs": [
+        {
+          "type": "uint256",
+          "unit": "sec",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "arg0"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 735
+    }
+  ],
+  "bytecode": "0x6101a556600436101561000d5761019b565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be160005114156101535734156100ba57600080fd5b60043560003360e05260c052604060c0205560004260043510156100dd57600080fd5b426004350310151561011f57337f93c4d5b9490aaa3567df063ac6a9b172aecfaff40bcd04f1ba31f2f0e9575f0c60006000a2600160005260206000f3610151565b337f540346575222d36aebe2e2ff7c86a1966989ca1531c6028fd354792e2fabb3c760006000a2600060005260206000f35b005b6304dbe3fe600051141561019a57341561016c57600080fd5b600435602051811061017d57600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd5b6100046101a5036100046000396100046101a5036000f3",
+  "deployedBytecode": "0x600436101561000d5761019b565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be160005114156101535734156100ba57600080fd5b60043560003360e05260c052604060c0205560004260043510156100dd57600080fd5b426004350310151561011f57337f93c4d5b9490aaa3567df063ac6a9b172aecfaff40bcd04f1ba31f2f0e9575f0c60006000a2600160005260206000f3610151565b337f540346575222d36aebe2e2ff7c86a1966989ca1531c6028fd354792e2fabb3c760006000a2600060005260206000f35b005b6304dbe3fe600051141561019a57341561016c57600080fd5b600435602051811061017d57600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd",
+  "source": "# @title WAX \r\n# \r\n# @notice Time Expiration Record and Maturity Condition Validation\r\n# \r\n# @author Alexander Angel\r\n# \r\n# @dev SStore of time\r\n\r\nWaxing: event({eco: indexed(address)})\r\nWaning: event({eco: indexed(address)})\r\n\r\nexpiration: public(map(address, timestamp)) # maps ECOs to timestamp of their expiration\r\n\r\n@public\r\ndef timeToExpiry(time: timestamp) -> bool:\r\n    self.expiration[msg.sender] = time\r\n    if(time - block.timestamp >= 0):\r\n        log.Waning(msg.sender)\r\n        return True\r\n    else:\r\n        log.Waxing(msg.sender)\r\n        return False\r\n",
+  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/Wax.vy",
+  "compiler": {
+    "name": "vyper",
+    "version": "0.1.0b13+commit.375fb27"
+  },
+  "networks": {
+    "5777": {
+      "events": {
+        "0x540346575222d36aebe2e2ff7c86a1966989ca1531c6028fd354792e2fabb3c7": {
+          "name": "Waxing",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x540346575222d36aebe2e2ff7c86a1966989ca1531c6028fd354792e2fabb3c7"
+        },
+        "0x93c4d5b9490aaa3567df063ac6a9b172aecfaff40bcd04f1ba31f2f0e9575f0c": {
+          "name": "Waning",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x93c4d5b9490aaa3567df063ac6a9b172aecfaff40bcd04f1ba31f2f0e9575f0c"
+        }
+      },
+      "links": {},
+      "address": "0x2F3D1a72970044D4c104Eb796Cb5F480f9700739",
+      "transactionHash": "0xd9cef13a766685d83891d4d6c19555b07f55e51639801c357d5e7c6264631d0e"
+    }
+  },
+  "schemaVersion": "3.0.17",
+  "updatedAt": "2019-11-12T13:03:03.062Z",
+  "networkType": "ethereum"
+}

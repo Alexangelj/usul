@@ -5,6 +5,7 @@ const ECOFactory = artifacts.require('ECOFactory')
 const ECOPriceOracle = artifacts.require('ECOPriceOracle')
 const Slate = artifacts.require('Slate')
 const Stash = artifacts.require('Stash')
+const Wax = artifacts.require('Wax')
 
 var _buyer = '0xE64aF0A0D319fb613983BB1D00A2baFfEAF1aBE9'
 var admin = '0x9995d8026d970db26C8de1553957f670C2C5707b'
@@ -25,8 +26,10 @@ module.exports = async (deployer, accounts) => {
   let stash = await Stash.deployed()
   await deployer.deploy(Slate, stash.address, eco_template.address)
   let slate = await Slate.deployed()
-  await deployer.deploy(ECOFactory, eco_template.address, oracle.address, slate.address)
-
+  await deployer.deploy(Wax)
+  let wax = await Wax.deployed()
+  await deployer.deploy(ECOFactory, eco_template.address, oracle.address, slate.address, stash.address, wax.address)
+  
   
   //let stash = await Stash.deployed()
   //await deployer.deploy(Slate, stash.address, eco_template.address)
