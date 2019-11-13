@@ -5,8 +5,12 @@ const ECO = artifacts.require("ECO");
 const ECOFactory = artifacts.require('ECOFactory')
 const ECOPriceOracle = artifacts.require('ECOPriceOracle')
 const Slate = artifacts.require('Slate')
+const Slate20 = artifacts.require('Slate20')
 const Stash = artifacts.require('Stash')
 const Wax = artifacts.require('Wax')
+const Dai = artifacts.require('Dai')
+const ARC = artifacts.require('Arc')
+
 
 contract('Stash', accounts => {
 
@@ -76,7 +80,8 @@ contract('Stash', accounts => {
                                             strike, 
                                             notional, 
                                             maturity,
-                                            margin
+                                            margin,
+                                            false
                                             )
         //let eco_address = await eco_fac.getEco(purchaser)
         //let _eco = await ECO.at(eco_address)
@@ -139,7 +144,7 @@ contract('Stash', accounts => {
         let write = await _eco.write(eco_address, premium, margin, {from: writer, value: margin*wei })
         let write_gas = await write.receipt.gasUsed
         console.log('write Gas Internal: ', write_gas)
-        await getGas(write, 'write')
+        await getGas(write, 'write internal')
 
         let wrote = await slate.wrote(eco_address)
         console.log('Wrote: ', wrote)
@@ -164,7 +169,7 @@ contract('Stash', accounts => {
         let purchase = await _eco.purchase(eco_address, premium, {from: purchaser, value: premium*wei })
         let purchase_gas = await purchase.receipt.gasUsed
         console.log('purchase Gas Internal: ', purchase_gas)
-        await getGas(purchase, 'purchase')
+        await getGas(purchase, 'purchase internal')
 
         let bought = await slate.bought(eco_address)
         console.log('Bought: ', bought)
@@ -196,7 +201,7 @@ contract('Stash', accounts => {
         let validation = await _eco.validate()
         let validation_gas = await validation.receipt.gasUsed
         console.log('validation Gas Internal: ', validation_gas)
-        await getGas(validation, 'purchase')
+        await getGas(validation, 'validation')
         
         await checkBalances(eco_address, slate.address, stash.address)
     });
@@ -213,7 +218,7 @@ contract('Stash', accounts => {
         let mature = await _eco.isMature()
         let mature_gas = await mature.receipt.gasUsed
         console.log('mature Gas Internal: ', mature_gas)
-        await getGas(mature, 'purchase')
+        await getGas(mature, 'mature')
 
         let timestamp = await wax.expiration(eco_address)
         console.log('Expiration timestamp: ', timestamp.toNumber())
@@ -232,9 +237,11 @@ contract('Stash', accounts => {
         let exercise = await _eco.exercise({from: purchaser})
         let exercise_gas = await exercise.receipt.gasUsed
         console.log('exercise Gas Internal: ', exercise_gas)
-        await getGas(exercise, 'purchase')
+        await getGas(exercise, 'exercise')
 
         await checkBalances(eco_address, slate.address, stash.address)
+        console.log(gas)
     });
 
 })
+

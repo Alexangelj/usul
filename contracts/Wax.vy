@@ -19,4 +19,5 @@ def timeToExpiry(time: timestamp) -> bool:
         return True
     else:
         log.Waxing(msg.sender)
+        # Function that exercises ECO
         return False

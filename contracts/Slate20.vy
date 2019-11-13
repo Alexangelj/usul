@@ -6,7 +6,7 @@
 # 
 # @dev SStore of users
 
-contract Stash():
+contract Stash20():
     def getAddress(addr: address) -> bool:modifying
     def deposit(writer: address, margin: uint256) -> bool:modifying
     
@@ -16,7 +16,7 @@ Write: event({writer: indexed(address)})
 Deposit: event({source: indexed(address), val: wei_value})
 
 # Contract Interface variables
-stash: Stash
+stash20: Stash20
 
 # User Variables
 
@@ -35,10 +35,10 @@ def __default__():
     log.Deposit(msg.sender, msg.value)
 
 @public
-def __init__(_stash: address, _option: address):
-    self.stash = Stash(_stash)
+def __init__(_stash20: address, _option: address):
+    self.stash20 = Stash20(_stash20)
     self.premium[ZERO_ADDRESS] = 0
-    self.stash.getAddress(self) # Sends the Slate and Option address to Stash
+    self.stash20.getAddress(self) # Sends the Slate and Option address to stash20
     # FIX
     self.option = _option
 
@@ -49,7 +49,7 @@ def write(_option: address, prm: uint256, margin: uint256) -> bool:
     @notice Seller writes ECO Contract, Deposits margin, Seller is authorized
     """
     self.wrote[_option] = tx.origin
-    self.stash.deposit(tx.origin, margin)
+    self.stash20.deposit(tx.origin, margin)
     log.Write(tx.origin)
 
     # call external margin depost function

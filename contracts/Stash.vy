@@ -1,10 +1,12 @@
-# @title STASH 
+# @title STASH ERC 20 - Dai
 # 
 # @notice Margin Record Store and Deposit Authentication
 # 
 # @author Alexander Angel
 # 
 # @dev SStore of margin deposits
+
+
 
 contract Slate():
     def wrote(_writer: address) -> address:constant
@@ -38,6 +40,6 @@ def deposit(_writer: address, margin: uint256) -> bool:
 
 @public
 def withdraw(val: uint256) -> bool:
-    send(self.slate.wrote(msg.sender), as_wei_value(val-1, 'ether')) # fix -1 to become the underlying - strike difference
+    send(self.slate.wrote(msg.sender), as_wei_value(val-1, 'ether')) # Returns leftover margin to writer fix -1 to become the underlying - strike difference
     send(tx.origin, as_wei_value(1, 'ether')) # Price * notional payment to buyer (tx.origin)
     return True

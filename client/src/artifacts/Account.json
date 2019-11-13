@@ -709,11 +709,11 @@
         }
       },
       "links": {},
-      "address": "0x68bf41d4e688B11Aee9B12f5b53B468E46ff28C8",
-      "transactionHash": "0x2d51d700d48e80f90aa635c6b4fcd0f2fc14a2764a2a9f3703ff6bb311e1d02e"
+      "address": "0xB579325129394274A7dba0Fe2754F06CC8348eca",
+      "transactionHash": "0x8a1dc3cfa2f8acc8af137a1bc2e785ed3c9d4074088906a00b605a26ece63d56"
     }
   },
-  "schemaVersion": "3.0.17",
-  "updatedAt": "2019-11-12T13:03:03.046Z",
+  "schemaVersion": "3.0.19",
+  "updatedAt": "2019-11-13T05:21:08.832Z",
   "networkType": "ethereum"
 }

@@ -211,11 +211,11 @@
         }
       },
       "links": {},
-      "address": "0x0449AeE9c65D32E4f8Be396B09D0b74BcA355978",
-      "transactionHash": "0x8889ba5fa197b90609c104a635b1ccaeb82fdc13389ee1ed2d41050e1a42e387"
+      "address": "0x7a8E8d1147336162570DF579BdC302e3C4e7B449",
+      "transactionHash": "0x51b29f994faeb0f34724d6d593bedc4dfadf70a27d758bd3d5cc2a9355cb20be"
     }
   },
-  "schemaVersion": "3.0.17",
-  "updatedAt": "2019-11-12T13:03:03.062Z",
+  "schemaVersion": "3.0.19",
+  "updatedAt": "2019-11-13T05:21:08.855Z",
   "networkType": "ethereum"
 }
