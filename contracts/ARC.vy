@@ -5,13 +5,17 @@
 # @author Alexander Angel
 # 
 # @dev Uses a factory to initialize and deploy option contracts
+
+
+
 contract Factory():
     def getEco(user_addr: address) -> address:constant
     def getUser(eco: address) -> address:constant
 
 contract Slate():
-    def bought(addr: address) -> address:constant
-    def premium(addr: address) -> uint256:constant
+    def bought(_option: address) -> address:constant
+    def wrote(_option: address) -> address:constant
+    def premium(_option: address) -> uint256:constant
     def write(_option: address, prm: uint256, margin: uint256) -> bool:modifying
     def purchase(_option: address, prm: uint256) -> bool:modifying
     def withdraw(val: uint256) -> bool:modifying
@@ -32,6 +36,7 @@ contract Dai():
     def transferFrom(_from: address, _to: address, _value: uint256) -> bool:modifying
     def approve(_spender: address, _value: uint256) -> bool:modifying
 
+
 Valid: event({eco: indexed(address)})
 Buy: event({eco: indexed(address)})
 Write: event({eco: indexed(address)})
@@ -44,34 +49,25 @@ Approval: event({_owner: indexed(address), _spender: indexed(address), _value: u
 # Can delete
 Error: event({fund: uint256, margn: uint256})
 
-factory: Factory
 
-# New
+# Interface Contracts
+factory: public(Factory)
 slate: public(Slate)
 stash: public(Stash)
 wax: public(Wax)
 dai: public(Dai)
 
-
 user: address
 
-# ECO parameters
-buyer: public(address)
-seller: public(address)
+# Contract parameters
 strike: public(uint256)
 notional: public(uint256)
 maturity: public(timedelta)
-margin: public(uint256)
 
-strikepot: public(uint256) # strike price * notional -> wei
-jackpot: public(uint256) # spot price * notional -> wei
-stub: public(uint256) # margin - jackpot + strikepot -> wei, sent to writer
+# Exercise Conditions
 active: public(bool)
 completed: public(bool)
 expiration: public(timestamp)
-spot: public(uint256)
-stash_address: public(address)
-raw_value: bytes[32]
 
 
 @public
@@ -80,9 +76,7 @@ def __default__():
     log.Payment(msg.value, msg.sender)
 
 @public
-def setup(  _buyer: address, 
-            _seller: address,
-            _strike: uint256,
+def setup(  _strike: uint256,
             _notional: uint256,
             _maturity: timedelta,
             _margin: uint256,
@@ -96,17 +90,13 @@ def setup(  _buyer: address,
     """
     assert(self.factory == ZERO_ADDRESS and self.user == ZERO_ADDRESS) and msg.sender != ZERO_ADDRESS
     self.factory = Factory(msg.sender)
-    self.buyer = _buyer
-    self.seller = _seller
+    
     self.strike = _strike
     self.notional = _notional
     self.maturity = _maturity
-    self.margin = _margin
+
     
-    self.expiration = block.timestamp + (60 * 60 * 24 * self.maturity)
-    self.strikepot = self.strike * self.notional
-    self.jackpot = self.notional * self.strike
-    self.stub = self.margin - self.jackpot + self.strikepot
+    
 
     self.active = False
     self.completed = False
@@ -116,6 +106,10 @@ def setup(  _buyer: address,
     self.stash = Stash(_stash_address)
     self.wax = Wax(_wax_address)
     self.dai = Dai(_token_address)
+    
+    self.expiration = block.timestamp + (60 * 60 * 24 * self.maturity)
+    self.dai.approve(self.stash, 1000000000000000*10**18)
+
 
 @public
 def isMature() -> bool:
@@ -126,23 +120,52 @@ def isMature() -> bool:
 
 @public
 @payable
-def purchase(_option: address, prm: uint256) -> bool:
+def purchase(prm: uint256) -> bool:
     """
     @notice Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized
     """
     send(self.slate, msg.value)
     log.Buy(self)
-    return self.slate.purchase(_option, prm)
+    return self.slate.purchase(self, prm)
 
 @public
 @payable
-def write(_option: address, prm: uint256, _margin: uint256) -> bool:
+def write(prm: uint256, _margin: uint256) -> bool:
     """
     @notice Seller writes ECO Contract, Deposits margin, Seller is authorized
     """
-    self.dai.transfer(self.stash, _margin)
+    self.dai.transferFrom(msg.sender, self.stash, _margin)
     log.Write(self)
-    return self.slate.write(_option, prm, _margin)
+    return self.slate.write(self, prm, _margin)
+
+# Need to build DEX first
+# @public
+# @payable
+# def purchaseClose(prm: uint256) -> bool:
+#     """
+#     @notice -   A writer can purchase their contract back to effectively close it - i.e. buy the obligation
+#     """
+#     assert self.active
+#     assert msg.sender == self.slate.wrote(self)
+#     send(self.slate, msg.value) # Send the premium price to the Slate
+#     self.dai.transferFrom(  self.stash, # Transfer margin from Stash
+#                             msg.sender, # To Original writer
+#                             self.stash.fund(self.slate.wrote(self))) # Look up margin value, by looking up who wrote the option
+#     return self.slate.purchase(self, prm) # Update the slate to show a purchase order has been submitted
+#     
+# 
+# @public
+# @payable
+# def sellClose() -> bool:
+#     """
+#     @notice -   The Original purchaser may want to sell their option because the premium has appreciated.
+#     """
+#     assert self.active
+#     assert msg.sender == self.slate.bought(self) # Asserts the sellClose order comes from someone who owns the option
+#     self.slate.write(   self, # Updates the slate with a new write
+#                         self.slate.premium(self.slate.bought(self)), # looks up premium, by looking up who purchased the option
+#                         self.stash.fund(self.slate.wrote(self))) # Looks up the margin, by looking up who wrote the option
+#     return self.slate.withdraw(self.slate.premium(self.slate.wrote(self))) # Purchase to Close offer withdraws the premium, by looking up who wrote the option
 
 
 @public
@@ -152,12 +175,15 @@ def validate() -> bool:
     """
     assert not self.active, 'Should be inactive'
     assert not self.completed, 'Shouldnt be completed'
-    log.Error(self.stash.fund(self.seller), self.margin)
-    assert self.stash.fund(self.seller) >= self.margin
-    assert self.slate.bought(self) == self.buyer
-    assert self.slate.premium(self.buyer) >= 1 # fix the '1' with premium
+    assert self.stash.fund(self.slate.wrote(self)) > 0 # Looks up margin
+    assert self.slate.premium(self.slate.bought(self)) > 0 # Looks up premium
 
-    self.slate.withdraw(1)
+    # This tx looks confusing but it's not, it's just looking up what the premium is.
+    # Calling withdraw function of slate, which transfers an amt defined in parameter to the tx.origin of this tx
+    # The argument is looking up the premium value by looking up the buyer
+    # It's looking up the buyer by using this option's address, which is a map in slate.
+    self.slate.withdraw(self.slate.premium(self.slate.bought(self))) # Slate payment to writer equal to premium paid
+
     self.active = True
     log.Valid(self)
     return True
@@ -169,12 +195,11 @@ def exercise() -> bool:
     @notice If called from Buyer, Sends price * notional Ether to Buyer, Sends strike * notional to Seller, Completes
     """
     assert self.active
-    assert not msg.sender == self.seller
-    assert msg.sender == self.buyer
-    assert self.jackpot >= self.strikepot
+    assert msg.sender == self.slate.bought(self)
 
-    #self.slate.withdraw(1) # this val is jackpot
-    self.stash.withdraw(3000000000000000000) # this val is stub, should be in DAI
+    send(self.slate, msg.value) # Purchase of underlying asset * notional amount @ strike price is sent to Slate
+    self.slate.withdraw(self.strike * self.notional) # Writer receives payment from Slate
+    self.stash.withdraw(self.stash.fund(self.slate.wrote(self))) # Purchaser receives underlying asset * notional amount
 
     self.active = False
     self.completed = True

@@ -12,9 +12,7 @@ contract Eco():
                 ): modifying
 
 contract Arc():
-    def setup(  buyer: address, 
-                seller: address,
-                strike: uint256,
+    def setup(  strike: uint256,
                 notional: uint256,
                 maturity: timedelta,
                 margin: uint256,
@@ -99,9 +97,7 @@ def createEco(  buyer: address,
     if(token):
         arc: address = create_forwarder_to(self.arcTemplate)
         _arc: address = arc
-        Arc(arc).setup( buyer,
-                        seller,
-                        strike,
+        Arc(arc).setup( strike,
                         notional,
                         maturity,
                         margin,

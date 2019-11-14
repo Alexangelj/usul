@@ -75,6 +75,6 @@ def purchase(_option: address, prm: uint256) -> bool:
     return True
 
 @public
-def withdraw(val: uint256) -> bool:
-    send(self.wrote[msg.sender], as_wei_value(val, 'ether'))
+def withdraw(val: wei_value) -> bool:
+    send(self.wrote[msg.sender], val)
     return True

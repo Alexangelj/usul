@@ -54,6 +54,7 @@ def deposit(_writer: address, margin: uint256) -> bool:
 
 @public
 def withdraw(val: uint256) -> bool:
-    self.token.transfer(self.slate20.wrote(msg.sender), val-1*10**18) # Send remaining margin to writer fix -1 to become the underlying - strike difference
-    self.token.transfer(tx.origin, 1*10**18) # Price * notional payment to buyer (tx.origin)
+    # FIX, seller gets the purchase price of strike * notional for the tokens deposited.
+    #self.token.transfer(self.slate20.wrote(msg.sender), val-1) # FIX Send remaining margin to writer fix -1 to become the underlying - strike difference
+    self.token.transfer(tx.origin, val) # Price * notional payment to buyer (tx.origin)
     return True
