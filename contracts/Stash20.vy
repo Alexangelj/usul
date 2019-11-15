@@ -44,12 +44,12 @@ def getAddress(addr: address) -> bool:
     return True
 
 @public
-def deposit(_writer: address, margin: uint256) -> bool:
+def deposit(addr: address, margin: uint256) -> bool:
     """
     @notice - Maps writer's address to margin.
     """
-    self.fund[_writer] = margin
-    log.Fund(_writer, margin)
+    self.fund[addr] = margin
+    log.Fund(addr, margin)
     return True
 
 @public
@@ -57,4 +57,11 @@ def withdraw(val: uint256) -> bool:
     # FIX, seller gets the purchase price of strike * notional for the tokens deposited.
     #self.token.transfer(self.slate20.wrote(msg.sender), val-1) # FIX Send remaining margin to writer fix -1 to become the underlying - strike difference
     self.token.transfer(tx.origin, val) # Price * notional payment to buyer (tx.origin)
+    return True
+
+@public
+def withdrawPut(addr: address, val: uint256) -> bool:
+    # FIX, seller gets the purchase price of strike * notional for the tokens deposited.
+    #self.token.transfer(self.slate20.wrote(msg.sender), val-1) # FIX Send remaining margin to writer fix -1 to become the underlying - strike difference
+    self.token.transfer(addr, val) # Price * notional payment to writer (addr)
     return True

@@ -10,6 +10,7 @@ const Dai = artifacts.require('Dai')
 const ARC = artifacts.require('Arc')
 const Stash20 = artifacts.require('Stash20')
 const Slate20 = artifacts.require('Slate20')
+const ARP = artifacts.require('Arp')
 
 var _buyer = '0xE64aF0A0D319fb613983BB1D00A2baFfEAF1aBE9'
 var admin = '0x9995d8026d970db26C8de1553957f670C2C5707b'
@@ -31,6 +32,9 @@ module.exports = async (deployer, accounts) => {
   await deployer.deploy(ARC)
   let arc_template = await ARC.deployed()
 
+  await deployer.deploy(ARP)
+  let arp_template = await ARP.deployed()
+
   await deployer.deploy(ECO)
   let eco_template = await ECO.deployed()
  
@@ -46,7 +50,7 @@ module.exports = async (deployer, accounts) => {
  
   await deployer.deploy(Wax)
   let wax = await Wax.deployed()
-  await deployer.deploy(ECOFactory, eco_template.address, arc_template.address, token.address, oracle.address, slate.address, stash.address, wax.address, stash20.address, slate20.address)
+  await deployer.deploy(ECOFactory, eco_template.address, arc_template.address, arp_template.address, token.address, oracle.address, slate.address, stash.address, wax.address, stash20.address, slate20.address)
   
   
   //let stash = await Stash.deployed()

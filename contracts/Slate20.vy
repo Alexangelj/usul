@@ -75,6 +75,44 @@ def purchase(_option: address, prm: uint256) -> bool:
     return True
 
 @public
+@payable
+def writePut(_option: address, prm: uint256, margin: uint256) -> bool:
+    """
+    @notice Seller writes ECO Contract, Deposits margin, Seller is authorized
+    """
+    self.wrote[_option] = tx.origin # Record the writer
+    self.premium[tx.origin] += margin
+    log.Write(tx.origin)
+
+    # call external margin depost function
+    return True
+
+@public
+@payable
+def purchasePut(_option: address, prm: uint256, margin: uint256) -> bool:
+    """
+    @notice Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized
+    """
+
+    self.bought[_option] = tx.origin # sets option to a buyer -> 20k gas
+    self.premium[tx.origin] += prm # sets buyer's deposit to premium, for writer to withdraw -> 20k gas
+    self.stash20.deposit(tx.origin, margin)
+    log.Buy(tx.origin, prm) # -> 1.4k gas
+    # Going to need cond to check if writer purchased to closed, or make that seperate
+    #if(tx.origin == self.writer):
+    #    return False
+
+    # FIX
+    assert not tx.origin == self.option
+
+    return True
+
+@public
 def withdraw(val: wei_value) -> bool:
     send(self.wrote[msg.sender], val)
+    return True
+
+@public
+def withdrawPut(val: wei_value) -> bool:
+    send(self.bought[msg.sender], val)
     return True

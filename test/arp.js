@@ -8,9 +8,9 @@ const Slate20 = artifacts.require('Slate20')
 const Stash20 = artifacts.require('Stash20')
 const Wax = artifacts.require('Wax')
 const Dai = artifacts.require('Dai')
-const ARC = artifacts.require('Arc')
+const Arp = artifacts.require('Arp')
 
-contract('Arc', accounts => {
+contract('arp', accounts => {
 
     // Lets make a CALL 2 ETH Strike for DAI underlying asset, with a notional of 2
     // Exercise price will be 5 ETH
@@ -95,18 +95,18 @@ contract('Arc', accounts => {
         gas.push([name + ' gas: ', spent])
     }
 
-    async function checkBalances(arc_address, slate20_addr, stash20_addr, dai){
+    async function checkBalances(arp_address, slate20_addr, stash20_addr, dai){
         var bal_before = [
             'purchaser: ',
             'writer: ',
-            'ARC: ',
+            'arp: ',
             'Slate20 ETH: ',
             'Stash20 ETH: ',
         ]
         var acc_list = [
             purchaser,
             writer,
-            arc_address,
+            arp_address,
             slate20_addr,
             stash20_addr,
         ]
@@ -129,9 +129,9 @@ contract('Arc', accounts => {
         console.log('Slate20: ', slate20.address)
     });
 
-    it('Creates arc Contract', async () => {
+    it('Creates arp Contract', async () => {
         console.log('\n')
-        let arc_fac = await ECOFactory.deployed()
+        let arp_fac = await ECOFactory.deployed()
         console.log(
             purchaser,
             writer,  
@@ -141,7 +141,7 @@ contract('Arc', accounts => {
             margin,
             true
         )
-        let arc = await arc_fac.createEco(  purchaser,
+        let arp = await arp_fac.createArp(  purchaser,
                                             writer,  
                                             strike, 
                                             notional, 
@@ -150,56 +150,57 @@ contract('Arc', accounts => {
                                             true
                                             )
                                             // Get gas usage
-        let arc_gas = await arc.receipt.gasUsed
-        console.log('arc Gas Internal: ', arc_gas)
-        await getGas(arc, 'arc internal')
+        let arp_gas = await arp.receipt.gasUsed
+        console.log('arp Gas Internal: ', arp_gas)
+        await getGas(arp, 'arp internal')
 
         // New with struct
-        //let arc_address = await arc_fac.getEco(purchaser)
-        //let _arc = await ARC.at(arc_address)
-        //let struct_strike = await _arc.terms__strike()
+        //let arp_address = await arp_fac.getEco(purchaser)
+        //let _arp = await Arp.at(arp_address)
+        //let struct_strike = await _arp.terms__strike()
         //console.log('struct strike: ', struct_strike.toString())
         let dai = await Dai.deployed()
-        let arc_address = await arc_fac.getEco(purchaser)
-        let _arc = await ARC.at(arc_address)
-        let arc_dai = (await dai.balanceOf(arc_address)).toString()
+        let arp_address = await arp_fac.getEco(purchaser)
+        let _arp = await Arp.at(arp_address)
+        let dai_to_purchaser = await dai.transfer(purchaser, margin)
+        let arp_dai = (await dai.balanceOf(arp_address)).toString()
         let writer_dai = (await dai.balanceOf(writer)).toString()
         let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-        console.log('Arc Dai: ', arc_dai)
+        console.log('arp Dai: ', arp_dai)
         console.log('Writer Dai: ', writer_dai)
         console.log('Purchaser Dai: ', purchaser_dai)
-        console.log(' *** End ARC Create *** ')
+        console.log(' *** End arp Create *** ')
     });
 
     it('Write Function Test', async () => {
         console.log(' *** Writes ***')
         // Get instantes
         let dai = await Dai.deployed()
-        let arc_fac = await ECOFactory.deployed()
-        let arc_address = await arc_fac.getEco(purchaser)
-        let _arc = await ARC.at(arc_address)
+        let arp_fac = await ECOFactory.deployed()
+        let arp_address = await arp_fac.getEco(purchaser)
+        let _arp = await Arp.at(arp_address)
         let slate20 = await Slate20.deployed()
         let stash20 = await Stash20.deployed()
         
         // Get DAI Balance of Stash20
-        let dai_arc = await dai.transfer(arc_address, '100000000000000000000')
+        //let dai_arp = await dai.transfer(arp_address, '700000000000000000000')
         let sbal1 = (await dai.balanceOf(stash20.address)).toString()
         console.log('Stash20: ', sbal1/wei)
 
         // Get margin from margin defined in the contract
         
         // New with Struct
-        //let marg = await _arc.terms__margin()
+        //let marg = await _arp.terms__margin()
         //console.log('Margin Deposited: ', marg.toString())
-        //let write = await _arc.write(arc_address, premium, marg, {from: writer})
+        //let write = await _arp.write(arp_address, premium, marg, {from: writer})
 
         // Old with inline
-        console.log('Margin Deposited: ', margin)
-        let approve = await dai.approve(arc_address, margin)
-        let write = await _arc.write(premium, margin, {from: writer})
+        console.log('Margin Should be Deposited: ', margin)
+        let approve = await dai.approve(arp_address, margin)
+        let write = await _arp.write(premium, strike_val, {from: writer, value: strike_val})
         
         // Old
-        // let write = await _arc.write(arc_address, premium, '3000000000000000000', {from: writer})
+        // let write = await _arp.write(arp_address, premium, '3000000000000000000', {from: writer})
         
         // Get Stash20 DAI Balance -> Should be equal to margin
         let sbal2 = (await dai.balanceOf(stash20.address)).toString()
@@ -211,40 +212,40 @@ contract('Arc', accounts => {
         await getGas(write, 'write internal')
 
         // Confirm writer is writer of contract
-        let wrote = await slate20.wrote(arc_address)
+        let wrote = await slate20.wrote(arp_address)
         console.log('Wrote: ', wrote)
         assert.equal(wrote, writer, 'Should be writer writing')
 
         // Confirm funds deposited, can be removed because this is for cash settled
-        let fund = await stash20.fund(writer)
-        console.log('Fund: ', (fund).toString())
-        assert.strictEqual((fund).toString(), margin.toString(), 'Writer should have funded Stash20')
+        let capital = await slate20.premium(writer)
+        console.log('Capital: ', (capital).toString())
+        assert.strictEqual((capital).toString(), strike_val, 'Writer should have funded Stash20')
 
         // Dai balances of users
-        let arc_dai = (await dai.balanceOf(arc_address)).toString()
+        let arp_dai = (await dai.balanceOf(arp_address)).toString()
         let writer_dai = (await dai.balanceOf(writer)).toString()
         let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-        console.log('Arc Dai: ', arc_dai)
+        console.log('arp Dai: ', arp_dai)
         console.log('Writer Dai: ', writer_dai)
         console.log('Purchaser Dai: ', purchaser_dai)
 
         // Get Balances of Accts
-        console.log('Should have transferred margin: ' + margin.toString() + ' to Stash20')
-        await checkBalances(arc_address, slate20.address, stash20.address, sbal2)
+        console.log('Should have transferred strike value: ' + strike_val + ' to Slate20')
+        await checkBalances(arp_address, slate20.address, stash20.address, sbal2)
     });
 
     it('Purchase Function Test', async () => {
         console.log(' *** Purchases ***')
         // Get instances
         let dai = await Dai.deployed()
-        let arc_fac = await ECOFactory.deployed()
-        let arc_address = await arc_fac.getEco(purchaser)
-        let _arc = await ARC.at(arc_address)
+        let arp_fac = await ECOFactory.deployed()
+        let arp_address = await arp_fac.getEco(purchaser)
+        let _arp = await Arp.at(arp_address)
         let slate20 = await Slate20.deployed()
         let stash20 = await Stash20.deployed()
         
         // Purchase function, should pay premium
-        let purchase = await _arc.purchase(premium, {from: purchaser, value: premium })
+        let purchase = await _arp.purchase(premium, margin, {from: purchaser, value: premium })
         
         // Get gas usage
         let purchase_gas = await purchase.receipt.gasUsed
@@ -252,7 +253,7 @@ contract('Arc', accounts => {
         await getGas(purchase, 'purchase internal')
 
         // Confirms purchase
-        let bought = await slate20.bought(arc_address)
+        let bought = await slate20.bought(arp_address)
         console.log('Bought: ', bought)
         assert.equal(bought, purchaser, 'Should be purchaser purchasing')
 
@@ -262,29 +263,29 @@ contract('Arc', accounts => {
         assert.strictEqual(prm.toString(), premium, 'purchaser should have paid premium')
         
         // Dai balances of users
-        let arc_dai = (await dai.balanceOf(arc_address)).toString()
+        let arp_dai = (await dai.balanceOf(arp_address)).toString()
         let writer_dai = (await dai.balanceOf(writer)).toString()
         let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-        console.log('Arc Dai: ', arc_dai)
+        console.log('arp Dai: ', arp_dai)
         console.log('Writer Dai: ', writer_dai)
         console.log('Purchaser Dai: ', purchaser_dai)
 
         // Checks balances
         console.log('Should have transferred premium: ' + premium.toString() + ' to Slate20')
         let dai_bal = (await dai.balanceOf(stash20.address)).toString()
-        await checkBalances(arc_address, slate20.address, stash20.address, dai_bal)
+        await checkBalances(arp_address, slate20.address, stash20.address, dai_bal)
     });
 
-    it('arc Validation', async () => {
+    it('arp Validation', async () => {
         console.log(' *** Validates ***')
         let dai = await Dai.deployed()
-        let arc_fac = await ECOFactory.deployed()
-        let arc_address = await arc_fac.getEco(purchaser)
-        let _arc = await ARC.at(arc_address)
+        let arp_fac = await ECOFactory.deployed()
+        let arp_address = await arp_fac.getEco(purchaser)
+        let _arp = await Arp.at(arp_address)
         let slate20 = await Slate20.deployed()
         let stash20 = await Stash20.deployed()
         let fund = await stash20.fund(writer)
-        let bought = await slate20.bought(arc_address)
+        let bought = await slate20.bought(arp_address)
         let prmium = await slate20.premium(purchaser)
         
         let sbal1 = (await dai.balanceOf(stash20.address)).toString()
@@ -293,8 +294,8 @@ contract('Arc', accounts => {
         assert.strictEqual(prmium.toString(), premium.toString(), 'Should have paid premium')
         assert.strictEqual((fund/wei).toString(), (sbal1/wei).toString(), 'Stash20 balance should equal writer margin')
         //console.log(fund.toString())
-        //console.log(await _arc.margin())
-        let validation = await _arc.validate()
+        //console.log(await _arp.margin())
+        let validation = await _arp.validate()
         let validation_gas = await validation.receipt.gasUsed
         console.log('validation Gas Internal: ', validation_gas)
         await getGas(validation, 'validation')
@@ -303,67 +304,67 @@ contract('Arc', accounts => {
         //console.log(log)
         
         // Dai balances of users
-        let arc_dai = (await dai.balanceOf(arc_address)).toString()
+        let arp_dai = (await dai.balanceOf(arp_address)).toString()
         let writer_dai = (await dai.balanceOf(writer)).toString()
         let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-        console.log('Arc Dai: ', arc_dai)
+        console.log('arp Dai: ', arp_dai)
         console.log('Writer Dai: ', writer_dai)
         console.log('Purchaser Dai: ', purchaser_dai)
 
         let dai_bal = (await dai.balanceOf(stash20.address)).toString()
-        await checkBalances(arc_address, slate20.address, stash20.address, dai_bal)
+        await checkBalances(arp_address, slate20.address, stash20.address, dai_bal)
     });
 
-    it('arc Maturity', async () => {
+    it('arp Maturity', async () => {
         console.log('\n')
         let dai = await Dai.deployed()
-        let arc_fac = await ECOFactory.deployed()
-        let arc_address = await arc_fac.getEco(purchaser)
-        let _arc = await ARC.at(arc_address)
+        let arp_fac = await ECOFactory.deployed()
+        let arp_address = await arp_fac.getEco(purchaser)
+        let _arp = await Arp.at(arp_address)
         let slate20 = await Slate20.deployed()
         let stash20 = await Stash20.deployed()
         let wax = await Wax.deployed()
         
-        let mature = await _arc.isMature()
+        let mature = await _arp.isMature()
         
         //let mature_gas = await mature.receipt.gasUsed
         //console.log('mature Gas Internal: ', mature_gas)
         //await getGas(mature, 'mature')
 
-        let timestamp = await wax.expiration(arc_address)
+        let timestamp = await wax.expiration(arp_address)
         console.log('Expiration timestamp: ', (timestamp.toNumber()))
 
         // Dai balances of users
-        let arc_dai = (await dai.balanceOf(arc_address)).toString()
+        let arp_dai = (await dai.balanceOf(arp_address)).toString()
         let writer_dai = (await dai.balanceOf(writer)).toString()
         let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-        console.log('Arc Dai: ', arc_dai)
+        console.log('arp Dai: ', arp_dai)
         console.log('Writer Dai: ', writer_dai)
         console.log('Purchaser Dai: ', purchaser_dai)
 
         let dai_bal = (await dai.balanceOf(stash20.address)).toString()
-        await checkBalances(arc_address, slate20.address, stash20.address, dai_bal)
+        await checkBalances(arp_address, slate20.address, stash20.address, dai_bal)
     });
 
     // Need to build DEX before I allow this
-    //it('arc Purchase/Sell to Close', async () => {
+    //it('arp Purchase/Sell to Close', async () => {
     //    console.log('\n')
     //    let dai = await Dai.deployed()
-    //    let arc_fac = await ECOFactory.deployed()
-    //    let arc_address = await arc_fac.getEco(purchaser)
-    //    let _arc = await ARC.at(arc_address)
+    //    let arp_fac = await ECOFactory.deployed()
+    //    let arp_address = await arp_fac.getEco(purchaser)
+    //    let _arp = await Arp.at(arp_address)
     //    let slate20 = await Slate20.deployed()
     //    let stash20 = await Stash20.deployed()
     //    
     //    // Must be from original writer for a premium amt parameter
-    //    let purchaseClose = await _arc.purchaseClose(premium, {from: writer, value: premium})
+    //    let purchaseClose = await _arp.purchaseClose(premium, {from: writer, value: premium})
     //    
     //    let purchaseClose_gas = await purchaseClose.receipt.gasUsed
     //    console.log('purchaseClose Gas Internal: ', purchaseClose_gas)
     //    await getGas(purchaseClose, 'purchaseClose')
 //
     //    // Must be from a buyer who owns the option
-    //    let sellClose = await _arc.sellClose({from: purchaser})
+    //    let sellClose = await _arp.sellClose({from: purchaser})
     //    
     //    let sellClose_gas = await sellClose.receipt.gasUsed
     //    console.log('sellClose Gas Internal: ', sellClose_gas)
@@ -371,29 +372,31 @@ contract('Arc', accounts => {
 //
 //
     //    // Dai balances of users
-    //    let arc_dai = (await dai.balanceOf(arc_address)).toString()
+    //    let arp_dai = (await dai.balanceOf(arp_address)).toString()
     //    let writer_dai = (await dai.balanceOf(writer)).toString()
     //    let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-    //    console.log('Arc Dai: ', arc_dai)
+    //    console.log('arp Dai: ', arp_dai)
     //    console.log('Writer Dai: ', writer_dai)
     //    console.log('Purchaser Dai: ', purchaser_dai)
 //
     //    let dai_bal = (await dai.balanceOf(stash20.address)).toString()
-    //    await checkBalances(arc_address, slate20.address, stash20.address, dai_bal)
+    //    await checkBalances(arp_address, slate20.address, stash20.address, dai_bal)
     //});
 
-    it('arc Exercise', async () => {
+    it('arp Exercise', async () => {
         // Get contract instances
         console.log('\n')
         let dai = await Dai.deployed()
-        let arc_fac = await ECOFactory.deployed()
-        let arc_address = await arc_fac.getEco(purchaser)
-        let _arc = await ARC.at(arc_address)
+        let arp_fac = await ECOFactory.deployed()
+        let arp_address = await arp_fac.getEco(purchaser)
+        let _arp = await Arp.at(arp_address)
         let slate20 = await Slate20.deployed()
         let stash20 = await Stash20.deployed()
 
+        // For a put, buyer sends tokens to sell, but must approve first
+        let approve = await dai.approve(arp_address, margin, {from: purchaser})
         // Exercise comes from buyer, where they pay for the underlying at the strike price (in wei)
-        let exercise = await _arc.exercise({from: purchaser, value: strike_val})
+        let exercise = await _arp.exercise({from: purchaser})
         
         // Get gas usage
         let exercise_gas = await exercise.receipt.gasUsed
@@ -402,13 +405,13 @@ contract('Arc', accounts => {
 
         // Get dai balance of stash
         let dai_bal = (await dai.balanceOf(stash20.address)).toString()
-        await checkBalances(arc_address, slate20.address, stash20.address, dai_bal)
+        await checkBalances(arp_address, slate20.address, stash20.address, dai_bal)
         
         // Get Dai balances of users
-        let arc_dai = (await dai.balanceOf(arc_address)).toString()
+        let arp_dai = (await dai.balanceOf(arp_address)).toString()
         let writer_dai = (await dai.balanceOf(writer)).toString()
         let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-        console.log('Arc Dai: ', arc_dai)
+        console.log('arp Dai: ', arp_dai)
         console.log('Writer Dai: ', writer_dai)
         console.log('Purchaser Dai: ', purchaser_dai)
         console.log(gas)
