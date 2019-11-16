@@ -18,7 +18,7 @@ contract Token():
     def transferFrom(_from: address, _to: address, _value: uint256) -> bool:modifying
     def approve(_spender: address, _value: uint256) -> bool:modifying
 
-Buy: event({buyer: indexed(address), prm: uint256})
+Buy: event({buyer: indexed(address), prm: wei_value})
 Write: event({writer: indexed(address)})
 Deposit: event({source: indexed(address), val: wei_value})
 
@@ -30,7 +30,7 @@ stash40: Stash40
 option: public(address)
 wrote: public(map(address, address)) # option addr, writer addr
 bought: public(map(address, address)) # option addr, buyer addr
-premium: public(map(address, uint256)) # premium paid for option
+premium: public(map(address, wei_value)) # premium paid for option
 token: public(Token)
 
 @public
@@ -62,7 +62,7 @@ def write(_option: address, prm: uint256, margin: uint256) -> bool:
 
 @public
 @payable
-def purchase(_option: address, prm: uint256) -> bool:
+def purchase(_option: address, prm: wei_value) -> bool:
     """
     @notice Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized
     """

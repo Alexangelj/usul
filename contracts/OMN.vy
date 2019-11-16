@@ -8,9 +8,9 @@
 #
 # @version 0.1.0b14
 
-#from vyper.interfaces import ERC20
-#
-#implements: ERC20
+from vyper.interfaces import ERC20
+
+implements: ERC20
 
 contract Factory():
     def getEco(user_addr: address) -> address:constant
@@ -21,7 +21,7 @@ contract Slate():
     def wrote(_option: address) -> address:constant
     def premium(_option: address) -> uint256:constant
     def write(_option: address, prm: uint256, underlying: uint256) -> bool:modifying
-    def purchase(_option: address, prm: uint256) -> bool:modifying
+    def purchase(_option: address, prm: wei_value) -> bool:modifying
     def withdraw(val: uint256) -> bool:modifying
 
 contract Stash():
@@ -29,6 +29,8 @@ contract Stash():
     def deposit(_writer: address, underlying: uint256) -> bool:modifying
     def withdraw(val: uint256) -> bool:modifying
     def write(_option: address, _underlying: uint256) -> bool:modifying
+    def wrote(_option: address) -> address:constant
+    def transferFrom(_from: address, _to: address, _value: uint256) -> bool:modifying
     
 contract Wax():
     def timeToExpiry(time: timestamp) -> bool:constant
@@ -79,6 +81,7 @@ user: address
 strike: public(uint256)
 underlying: public(uint256)
 maturity: public(timestamp)
+premium: public(uint256)
 
 # Exercise Conditions
 active: public(bool)
@@ -94,13 +97,16 @@ allowances: map(address, map(address, uint256))
 total_supply: uint256
 minter: address
 
+# User Claims
+writer_claim: public(map(address, uint256))
+
 @public
 @payable
 def __default__():
     log.Payment(msg.value, msg.sender)
 
 @public
-def setup(  _strikeAsset: uint256,
+def setup(  _strike: uint256,
             _underlying: uint256,
             _maturity: timestamp,
             _slate_address: address,
@@ -115,9 +121,9 @@ def setup(  _strikeAsset: uint256,
     assert(self.factory == ZERO_ADDRESS and self.user == ZERO_ADDRESS) and msg.sender != ZERO_ADDRESS
     self.factory = Factory(msg.sender)
     
-    self.strike = _strikeAsset
-    self.underlying = _underlying
-    self.maturity = _maturity
+    self.strike = _strike # Strike denominated in Strike Asset -> 10 Dai
+    self.underlying = _underlying # Underlying denominated in Underlying Asset -> 2 Oat
+    self.maturity = _maturity # Timestamp of maturity date
 
     self.active = False
     self.completed = False
@@ -133,14 +139,13 @@ def setup(  _strikeAsset: uint256,
     self.underlyingAsset.approve(self.stash, 1000000000000000*10**18)
 
     # EIP-20
-    init_supply: uint256 = 0
     self.name = "Dai Oat December"
     self.symbol = "DOZ"
     self.decimals = 10**18
-    self.balanceOf[tx.origin] = init_supply
-    self.total_supply = init_supply
+    self.balanceOf[tx.origin] = 0
+    self.total_supply = 0
     self.minter = tx.origin
-    log.Transfer(ZERO_ADDRESS, tx.origin, init_supply)
+    log.Transfer(ZERO_ADDRESS, tx.origin, 0)
 
 # EIP-20 Functions - Source: https://github.com/ethereum/vyper/blob/master/examples/tokens/ERC20.vy
 @public
@@ -270,7 +275,7 @@ def burnFrom(_to: address, _value: uint256):
 @constant
 def isMature() -> bool:
     """
-    @notice ECOs have a time to expiration, this checks if it has expired
+    @notice - ECOs have a time to expiration, this checks if it has expired
     """
     return self.wax.timeToExpiry(self.maturity)
 
@@ -280,58 +285,51 @@ def write(_underlying: uint256) -> bool:
     """
     @notice Seller writes ECO Contract, Deposits underlying, Seller is authorized
     """
-    self.underlyingAsset.transferFrom(msg.sender, self.stash, _underlying)
-    self.stash.write(self, _underlying)
+    self.underlyingAsset.transferFrom(msg.sender, self.stash, _underlying) # Store underlying in stash
+    self.stash.write(self, _underlying) # Record underlying amount in stash
     log.Write(self)
-    self.mint(msg.sender, 10**18) # 1 default token minted
+    self.mint(msg.sender, _underlying / self.underlying * self.decimals) # Mint amount of tokens equal to the underlying deposited / underlying asset amount
     return True
-    #return self.slate.write(self, prm, _underlying)
 
+# Temporary way to exchange tokens between parties
+@public
+def sell(token_amount: uint256, ask_price: uint256) -> bool:
+    """
+    @notice - Minted tokens can be sold by depositing them into the contract for buyers to purchase
+    """
+    self.balanceOf[msg.sender] -= token_amount
+    self.balanceOf[self] += token_amount
+    self.premium = ask_price
+    log.Transfer(msg.sender, self, token_amount)
+    return True
+
+# Temporary way to exchange tokens between parties
 @public
 @payable
-def purchase(prm: uint256) -> bool:
+def purchase(token_amount: uint256) -> bool:
     """
-    @notice Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized
+    @notice - Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized
     """
-    send(self.slate, msg.value)
+    if(msg.value >= self.premium): # If the amount sent is more than the premium, sell the amount of tokens it would purchase
+        assert self.balanceOf[self] >= token_amount
+        self.balanceOf[msg.sender] += token_amount
+        self.balanceOf[self] -= token_amount
+        send(self.stash.wrote(self), msg.value)
     log.Buy(self)
-    return self.slate.purchase(self, prm)
-
-
-@public
-def validate() -> bool:
-    """
-    @notice Checks if inactive, Checks Buyer & Seller's Authorization, Sends Premium to Seller, Activates Contract
-    """
-    assert not self.active, 'Should be inactive'
-    assert not self.completed, 'Shouldnt be completed'
-    assert self.stash.fund(self.slate.wrote(self)) > 0 # Looks up underlying
-    assert self.slate.premium(self.slate.bought(self)) > 0 # Looks up premium
-
-    # This tx looks confusing but it's not, it's just looking up what the premium is.
-    # Calling withdraw function of slate, which transfers an amt defined in parameter to the tx.origin of this tx
-    # The argument is looking up the premium value by looking up the buyer
-    # It's looking up the buyer by using this option's address, which is a map in slate.
-    self.slate.withdraw(self.slate.premium(self.slate.bought(self))) # Slate payment to writer equal to premium paid
-
-    self.active = True
-    log.Valid(self)
-    return True
+    return self.slate.purchase(self, msg.value)
 
 @public
 @payable
-def exercise() -> bool:
+def exercise(amount: uint256) -> bool:
     """
-    @notice If called from Buyer, Sends price * underlying Ether to Buyer, Sends strikeAsset * underlying to Seller, Completes
+    @notice - Buyer sends strike asset in exchange for underlying asset. 
     """
-    assert self.active
     assert msg.sender == self.slate.bought(self)
-
-    send(self.slate, msg.value) # Purchase of underlying asset * underlying amount @ strikeAsset price is sent to Slate
-    self.slate.withdraw(self.strike * self.underlying) # Writer receives payment from Slate
-    self.stash.withdraw(self.stash.fund(self.slate.wrote(self))) # Purchaser receives underlying asset * underlying amount
-
-    self.active = False
-    self.completed = True
+    assert self.balanceOf[msg.sender] >= amount * self.decimals
+    self.strikeAsset.transferFrom(msg.sender, self, (self.strike * amount)) # Strike asset transferred from purchaser
+    self.writer_claim[self.stash.wrote(self)] += (self.strike * amount) # Writer's claim to withdraw strike asset updated
+    self.underlyingAsset.transferFrom(self.stash, msg.sender, self.underlying * amount) # Underlying asset sent to Purchaser
+    self.strikeAsset.transfer(self.stash.wrote(self), (self.writer_claim[self.stash.wrote(self)])) # Send strike asset to writer
+    self._burn(msg.sender, amount * self.decimals)
     log.Exercise(self)
     return True

@@ -53,6 +53,7 @@ def write(_option: address, _underlying: uint256) -> bool:
     """
     @notice Seller writes ECO Contract, Deposits _underlying, Seller is authorized
     """
+    self.token.approve(msg.sender, _underlying) # Allow option to transfer tokens from this contract
     self.wrote[_option] = tx.origin
     self.fund[tx.origin] = _underlying
     log.Fund(tx.origin, _underlying)

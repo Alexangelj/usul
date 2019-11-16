@@ -20,6 +20,8 @@ contract('omn', accounts => {
     var strike = (10*decimals).toFixed() // Dai amount paid for underlying
     var underlying = (2*decimals).toFixed() // Oat amount sold for strike asset
     var maturity = 1573992000 // valid 11/17/2019 12pm utc
+    var premium = (1*decimals).toFixed() // premium that a seller asks for
+    var amount = (5*decimals).toFixed()
 
 
     console.log('Strike: ', strike,'Underlying: ', underlying)
@@ -29,22 +31,54 @@ contract('omn', accounts => {
         gas.push([name + ' gas: ', spent])
     }
 
-    async function checkBalances(omn_address, slate40_addr, stash40_addr, dai, oat){
+    async function checkBalances(){
+        console.log(' * ETH Balances of Users * ')
         var bal_before = [
-            'omn: ',
-            'Slate40 ETH: ',
-            'Stash40 ETH: ',
+            'Writer ETH: ',
+            'Purchaser ETH: ',
         ]
         var acc_list = [
-            omn_address,
-            slate40_addr,
-            stash40_addr,
+            writer,
+            purchaser,
         ]
         for(var i = 0; i < acc_list.length; i++) {
             console.log(bal_before[i], await web3.eth.getBalance(acc_list[i])/10**18)
         }
-        console.log('Slate40 Dai: ', dai)
-        console.log('Stash40 OAT: ', oat)
+    }
+
+    async function tokenBalances(omn_address, oat, dai, stash40, slate40, _omn) {
+        console.log(' * Ledger Balances * ')
+        // Balances of Stash/Slate
+        let stash_bal = (await oat.balanceOf(stash40.address)).toString()
+        console.log('Stash Oat: ', stash_bal)
+        let slate_dai = (await dai.balanceOf(slate40.address)).toString()
+        console.log('Slate Dai: ', slate_dai)
+
+        // oat balances of users
+        let omn_oat = (await oat.balanceOf(omn_address)).toString()
+        let writer_oat = (await oat.balanceOf(writer)).toString()
+        let purchaser_oat = (await oat.balanceOf(purchaser)).toString()
+        console.log('Omn oat: ', omn_oat)
+        console.log('Writer oat: ', writer_oat)
+        console.log('Purchaser oat: ', purchaser_oat)
+
+        // dai balances of users
+        let omn_dai = (await dai.balanceOf(omn_address)).toString()
+        let writer_dai = (await dai.balanceOf(writer)).toString()
+        let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
+        console.log('Omn dai: ', omn_dai)
+        console.log('Writer dai: ', writer_dai)
+        console.log('Purchaser dai: ', purchaser_dai)
+
+        // OMN token Balances
+        let writer__omn = (await _omn.balanceOf(writer)).toString()
+        let purchaser__omn = (await _omn.balanceOf(purchaser)).toString()
+        console.log('Writer _omn: ', writer__omn)
+        console.log('Purchaser _omn: ', purchaser__omn)
+
+        // OMN Total Supply
+        let total = (await _omn.totalSupply()).toString()
+        console.log('Total OMN Supply: ', total)
     }
 
 
@@ -79,20 +113,7 @@ contract('omn', accounts => {
         let oat = await Oat.deployed()
         let omn_address = await omn_fac.getOmn(writer)
         let _omn = await Omn.at(omn_address)
-        let omn_dai = (await dai.balanceOf(omn_address)).toString()
-        let writer_dai = (await dai.balanceOf(writer)).toString()
-        let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-        let writer_oat = (await oat.balanceOf(writer)).toString()
-        let purchaser_oat = (await oat.balanceOf(purchaser)).toString()
-        let slate_dai = (await dai.balanceOf(slate40.address)).toString()
-        let stash_oat = (await oat.balanceOf(stash40.address)).toString()
-        console.log('omn Dai: ', omn_dai)
-        console.log('Writer Dai: ', writer_dai)
-        console.log('Writer oat: ', writer_oat)
-        console.log('Purchaser Dai: ', purchaser_dai)
-        console.log('Purchaser oat: ', purchaser_oat)
-        console.log('Slate Dai: ', slate_dai)
-        console.log('Stash oat: ', stash_oat)
+        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
         console.log(' *** End omn Create *** ')
     });
 
@@ -103,6 +124,7 @@ contract('omn', accounts => {
         // sending it to the stash (auxillary storage for underlying)
         
         // Get instances
+
         // Tokens
         let dai = await Dai.deployed()
         let oat = await Oat.deployed()
@@ -117,17 +139,17 @@ contract('omn', accounts => {
         // Get Oat Balance of Stash40
         //let dai_omn = await dai.transfer(omn_address, '100000000000000000000')
         let stash_bal_prior = (await oat.balanceOf(stash40.address)).toString()
-        console.log('Stash40: ', stash_bal_prior)
+        console.log('Stash40 Before Write: ', stash_bal_prior)
 
+        // Write function
+        //console.log('underlying Deposited: ', underlying)
+        //let approve = await oat.approve(omn_address, underlying)
+        //let write = await _omn.write(underlying, {from: writer})
 
-        console.log('underlying Deposited: ', underlying)
-        let approve = await oat.approve(omn_address, underlying)
-        let write = await _omn.write(underlying, {from: writer})
-        
-        
-        // Get Stash40 OAT Balance -> Should be equal to underlying
-        let stash_bal = (await oat.balanceOf(stash40.address)).toString()
-        console.log('Stash40: ', stash_bal)
+        var more = (12*10**18).toFixed()
+        console.log('underlying Deposited: ', more)
+        let approve = await oat.approve(omn_address, more)
+        let write = await _omn.write(more, {from: writer})
         
         // Get gas usage
         let write_gas = await write.receipt.gasUsed
@@ -140,160 +162,109 @@ contract('omn', accounts => {
         assert.equal(wrote, writer, 'Should be writer writing')
 
         // Confirm funds deposited, can be removed because this is for cash settled
+        //let fund = await stash40.fund(writer)
+        //console.log('Funded Amount: ', (fund).toString())
+        //assert.strictEqual((fund).toString(), underlying.toString(), 'Writer should have funded Stash40')
+
         let fund = await stash40.fund(writer)
-        console.log('Fund: ', (fund).toString())
-        assert.strictEqual((fund).toString(), underlying.toString(), 'Writer should have funded Stash40')
+        console.log('Funded Amount: ', (fund).toString())
+        assert.strictEqual((fund).toString(), more.toString(), 'Writer should have funded Stash40')
 
-        // oat balances of users
-        let omn_oat = (await oat.balanceOf(omn_address)).toString()
-        let writer_oat = (await oat.balanceOf(writer)).toString()
-        let purchaser_oat = (await oat.balanceOf(purchaser)).toString()
-        console.log('omn oat: ', omn_oat)
-        console.log('Writer oat: ', writer_oat)
-        console.log('Purchaser oat: ', purchaser_oat)
-
-        let slate_bal = (await dai.blanaceOf(slate40.address)).toString()
         // Get Balances of Accts
         console.log('Should have transferred underlying: ' + underlying.toString() + ' to Stash40')
-        await checkBalances(omn_address, slate40.address, stash40.address, slate_bal, stash_bal)
+        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
+
+        // Sell Function
+        let writer_bal = await _omn.balanceOf(writer)
+        await oat.approve(omn_address, writer_bal)
+        let sell = await _omn.sell(writer_bal, premium, {from: writer}) // Sell the option token for premium
+
+        await checkBalances()
+        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
     });
-//
-    //it('Purchase Function Test', async () => {
-    //    console.log(' *** Purchases ***')
-    //    // Get instances
-    //    let dai = await Dai.deployed()
-    //    let omn_fac = await Factory.deployed()
-    //    let omn_address = await omn_fac.getOmn(purchaser)
-    //    let _omn = await Omn.at(omn_address)
-    //    let slate40 = await Slate40.deployed()
-    //    let stash40 = await Stash40.deployed()
-    //    
-    //    // Purchase function, should pay premium
-    //    let purchase = await _omn.purchase(premium, {from: purchaser, value: premium })
-    //    
-    //    // Get gas usage
-    //    let purchase_gas = await purchase.receipt.gasUsed
-    //    console.log('purchase Gas Internal: ', purchase_gas)
-    //    await getGas(purchase, 'purchase internal')
-//
-    //    // Confirms purchase
-    //    let bought = await slate40.bought(omn_address)
-    //    console.log('Bought: ', bought)
-    //    assert.equal(bought, purchaser, 'Should be purchaser purchasing')
-//
-    //    // Confirms premium was paid
-    //    let prm = await slate40.premium(purchaser)
-    //    console.log('Premium: ', prm.toString())
-    //    assert.strictEqual(prm.toString(), premium, 'purchaser should have paid premium')
-    //    
-    //    // Dai balances of users
-    //    let omn_dai = (await dai.balanceOf(omn_address)).toString()
-    //    let writer_dai = (await dai.balanceOf(writer)).toString()
-    //    let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-    //    console.log('omn Dai: ', omn_dai)
-    //    console.log('Writer Dai: ', writer_dai)
-    //    console.log('Purchaser Dai: ', purchaser_dai)
-//
-    //    // Checks balances
-    //    console.log('Should have transferred premium: ' + premium.toString() + ' to Slate40')
-    //    let dai_bal = (await dai.balanceOf(stash40.address)).toString()
-    //    await checkBalances(omn_address, slate40.address, stash40.address, dai_bal)
-    //});
-//
-    //it('omn Validation', async () => {
-    //    console.log(' *** Validates ***')
-    //    let dai = await Dai.deployed()
-    //    let omn_fac = await Factory.deployed()
-    //    let omn_address = await omn_fac.getOmn(purchaser)
-    //    let _omn = await Omn.at(omn_address)
-    //    let slate40 = await Slate40.deployed()
-    //    let stash40 = await Stash40.deployed()
-    //    let fund = await stash40.fund(writer)
-    //    let bought = await slate40.bought(omn_address)
-    //    let prmium = await slate40.premium(purchaser)
-    //    
-    //    let sbal1 = (await dai.balanceOf(stash40.address)).toString()
-    //    
-    //    assert.strictEqual(bought, purchaser, 'Option address should match buyer')
-    //    assert.strictEqual(prmium.toString(), premium.toString(), 'Should have paid premium')
-    //    assert.strictEqual((fund/wei).toString(), (sbal1/wei).toString(), 'Stash40 balance should equal writer underlying')
-//
-    //    let validation = await _omn.validate()
-    //    let validation_gas = await validation.receipt.gasUsed
-    //    console.log('validation Gas Internal: ', validation_gas)
-    //    await getGas(validation, 'validation')
-    //    
-    //    // Dai balances of users
-    //    let omn_dai = (await dai.balanceOf(omn_address)).toString()
-    //    let writer_dai = (await dai.balanceOf(writer)).toString()
-    //    let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-    //    console.log('omn Dai: ', omn_dai)
-    //    console.log('Writer Dai: ', writer_dai)
-    //    console.log('Purchaser Dai: ', purchaser_dai)
-//
-    //    let dai_bal = (await dai.balanceOf(stash40.address)).toString()
-    //    await checkBalances(omn_address, slate40.address, stash40.address, dai_bal)
-    //});
-//
-    //it('omn Maturity', async () => {
-    //    console.log('\n')
-    //    let dai = await Dai.deployed()
-    //    let omn_fac = await Factory.deployed()
-    //    let omn_address = await omn_fac.getOmn(purchaser)
-    //    let _omn = await Omn.at(omn_address)
-    //    let slate40 = await Slate40.deployed()
-    //    let stash40 = await Stash40.deployed()
-    //    let wax = await Wax.deployed()
-    //    
-    //    let mature = await _omn.isMature()
-    //    
-//
-    //    let timestamp = await wax.expiration(omn_address)
-    //    console.log('Expiration timestamp: ', (timestamp.toNumber()))
-//
-    //    // Dai balances of users
-    //    let omn_dai = (await dai.balanceOf(omn_address)).toString()
-    //    let writer_dai = (await dai.balanceOf(writer)).toString()
-    //    let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-    //    console.log('omn Dai: ', omn_dai)
-    //    console.log('Writer Dai: ', writer_dai)
-    //    console.log('Purchaser Dai: ', purchaser_dai)
-//
-    //    let dai_bal = (await dai.balanceOf(stash40.address)).toString()
-    //    await checkBalances(omn_address, slate40.address, stash40.address, dai_bal)
-    //});
-//
-    //it('omn Exercise', async () => {
-    //    // Get contract instances
-    //    console.log('\n')
-    //    let dai = await Dai.deployed()
-    //    let omn_fac = await Factory.deployed()
-    //    let omn_address = await omn_fac.getOmn(purchaser)
-    //    let _omn = await Omn.at(omn_address)
-    //    let slate40 = await Slate40.deployed()
-    //    let stash40 = await Stash40.deployed()
-//
-    //    // Exercise comes from buyer, where they pay for the underlying at the strike price (in wei)
-    //    let exercise = await _omn.exercise({from: purchaser, value: strike_val})
-    //    
-    //    // Get gas usage
-    //    let exercise_gas = await exercise.receipt.gasUsed
-    //    console.log('exercise Gas Internal: ', exercise_gas)
-    //    await getGas(exercise, 'exercise')
-//
-    //    // Get dai balance of stash
-    //    let dai_bal = (await dai.balanceOf(stash40.address)).toString()
-    //    await checkBalances(omn_address, slate40.address, stash40.address, dai_bal)
-    //    
-    //    // Get Dai balances of users
-    //    let omn_dai = (await dai.balanceOf(omn_address)).toString()
-    //    let writer_dai = (await dai.balanceOf(writer)).toString()
-    //    let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-    //    console.log('omn Dai: ', omn_dai)
-    //    console.log('Writer Dai: ', writer_dai)
-    //    console.log('Purchaser Dai: ', purchaser_dai)
-    //    console.log(gas)
-    //});
+
+    it('Purchase Function Test', async () => {
+        console.log(' *** Purchases ***')
+        // Get instances
+        let dai = await Dai.deployed()
+        let oat = await Oat.deployed()
+        let omn_fac = await Factory.deployed()
+        let omn_address = await omn_fac.getOmn(writer)
+        let _omn = await Omn.at(omn_address)
+        let slate40 = await Slate40.deployed()
+        let stash40 = await Stash40.deployed()
+        
+        // Get Ether Bal of Writer Before
+        console.log('Writer Ether Bal: ', (await web3.eth.getBalance(writer))/decimals)
+
+        // Purchase function, should pay premium
+        let purchase = await _omn.purchase(amount, {from: purchaser, value: premium*5 })
+        
+        // Get gas usage
+        let purchase_gas = await purchase.receipt.gasUsed
+        console.log('purchase Gas Internal: ', purchase_gas)
+        await getGas(purchase, 'purchase internal')
+
+        // Confirms purchase
+        let bought = await slate40.bought(omn_address)
+        console.log('Bought: ', bought)
+        assert.equal(bought, purchaser, 'Should be purchaser purchasing')
+
+        // Confirms premium was paid
+        //let prm = await slate40.premium(purchaser)
+        //console.log('Premium: ', prm.toString())
+        //assert.strictEqual(prm.toString(), premium, 'purchaser should have paid premium')
+
+        // Checks balances
+        console.log('Should have transferred premium: ' + premium.toString() + ' to Writer')
+        console.log('Writer Ether Bal: ', (await web3.eth.getBalance(writer))/decimals)
+        await checkBalances()
+        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
+    });
+
+    it('omn Maturity', async () => {
+        console.log('\n')
+        let dai = await Dai.deployed()
+        let omn_fac = await Factory.deployed()
+        let omn_address = await omn_fac.getOmn(writer)
+        let _omn = await Omn.at(omn_address)
+        let slate40 = await Slate40.deployed()
+        let stash40 = await Stash40.deployed()
+        let wax = await Wax.deployed()
+        
+        let mature = await _omn.isMature()
+        
+
+        let timestamp = (await _omn.expiration())
+        console.log('Expiration timestamp: ', (timestamp.toNumber()))
+    });
+
+    it('omn Exercise', async () => {
+        // Get contract instances
+        console.log('\n')
+        let oat = await Oat.deployed()
+        let dai = await Dai.deployed()
+        let omn_fac = await Factory.deployed()
+        let omn_address = await omn_fac.getOmn(writer)
+        let _omn = await Omn.at(omn_address)
+        let slate40 = await Slate40.deployed()
+        let stash40 = await Stash40.deployed()
+
+        // Exercise comes from buyer, where they pay for the underlying at the strike price (in wei)
+        let amount_to_exercise = 2
+        let approve = await dai.approve(omn_address, (strike * 1 * amount_to_exercise).toString(), {from: purchaser})
+        let exercise = await _omn.exercise(amount_to_exercise, {from: purchaser})
+        
+        // Get gas usage
+        let exercise_gas = await exercise.receipt.gasUsed
+        console.log('exercise Gas Internal: ', exercise_gas)
+        await getGas(exercise, 'exercise')
+        
+        // Get balances of users
+        await checkBalances()
+        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
+        console.log(gas)
+    });
 
 
 })
