@@ -1,0 +1,372 @@
+{
+  "contractName": "Factory",
+  "abi": [
+    {
+      "name": "Newomn",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "omn",
+          "indexed": true
+        },
+        {
+          "type": "uint256",
+          "name": "strike",
+          "indexed": false
+        },
+        {
+          "type": "uint256",
+          "name": "underlying",
+          "indexed": false
+        },
+        {
+          "type": "uint256",
+          "name": "maturity",
+          "indexed": false,
+          "unit": "sec"
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Error",
+      "inputs": [
+        {
+          "type": "string",
+          "name": "message",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Payment",
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "amount",
+          "indexed": false,
+          "unit": "wei"
+        },
+        {
+          "type": "address",
+          "name": "_from",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "payable": true,
+      "type": "fallback"
+    },
+    {
+      "outputs": [],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_omnTemplate"
+        },
+        {
+          "type": "address",
+          "name": "_dai_address"
+        },
+        {
+          "type": "address",
+          "name": "_oat_address"
+        },
+        {
+          "type": "address",
+          "name": "_slate40_address"
+        },
+        {
+          "type": "address",
+          "name": "_stash40_address"
+        },
+        {
+          "type": "address",
+          "name": "_wax_address"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "constructor"
+    },
+    {
+      "name": "createOmn",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "strike"
+        },
+        {
+          "type": "uint256",
+          "name": "underlying"
+        },
+        {
+          "type": "uint256",
+          "unit": "sec",
+          "name": "maturity"
+        }
+      ],
+      "constant": false,
+      "payable": true,
+      "type": "function",
+      "gas": 119985
+    },
+    {
+      "name": "getOmn",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "user"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 735
+    },
+    {
+      "name": "getUser",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "omn"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 765
+    },
+    {
+      "name": "omnTemplate",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 641
+    },
+    {
+      "name": "dai_address",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 671
+    },
+    {
+      "name": "oat_address",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 701
+    },
+    {
+      "name": "stash40_address",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 731
+    },
+    {
+      "name": "slate40_address",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 761
+    },
+    {
+      "name": "wax_address",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 791
+    }
+  ],
+  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05260c061058e6101403934156100a157600080fd5b602061058e60c03960c05160205181106100ba57600080fd5b506020602061058e0160c03960c05160205181106100d757600080fd5b506020604061058e0160c03960c05160205181106100f457600080fd5b506020606061058e0160c03960c051602051811061011157600080fd5b506020608061058e0160c03960c051602051811061012e57600080fd5b50602060a061058e0160c03960c051602051811061014b57600080fd5b506000541561015957600080fd5b6000610140511861016957600080fd5b6101405160005561016051600355610180516004556101a0516006556101c0516005556101e05160075561057656600436101561000d576103b0565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263df4291a8600051141561023757600033186100bc57600080fd5b6000600054186100cb57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061013d57600080fd5b610140526101405161020052610140513b61015757600080fd5b61014051301861016657600080fd5b6000600061010463f83a8988610220526004356102405260243561026052604435610280526006546102a0526005546102c0526007546102e052600354610300526004546103205261023c6000610140515af16101c257600080fd5b6101405160013360e05260c052604060c020553360026101405160e05260c052604060c02055600435610380526024356103a0526044356103c052610140517fb0c0f1688ab7a8f6a25fd6af22e9356fe4d1d4266a32850acd6329a77e98c6a46060610380a26101405160005260206000f350005b631450fc10600051141561027e57341561025057600080fd5b600435602051811061026157600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b60005114156102c557341561029757600080fd5b60043560205181106102a857600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63949a9d4c60005114156102ec5734156102de57600080fd5b60005460005260206000f350005b634905e59f600051141561031357341561030557600080fd5b60035460005260206000f350005b637980b868600051141561033a57341561032c57600080fd5b60045460005260206000f350005b6307b223db600051141561036157341561035357600080fd5b60055460005260206000f350005b632379e6ea600051141561038857341561037a57600080fd5b60065460005260206000f350005b63f9e204e860005114156103af5734156103a157600080fd5b60075460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a25b61019861057603610198600039610198610576036000f3",
+  "deployedBytecode": "0x600436101561000d576103b0565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263df4291a8600051141561023757600033186100bc57600080fd5b6000600054186100cb57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061013d57600080fd5b610140526101405161020052610140513b61015757600080fd5b61014051301861016657600080fd5b6000600061010463f83a8988610220526004356102405260243561026052604435610280526006546102a0526005546102c0526007546102e052600354610300526004546103205261023c6000610140515af16101c257600080fd5b6101405160013360e05260c052604060c020553360026101405160e05260c052604060c02055600435610380526024356103a0526044356103c052610140517fb0c0f1688ab7a8f6a25fd6af22e9356fe4d1d4266a32850acd6329a77e98c6a46060610380a26101405160005260206000f350005b631450fc10600051141561027e57341561025057600080fd5b600435602051811061026157600080fd5b50600160043560e05260c052604060c0205460005260206000f350005b636f77926b60005114156102c557341561029757600080fd5b60043560205181106102a857600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63949a9d4c60005114156102ec5734156102de57600080fd5b60005460005260206000f350005b634905e59f600051141561031357341561030557600080fd5b60035460005260206000f350005b637980b868600051141561033a57341561032c57600080fd5b60045460005260206000f350005b6307b223db600051141561036157341561035357600080fd5b60055460005260206000f350005b632379e6ea600051141561038857341561037a57600080fd5b60065460005260206000f350005b63f9e204e860005114156103af5734156103a157600080fd5b60075460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a2",
+  "source": "contract Omn():\r\n    def setup(  strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                _slate_address: address,\r\n                _stash_address: address,\r\n                _wax_address: address,\r\n                _dai_address: address,\r\n                _oat_address: address,\r\n                ): modifying\r\n\r\n\r\nNewomn: event({\r\n                omn: indexed(address), \r\n                strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                })\r\n\r\nError: event({message: string[50]})\r\nPayment: event({amount: wei_value, _from: indexed(address)})\r\n\r\nomnTemplate: public(address)\r\nuser_to_omn: map(address, address)\r\nomn_to_user: map(address, address)\r\n\r\n# Initial tokens\r\ndai_address: public(address)\r\noat_address: public(address)\r\n# Repositories\r\nstash40_address: public(address)\r\nslate40_address: public(address)\r\n# Utility\r\nwax_address: public(address)\r\n\r\n@public\r\n@payable\r\ndef __default__():\r\n    log.Payment(msg.value, msg.sender)\r\n\r\n@public\r\ndef __init__(   _omnTemplate: address,  \r\n                _dai_address: address, # strike asset denomination\r\n                _oat_address: address, # underlying asset\r\n                _slate40_address: address, # strike asset storage\r\n                _stash40_address: address, # underlying asset storage\r\n                _wax_address: address, \r\n                ):\r\n    assert self.omnTemplate == ZERO_ADDRESS\r\n    assert _omnTemplate != ZERO_ADDRESS\r\n    self.omnTemplate = _omnTemplate\r\n    self.dai_address = _dai_address\r\n    self.oat_address = _oat_address\r\n    self.slate40_address = _slate40_address\r\n    self.stash40_address = _stash40_address\r\n    self.wax_address = _wax_address\r\n    \r\n@public\r\n@payable\r\ndef createOmn(  strike: uint256, # Omn's strike is denominated in Dai, Example: 10 dai for 1 Oat.\r\n                underlying: uint256, # Omn's underlying is Oat\r\n                maturity: timestamp,\r\n                ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.omnTemplate != ZERO_ADDRESS\r\n\r\n    omn: address = create_forwarder_to(self.omnTemplate)\r\n    _omn: address = omn\r\n    Omn(omn).setup( strike,\r\n                    underlying,\r\n                    maturity,\r\n                    self.slate40_address,\r\n                    self.stash40_address,\r\n                    self.wax_address,\r\n                    self.dai_address,\r\n                    self.oat_address,\r\n                    )\r\n    self.user_to_omn[msg.sender] = omn\r\n    self.omn_to_user[omn] = msg.sender\r\n    log.Newomn(     omn,\r\n                    strike,\r\n                    underlying,\r\n                    maturity,\r\n                    )\r\n    return omn\r\n\r\n\r\n@public\r\n@constant\r\ndef getOmn(user: address) -> address:\r\n    return self.user_to_omn[user]\r\n\r\n@public\r\n@constant\r\ndef getUser(omn: address) -> address:\r\n    return self.omn_to_user[omn]\r\n\r\n",
+  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/Factory.vy",
+  "compiler": {
+    "name": "vyper",
+    "version": "0.1.0b14+commit.49b201c"
+  },
+  "networks": {
+    "5777": {
+      "events": {
+        "0xd57eef9fa764a7d8bd34ce431cca31eabb9ed6b5334e77d213aeac802a51ad44": {
+          "name": "Newomn",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "omn",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "buyer",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "uint256",
+              "name": "notional",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "maturity",
+              "indexed": false,
+              "unit": "sec"
+            },
+            {
+              "type": "uint256",
+              "name": "margin",
+              "indexed": false,
+              "unit": "wei"
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xd57eef9fa764a7d8bd34ce431cca31eabb9ed6b5334e77d213aeac802a51ad44"
+        },
+        "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa": {
+          "name": "Error",
+          "inputs": [
+            {
+              "type": "string",
+              "name": "message",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa"
+        },
+        "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e": {
+          "name": "Payment",
+          "inputs": [
+            {
+              "type": "uint256",
+              "name": "amount",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "address",
+              "name": "_from",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e"
+        },
+        "0xb0c0f1688ab7a8f6a25fd6af22e9356fe4d1d4266a32850acd6329a77e98c6a4": {
+          "name": "Newomn",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "omn",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "underlying",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "maturity",
+              "indexed": false,
+              "unit": "sec"
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xb0c0f1688ab7a8f6a25fd6af22e9356fe4d1d4266a32850acd6329a77e98c6a4"
+        }
+      },
+      "links": {},
+      "address": "0x6e6801c635832717268F54dD8F9e6Ca8541c46c6",
+      "transactionHash": "0x4591be03c9a09bf77a43b9f4ff0dd224a8720819e3e13e7f954237b2198b301a"
+    }
+  },
+  "schemaVersion": "3.0.19",
+  "updatedAt": "2019-11-15T22:40:28.928Z",
+  "networkType": "ethereum"
+}

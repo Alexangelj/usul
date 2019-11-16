@@ -1,0 +1,608 @@
+{
+  "contractName": "ARP",
+  "abi": [
+    {
+      "name": "Valid",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "eco",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Buy",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "eco",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Write",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "eco",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Exercise",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "eco",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Mature",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "eco",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Payment",
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "amount",
+          "indexed": false,
+          "unit": "wei"
+        },
+        {
+          "type": "address",
+          "name": "source",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Transfer",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_from",
+          "indexed": true
+        },
+        {
+          "type": "address",
+          "name": "_to",
+          "indexed": true
+        },
+        {
+          "type": "uint256",
+          "name": "_value",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Approval",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_owner",
+          "indexed": true
+        },
+        {
+          "type": "address",
+          "name": "_spender",
+          "indexed": true
+        },
+        {
+          "type": "uint256",
+          "name": "_value",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Error",
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "fund",
+          "indexed": false
+        },
+        {
+          "type": "uint256",
+          "name": "margn",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "constant": false,
+      "payable": true,
+      "type": "fallback"
+    },
+    {
+      "name": "setup",
+      "outputs": [],
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "_strike"
+        },
+        {
+          "type": "uint256",
+          "name": "_notional"
+        },
+        {
+          "type": "uint256",
+          "unit": "sec",
+          "name": "_maturity"
+        },
+        {
+          "type": "uint256",
+          "name": "_margin"
+        },
+        {
+          "type": "address",
+          "name": "_token_address"
+        },
+        {
+          "type": "address",
+          "name": "_slate_address"
+        },
+        {
+          "type": "address",
+          "name": "_stash_address"
+        },
+        {
+          "type": "address",
+          "name": "_wax_address"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 358805
+    },
+    {
+      "name": "isMature",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 2305
+    },
+    {
+      "name": "purchase",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "prm"
+        },
+        {
+          "type": "uint256",
+          "name": "_margin"
+        }
+      ],
+      "constant": false,
+      "payable": true,
+      "type": "function",
+      "gas": 38878
+    },
+    {
+      "name": "write",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "prm"
+        },
+        {
+          "type": "uint256",
+          "name": "_margin"
+        }
+      ],
+      "constant": false,
+      "payable": true,
+      "type": "function",
+      "gas": 38908
+    },
+    {
+      "name": "validate",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 50212
+    },
+    {
+      "name": "exercise",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": false,
+      "payable": true,
+      "type": "function",
+      "gas": 71772
+    },
+    {
+      "name": "factory",
+      "outputs": [
+        {
+          "type": "address",
+          "unit": "Factory",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 731
+    },
+    {
+      "name": "slate",
+      "outputs": [
+        {
+          "type": "address",
+          "unit": "Slate",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 761
+    },
+    {
+      "name": "stash",
+      "outputs": [
+        {
+          "type": "address",
+          "unit": "Stash",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 791
+    },
+    {
+      "name": "wax",
+      "outputs": [
+        {
+          "type": "address",
+          "unit": "Wax",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 821
+    },
+    {
+      "name": "token",
+      "outputs": [
+        {
+          "type": "address",
+          "unit": "Token",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 851
+    },
+    {
+      "name": "strike",
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 881
+    },
+    {
+      "name": "notional",
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 911
+    },
+    {
+      "name": "maturity",
+      "outputs": [
+        {
+          "type": "uint256",
+          "unit": "sec",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 941
+    },
+    {
+      "name": "active",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 971
+    },
+    {
+      "name": "completed",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 1001
+    },
+    {
+      "name": "expiration",
+      "outputs": [
+        {
+          "type": "uint256",
+          "unit": "sec",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 1031
+    }
+  ],
+  "bytecode": "0x610b0856600436101561000d57610ad6565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263425c923c60005114156101d15734156100ba57600080fd5b60843560205181106100cb57600080fd5b5060a43560205181106100dd57600080fd5b5060c43560205181106100ef57600080fd5b5060e435602051811061010157600080fd5b5060003314156005541560005415161661011a57600080fd5b3360005560043560065560243560075560443560085560006009556000600a5560a43560015560c43560025560e435600355608435600455426201518081818301101561016657600080fd5b80820190509050600b556004543b61017d57600080fd5b600454301861018b57600080fd5b60206101e0604463095ea7b361014052600254610160526d314dc6448d9338c15b0a000000006101805261015c60006004545af16101c857600080fd5b6000506101e050005b63ae4e7fdf600051141561023f5734156101ea57600080fd5b6003543b6101f757600080fd5b600354301861020557600080fd5b60206101c060246307757be1610140526008546101605261015c6003545afa61022d57600080fd5b6000506101c05160005260206000f350005b6370876c9860005114156102ef576000600060006000346001546000f161026557600080fd5b307f5c6c890314aa0d49059c35b35ff86ffb43efe8f543dc3691558f39dfa4a8201160006000a26001543b61029957600080fd5b60015430186102a757600080fd5b6020610200606463acb71411610140523061016052600435610180526024356101a05261015c60006001545af16102dd57600080fd5b6000506102005160005260206000f350005b639c0e3f7a600051141561039f576000600060006000346001546000f161031557600080fd5b307f3d9850d7c40f30357297906847346c1d76b7ab7b248eb505c9b940534a680e5760006000a26001543b61034957600080fd5b600154301861035757600080fd5b60206102006064634d21a997610140523061016052600435610180526024356101a05261015c60006001545af161038d57600080fd5b6000506102005160005260206000f350005b636901f66860005114156106995734156103b857600080fd5b6308c379a0610140526020610160526012610180527f53686f756c6420626520696e61637469766500000000000000000000000000006101a052610180506009541561040557608461015cfd5b6308c379a06101e0526020610200526015610220527f53686f756c646e7420626520636f6d706c6574656400000000000000000000006102405261022050600a54156104525760846101fcfd5b60006001543b61046157600080fd5b600154301861046f57600080fd5b60206103a0602463a61e6bf1610320526001543b61048c57600080fd5b600154301861049a57600080fd5b6020610300602463533286ec61028052306102a05261029c6001545afa6104c057600080fd5b600050610300516103405261033c6001545afa6104dc57600080fd5b6000506103a051116104ed57600080fd5b60006001543b6104fc57600080fd5b600154301861050a57600080fd5b60206104e0602463a61e6bf1610460526001543b61052757600080fd5b600154301861053557600080fd5b6020610440602463667022fd6103c052306103e0526103dc6001545afa61055b57600080fd5b600050610440516104805261047c6001545afa61057757600080fd5b6000506104e0511161058857600080fd5b6001543b61059557600080fd5b60015430186105a357600080fd5b60206106c06024632e1a7d4d610640526001543b6105c057600080fd5b60015430186105ce57600080fd5b6020610620602463a61e6bf16105a0526001543b6105eb57600080fd5b60015430186105f957600080fd5b6020610580602463667022fd61050052306105205261051c6001545afa61061f57600080fd5b600050610580516105c0526105bc6001545afa61063b57600080fd5b600050610620516106605261065c60006001545af161065957600080fd5b6000506106c0506001600955307fb16bddadd75f5e575957a0d58a6ecc1caaad819513f887396c0fbdb544aba40860006000a2600160005260206000f350005b63d32cb0fe6000511415610928576009546106b357600080fd5b6001543b6106c057600080fd5b60015430186106ce57600080fd5b60206101c0602463667022fd61014052306101605261015c6001545afa6106f457600080fd5b6000506101c051331461070657600080fd5b6004543b61071357600080fd5b600454301861072157600080fd5b602061034060646323b872dd61028052336102a0526002546102c0526002543b61074a57600080fd5b600254301861075857600080fd5b6020610260602463230244086101e05233610200526101fc6002545afa61077e57600080fd5b600050610260516102e05261029c60006004545af161079c57600080fd5b600050610340506001543b6107b057600080fd5b60015430186107be57600080fd5b60206103e060246350a85ed26103605260065460075480820282158284830414176107e857600080fd5b809050905090506103805261037c60006001545af161080657600080fd5b6000506103e0506002543b61081a57600080fd5b600254301861082857600080fd5b60206105e060446375538444610540526001543b61084557600080fd5b600154301861085357600080fd5b6020610480602463533286ec61040052306104205261041c6001545afa61087957600080fd5b60005061048051610560526002543b61089157600080fd5b600254301861089f57600080fd5b6020610520602463230244086104a052336104c0526104bc6002545afa6108c557600080fd5b600050610520516105805261055c60006002545af16108e357600080fd5b6000506105e05060006009556001600a55307ffbda77129cf75888cf6abaff7c88653061908824c579c49cfb9224fce0918dbc60006000a2600160005260206000f350005b63c45a0155600051141561094f57341561094157600080fd5b60005460005260206000f350005b636fe2a8a9600051141561097657341561096857600080fd5b60015460005260206000f350005b63d8da8131600051141561099d57341561098f57600080fd5b60025460005260206000f350005b639c550e8160005114156109c45734156109b657600080fd5b60035460005260206000f350005b63fc0c546a60005114156109eb5734156109dd57600080fd5b60045460005260206000f350005b63ad8f50086000511415610a12573415610a0457600080fd5b60065460005260206000f350005b63f855c2b26000511415610a39573415610a2b57600080fd5b60075460005260206000f350005b63204f83f96000511415610a60573415610a5257600080fd5b60085460005260206000f350005b6302fb0c5e6000511415610a87573415610a7957600080fd5b60095460005260206000f350005b639d9a7fe96000511415610aae573415610aa057600080fd5b600a5460005260206000f350005b634665096d6000511415610ad5573415610ac757600080fd5b600b5460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a25b610004610b0803610004600039610004610b08036000f3",
+  "deployedBytecode": "0x600436101561000d57610ad6565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263425c923c60005114156101d15734156100ba57600080fd5b60843560205181106100cb57600080fd5b5060a43560205181106100dd57600080fd5b5060c43560205181106100ef57600080fd5b5060e435602051811061010157600080fd5b5060003314156005541560005415161661011a57600080fd5b3360005560043560065560243560075560443560085560006009556000600a5560a43560015560c43560025560e435600355608435600455426201518081818301101561016657600080fd5b80820190509050600b556004543b61017d57600080fd5b600454301861018b57600080fd5b60206101e0604463095ea7b361014052600254610160526d314dc6448d9338c15b0a000000006101805261015c60006004545af16101c857600080fd5b6000506101e050005b63ae4e7fdf600051141561023f5734156101ea57600080fd5b6003543b6101f757600080fd5b600354301861020557600080fd5b60206101c060246307757be1610140526008546101605261015c6003545afa61022d57600080fd5b6000506101c05160005260206000f350005b6370876c9860005114156102ef576000600060006000346001546000f161026557600080fd5b307f5c6c890314aa0d49059c35b35ff86ffb43efe8f543dc3691558f39dfa4a8201160006000a26001543b61029957600080fd5b60015430186102a757600080fd5b6020610200606463acb71411610140523061016052600435610180526024356101a05261015c60006001545af16102dd57600080fd5b6000506102005160005260206000f350005b639c0e3f7a600051141561039f576000600060006000346001546000f161031557600080fd5b307f3d9850d7c40f30357297906847346c1d76b7ab7b248eb505c9b940534a680e5760006000a26001543b61034957600080fd5b600154301861035757600080fd5b60206102006064634d21a997610140523061016052600435610180526024356101a05261015c60006001545af161038d57600080fd5b6000506102005160005260206000f350005b636901f66860005114156106995734156103b857600080fd5b6308c379a0610140526020610160526012610180527f53686f756c6420626520696e61637469766500000000000000000000000000006101a052610180506009541561040557608461015cfd5b6308c379a06101e0526020610200526015610220527f53686f756c646e7420626520636f6d706c6574656400000000000000000000006102405261022050600a54156104525760846101fcfd5b60006001543b61046157600080fd5b600154301861046f57600080fd5b60206103a0602463a61e6bf1610320526001543b61048c57600080fd5b600154301861049a57600080fd5b6020610300602463533286ec61028052306102a05261029c6001545afa6104c057600080fd5b600050610300516103405261033c6001545afa6104dc57600080fd5b6000506103a051116104ed57600080fd5b60006001543b6104fc57600080fd5b600154301861050a57600080fd5b60206104e0602463a61e6bf1610460526001543b61052757600080fd5b600154301861053557600080fd5b6020610440602463667022fd6103c052306103e0526103dc6001545afa61055b57600080fd5b600050610440516104805261047c6001545afa61057757600080fd5b6000506104e0511161058857600080fd5b6001543b61059557600080fd5b60015430186105a357600080fd5b60206106c06024632e1a7d4d610640526001543b6105c057600080fd5b60015430186105ce57600080fd5b6020610620602463a61e6bf16105a0526001543b6105eb57600080fd5b60015430186105f957600080fd5b6020610580602463667022fd61050052306105205261051c6001545afa61061f57600080fd5b600050610580516105c0526105bc6001545afa61063b57600080fd5b600050610620516106605261065c60006001545af161065957600080fd5b6000506106c0506001600955307fb16bddadd75f5e575957a0d58a6ecc1caaad819513f887396c0fbdb544aba40860006000a2600160005260206000f350005b63d32cb0fe6000511415610928576009546106b357600080fd5b6001543b6106c057600080fd5b60015430186106ce57600080fd5b60206101c0602463667022fd61014052306101605261015c6001545afa6106f457600080fd5b6000506101c051331461070657600080fd5b6004543b61071357600080fd5b600454301861072157600080fd5b602061034060646323b872dd61028052336102a0526002546102c0526002543b61074a57600080fd5b600254301861075857600080fd5b6020610260602463230244086101e05233610200526101fc6002545afa61077e57600080fd5b600050610260516102e05261029c60006004545af161079c57600080fd5b600050610340506001543b6107b057600080fd5b60015430186107be57600080fd5b60206103e060246350a85ed26103605260065460075480820282158284830414176107e857600080fd5b809050905090506103805261037c60006001545af161080657600080fd5b6000506103e0506002543b61081a57600080fd5b600254301861082857600080fd5b60206105e060446375538444610540526001543b61084557600080fd5b600154301861085357600080fd5b6020610480602463533286ec61040052306104205261041c6001545afa61087957600080fd5b60005061048051610560526002543b61089157600080fd5b600254301861089f57600080fd5b6020610520602463230244086104a052336104c0526104bc6002545afa6108c557600080fd5b600050610520516105805261055c60006002545af16108e357600080fd5b6000506105e05060006009556001600a55307ffbda77129cf75888cf6abaff7c88653061908824c579c49cfb9224fce0918dbc60006000a2600160005260206000f350005b63c45a0155600051141561094f57341561094157600080fd5b60005460005260206000f350005b636fe2a8a9600051141561097657341561096857600080fd5b60015460005260206000f350005b63d8da8131600051141561099d57341561098f57600080fd5b60025460005260206000f350005b639c550e8160005114156109c45734156109b657600080fd5b60035460005260206000f350005b63fc0c546a60005114156109eb5734156109dd57600080fd5b60045460005260206000f350005b63ad8f50086000511415610a12573415610a0457600080fd5b60065460005260206000f350005b63f855c2b26000511415610a39573415610a2b57600080fd5b60075460005260206000f350005b63204f83f96000511415610a60573415610a5257600080fd5b60085460005260206000f350005b6302fb0c5e6000511415610a87573415610a7957600080fd5b60095460005260206000f350005b639d9a7fe96000511415610aae573415610aa057600080fd5b600a5460005260206000f350005b634665096d6000511415610ad5573415610ac757600080fd5b600b5460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a2",
+  "source": "# @title A Right to Put - Physically Settled ERC 20 Token\r\n# \r\n# @notice Implementation of an American Put Option on the E thereum Network\r\n# \r\n# @author Alexander Angel\r\n# \r\n# @dev Uses a factory to initialize and deploy option contracts\r\n#\r\n# @version 0.1.0b14\r\n\r\n\r\ncontract Factory():\r\n    def getEco(user_addr: address) -> address:constant\r\n    def getUser(eco: address) -> address:constant\r\n\r\ncontract Slate():\r\n    def bought(_option: address) -> address:constant\r\n    def wrote(_option: address) -> address:constant\r\n    def premium(_option: address) -> uint256:constant\r\n    def write(_option: address, prm: uint256, margin: uint256) -> bool:modifying\r\n    def purchase(_option: address, prm: uint256) -> bool:modifying\r\n    def withdraw(val: uint256) -> bool:modifying\r\n    def purchasePut(_option: address, prm: uint256, margin:uint256) -> bool:modifying\r\n    def writePut(_option: address, prm: uint256, margin: uint256) -> bool:modifying\r\n    def withdrawPut(val: uint256) -> bool:modifying\r\n\r\ncontract Stash():\r\n    def fund(addr: address) -> uint256:constant\r\n    def deposit(_writer: address, margin: uint256) -> bool:modifying\r\n    def withdraw(val: uint256) -> bool:modifying\r\n    def withdrawPut(addr: address, val: uint256) -> bool:modifying\r\n    \r\ncontract Wax():\r\n    def timeToExpiry(time: timestamp) -> bool:constant\r\n    \r\ncontract Token():\r\n    def totalSupply() -> uint256:constant\r\n    def balanceOf(_owner: address) -> uint256:constant\r\n    def allowance(_owner: address, _spender: address) -> uint256:constant\r\n    def transfer(_to: address, _value: uint256) -> bool:modifying\r\n    def transferFrom(_from: address, _to: address, _value: uint256) -> bool:modifying\r\n    def approve(_spender: address, _value: uint256) -> bool:modifying\r\n\r\n\r\nValid: event({eco: indexed(address)})\r\nBuy: event({eco: indexed(address)})\r\nWrite: event({eco: indexed(address)})\r\nExercise: event({eco: indexed(address)})\r\nMature: event({eco: indexed(address)})\r\nPayment: event({amount: wei_value, source: indexed(address)})\r\nTransfer: event({_from: indexed(address), _to: indexed(address), _value: uint256})\r\nApproval: event({_owner: indexed(address), _spender: indexed(address), _value: uint256})\r\n\r\n# Can delete\r\nError: event({fund: uint256, margn: uint256})\r\n\r\n\r\n# Interface Contracts\r\nfactory: public(Factory)\r\nslate: public(Slate)\r\nstash: public(Stash)\r\nwax: public(Wax)\r\ntoken: public(Token)\r\n\r\nuser: address\r\n\r\n# Contract parameters\r\nstrike: public(uint256)\r\nnotional: public(uint256)\r\nmaturity: public(timestamp)\r\n\r\n# Exercise Conditions\r\nactive: public(bool)\r\ncompleted: public(bool)\r\nexpiration: public(timestamp)\r\n\r\n\r\n@public\r\n@payable\r\ndef __default__():\r\n    log.Payment(msg.value, msg.sender)\r\n\r\n@public\r\ndef setup(  _strike: uint256,\r\n            _notional: uint256,\r\n            _maturity: timestamp,\r\n            _margin: uint256,\r\n            _token_address: address,\r\n            _slate_address: address,\r\n            _stash_address: address,\r\n            _wax_address: address,\r\n            ):\r\n    \"\"\"\r\n    @notice Setup is called from the factory contract using an ECO contract template address\r\n    \"\"\"\r\n    assert(self.factory == ZERO_ADDRESS and self.user == ZERO_ADDRESS) and msg.sender != ZERO_ADDRESS\r\n    self.factory = Factory(msg.sender)\r\n    \r\n    self.strike = _strike\r\n    self.notional = _notional\r\n    self.maturity = _maturity\r\n\r\n    \r\n    \r\n\r\n    self.active = False\r\n    self.completed = False\r\n\r\n    # New\r\n    self.slate = Slate(_slate_address)\r\n    self.stash = Stash(_stash_address)\r\n    self.wax = Wax(_wax_address)\r\n    self.token = Token(_token_address)\r\n    \r\n    self.expiration = block.timestamp + (60 * 60 * 24 * 1)\r\n    self.token.approve(self.stash, 1000000000000000*10**18)\r\n\r\n\r\n# Need to fix, constant function? Or modifying function? How do I liquidate mature contracts?\r\n@public\r\n@constant\r\ndef isMature() -> bool:\r\n    \"\"\"\r\n    @notice ECOs have a time to expiration, this checks if it has expired\r\n    \"\"\"\r\n    return self.wax.timeToExpiry(self.maturity)\r\n\r\n@public\r\n@payable\r\ndef purchase(prm: uint256, _margin: uint256) -> bool:\r\n    \"\"\"\r\n    @notice Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized\r\n    \"\"\"\r\n    send(self.slate, msg.value)\r\n    log.Buy(self)\r\n    return self.slate.purchasePut(self, prm, _margin)\r\n\r\n@public\r\n@payable\r\ndef write(prm: uint256, _margin: uint256) -> bool:\r\n    \"\"\"\r\n    @notice Seller writes ECO Contract, Deposits margin, Seller is authorized\r\n            For a put, the margin capital requirement is the strike price * notional value,\r\n            so they fulfill the obligation to purchase an underlying asset at a predetermined price.\r\n    \"\"\"\r\n    send(self.slate, msg.value)\r\n    log.Write(self)\r\n    return self.slate.writePut(self, prm, _margin) # Write put will need to take note of the capital deposited\r\n\r\n# Need to build DEX first\r\n# @public\r\n# @payable\r\n# def purchaseClose(prm: uint256) -> bool:\r\n#     \"\"\"\r\n#     @notice -   A writer can purchase their contract back to effectively close it - i.e. buy the obligation\r\n#     \"\"\"\r\n#     assert self.active\r\n#     assert msg.sender == self.slate.wrote(self)\r\n#     send(self.slate, msg.value) # Send the premium price to the Slate\r\n#     self.token.transferFrom(  self.stash, # Transfer margin from Stash\r\n#                             msg.sender, # To Original writer\r\n#                             self.stash.fund(self.slate.wrote(self))) # Look up margin value, by looking up who wrote the option\r\n#     return self.slate.purchase(self, prm) # Update the slate to show a purchase order has been submitted\r\n#     \r\n# \r\n# @public\r\n# @payable\r\n# def sellClose() -> bool:\r\n#     \"\"\"\r\n#     @notice -   The Original purchaser may want to sell their option because the premium has appreciated.\r\n#     \"\"\"\r\n#     assert self.active\r\n#     assert msg.sender == self.slate.bought(self) # Asserts the sellClose order comes from someone who owns the option\r\n#     self.slate.write(   self, # Updates the slate with a new write\r\n#                         self.slate.premium(self.slate.bought(self)), # looks up premium, by looking up who purchased the option\r\n#                         self.stash.fund(self.slate.wrote(self))) # Looks up the margin, by looking up who wrote the option\r\n#     return self.slate.withdraw(self.slate.premium(self.slate.wrote(self))) # Purchase to Close offer withdraws the premium, by looking up who wrote the option\r\n\r\n\r\n@public\r\ndef validate() -> bool:\r\n    \"\"\"\r\n    @notice Checks if inactive, Checks Buyer & Seller's Authorization, Sends Premium to Seller, Activates Contract\r\n    \"\"\"\r\n    assert not self.active, 'Should be inactive'\r\n    assert not self.completed, 'Shouldnt be completed'\r\n    assert self.slate.premium(self.slate.wrote(self)) > 0 # Looks up capital outlay from writer, opposite from a call\r\n    assert self.slate.premium(self.slate.bought(self)) > 0 # Looks up premium\r\n\r\n    # This tx looks confusing but it's not, it's just looking up what the premium is.\r\n    # Calling withdraw function of slate, which transfers an amt defined in parameter to the tx.origin of this tx\r\n    # The argument is looking up the premium value by looking up the buyer\r\n    # It's looking up the buyer by using this option's address, which is a map in slate.\r\n    self.slate.withdraw(self.slate.premium(self.slate.bought(self))) # Slate payment to writer equal to premium paid\r\n\r\n    self.active = True\r\n    log.Valid(self)\r\n    return True\r\n\r\n@public\r\n@payable\r\ndef exercise() -> bool:\r\n    \"\"\"\r\n    @notice If called from Buyer, Sends price * notional Ether to Buyer, Sends strike * notional to Seller, Completes\r\n    \"\"\"\r\n    assert self.active\r\n    assert msg.sender == self.slate.bought(self)\r\n\r\n    # New\r\n    self.token.transferFrom(msg.sender, self.stash, self.stash.fund(msg.sender)) # Sends tokens from option purchaser, to the stash, at the amount underwritten\r\n    self.slate.withdrawPut(self.strike * self.notional) # Sends slate funds to option purchaser as payment for asset\r\n    self.stash.withdrawPut(self.slate.wrote(self), self.stash.fund(msg.sender)) # Options writer receives underlying asset * notional amount\r\n\r\n    self.active = False\r\n    self.completed = True\r\n    log.Exercise(self)\r\n    return True",
+  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/pre-token/ARP.vy",
+  "compiler": {
+    "name": "vyper",
+    "version": "0.1.0b14+commit.49b201c"
+  },
+  "networks": {
+    "5777": {
+      "events": {
+        "0xb16bddadd75f5e575957a0d58a6ecc1caaad819513f887396c0fbdb544aba408": {
+          "name": "Valid",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xb16bddadd75f5e575957a0d58a6ecc1caaad819513f887396c0fbdb544aba408"
+        },
+        "0x5c6c890314aa0d49059c35b35ff86ffb43efe8f543dc3691558f39dfa4a82011": {
+          "name": "Buy",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x5c6c890314aa0d49059c35b35ff86ffb43efe8f543dc3691558f39dfa4a82011"
+        },
+        "0x3d9850d7c40f30357297906847346c1d76b7ab7b248eb505c9b940534a680e57": {
+          "name": "Write",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x3d9850d7c40f30357297906847346c1d76b7ab7b248eb505c9b940534a680e57"
+        },
+        "0xfbda77129cf75888cf6abaff7c88653061908824c579c49cfb9224fce0918dbc": {
+          "name": "Exercise",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xfbda77129cf75888cf6abaff7c88653061908824c579c49cfb9224fce0918dbc"
+        },
+        "0x2eb828fdc16ef5c267a7b18c3f8edf180aaff1a8921c4fe994fef55ddc8abe60": {
+          "name": "Mature",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "eco",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x2eb828fdc16ef5c267a7b18c3f8edf180aaff1a8921c4fe994fef55ddc8abe60"
+        },
+        "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e": {
+          "name": "Payment",
+          "inputs": [
+            {
+              "type": "uint256",
+              "name": "amount",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "address",
+              "name": "source",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e"
+        },
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+          "name": "Transfer",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "_from",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "_to",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "_value",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+        },
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+          "name": "Approval",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "_owner",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "_spender",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "_value",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
+        },
+        "0x38e3aaf1b2f2c930b2c3ad9e7ba74f151a8852833d7f1f4c6a12793fff19c927": {
+          "name": "Error",
+          "inputs": [
+            {
+              "type": "uint256",
+              "name": "fund",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "margn",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x38e3aaf1b2f2c930b2c3ad9e7ba74f151a8852833d7f1f4c6a12793fff19c927"
+        }
+      },
+      "links": {},
+      "address": "0x3974250b9B83A40d11Fd2156A6Aad58e6F2F5810",
+      "transactionHash": "0xfa796de25c59a8d57d8383e8377bb005203e3fb3d00beca59a4672cf671636b8"
+    }
+  },
+  "schemaVersion": "3.0.19",
+  "updatedAt": "2019-11-15T21:37:22.819Z"
+}

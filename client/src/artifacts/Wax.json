@@ -40,10 +40,10 @@
           "name": "time"
         }
       ],
-      "constant": false,
+      "constant": true,
       "payable": false,
       "type": "function",
-      "gas": 36799
+      "gas": 404
     },
     {
       "name": "expiration",
@@ -66,13 +66,13 @@
       "gas": 735
     }
   ],
-  "bytecode": "0x6101a556600436101561000d5761019b565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be160005114156101535734156100ba57600080fd5b60043560003360e05260c052604060c0205560004260043510156100dd57600080fd5b426004350310151561011f57337f93c4d5b9490aaa3567df063ac6a9b172aecfaff40bcd04f1ba31f2f0e9575f0c60006000a2600160005260206000f3610151565b337f540346575222d36aebe2e2ff7c86a1966989ca1531c6028fd354792e2fabb3c760006000a2600060005260206000f35b005b6304dbe3fe600051141561019a57341561016c57600080fd5b600435602051811061017d57600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd5b6100046101a5036100046000396100046101a5036000f3",
-  "deployedBytecode": "0x600436101561000d5761019b565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be160005114156101535734156100ba57600080fd5b60043560003360e05260c052604060c0205560004260043510156100dd57600080fd5b426004350310151561011f57337f93c4d5b9490aaa3567df063ac6a9b172aecfaff40bcd04f1ba31f2f0e9575f0c60006000a2600160005260206000f3610151565b337f540346575222d36aebe2e2ff7c86a1966989ca1531c6028fd354792e2fabb3c760006000a2600060005260206000f35b005b6304dbe3fe600051141561019a57341561016c57600080fd5b600435602051811061017d57600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd",
-  "source": "# @title WAX \r\n# \r\n# @notice Time Expiration Record and Maturity Condition Validation\r\n# \r\n# @author Alexander Angel\r\n# \r\n# @dev SStore of time\r\n\r\nWaxing: event({eco: indexed(address)})\r\nWaning: event({eco: indexed(address)})\r\n\r\nexpiration: public(map(address, timestamp)) # maps ECOs to timestamp of their expiration\r\n\r\n@public\r\ndef timeToExpiry(time: timestamp) -> bool:\r\n    self.expiration[msg.sender] = time\r\n    if(time - block.timestamp >= 0):\r\n        log.Waning(msg.sender)\r\n        return True\r\n    else:\r\n        log.Waxing(msg.sender)\r\n        # Function that exercises ECO\r\n        return False\r\n",
+  "bytecode": "0x61013556600436101561000d5761012b565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be160005114156100e35734156100ba57600080fd5b426004351015156100d557600160005260206000f3506100e1565b600060005260206000f3505b005b6304dbe3fe600051141561012a5734156100fc57600080fd5b600435602051811061010d57600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd5b61000461013503610004600039610004610135036000f3",
+  "deployedBytecode": "0x600436101561000d5761012b565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be160005114156100e35734156100ba57600080fd5b426004351015156100d557600160005260206000f3506100e1565b600060005260206000f3505b005b6304dbe3fe600051141561012a5734156100fc57600080fd5b600435602051811061010d57600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd",
+  "source": "# @title WAX \r\n# \r\n# @notice Time Expiration Record and Maturity Condition Validation\r\n# \r\n# @author Alexander Angel\r\n# \r\n# @dev SStore of time\r\n\r\n\r\nWaxing: event({eco: indexed(address)})\r\nWaning: event({eco: indexed(address)})\r\n\r\nexpiration: public(map(address, timestamp)) # maps ECOs to timestamp of their expiration\r\n\r\n@public\r\n@constant\r\ndef timeToExpiry(time: timestamp) -> bool:\r\n    #self.expiration[msg.sender] = time\r\n    if(time >= block.timestamp):\r\n        #log.Waning(msg.sender)\r\n        return True\r\n    else:\r\n        #log.Waxing(msg.sender)\r\n        # Function that exercises ECO Actually cannot call exercise function because both these calls are 80k, so 160k is above limit\r\n        return False\r\n",
   "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/Wax.vy",
   "compiler": {
     "name": "vyper",
-    "version": "0.1.0b13+commit.375fb27"
+    "version": "0.1.0b14+commit.49b201c"
   },
   "networks": {
     "5777": {
@@ -105,11 +105,11 @@
         }
       },
       "links": {},
-      "address": "0x1a6eB8d1915857731Ab8D1996ade22747399D1f5",
-      "transactionHash": "0xab75f71ba4ec277a7e27a848a5f1e514222a1a9c866f51066a2ec817332f204a"
+      "address": "0xd31e235D72b74102994ACD79423caC8832dfCA2e",
+      "transactionHash": "0xbc35c62e52af2c9b97be0cb61ae60aad61fa41a9b8bb9fbbadea67105305a430"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-13T05:21:08.857Z",
+  "updatedAt": "2019-11-15T22:40:28.911Z",
   "networkType": "ethereum"
 }

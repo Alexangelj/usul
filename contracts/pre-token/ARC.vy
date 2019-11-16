@@ -1,4 +1,4 @@
-# @title A Recieving Call - Physically Settled via an ERC-20 Token
+# @title A Right to Call - Physically Settled ERC 20 Token
 # 
 # @notice Implementation of an American Call Option on the Ethereum Network
 # 
@@ -20,15 +20,11 @@ contract Slate():
     def write(_option: address, prm: uint256, margin: uint256) -> bool:modifying
     def purchase(_option: address, prm: uint256) -> bool:modifying
     def withdraw(val: uint256) -> bool:modifying
-    def purchasePut(_option: address, prm: uint256, margin:uint256) -> bool:modifying
-    def writePut(_option: address, prm: uint256, margin: uint256) -> bool:modifying
-    def withdrawPut(val: uint256) -> bool:modifying
 
 contract Stash():
     def fund(addr: address) -> uint256:constant
     def deposit(_writer: address, margin: uint256) -> bool:modifying
     def withdraw(val: uint256) -> bool:modifying
-    def withdrawPut(addr: address, val: uint256) -> bool:modifying
     
 contract Wax():
     def timeToExpiry(time: timestamp) -> bool:constant
@@ -127,25 +123,23 @@ def isMature() -> bool:
 
 @public
 @payable
-def purchase(prm: uint256, _margin: uint256) -> bool:
+def purchase(prm: uint256) -> bool:
     """
     @notice Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized
     """
     send(self.slate, msg.value)
     log.Buy(self)
-    return self.slate.purchasePut(self, prm, _margin)
+    return self.slate.purchase(self, prm)
 
 @public
 @payable
 def write(prm: uint256, _margin: uint256) -> bool:
     """
     @notice Seller writes ECO Contract, Deposits margin, Seller is authorized
-            For a put, the margin capital requirement is the strike price * notional value,
-            so they fulfill the obligation to purchase an underlying asset at a predetermined price.
     """
-    send(self.slate, msg.value)
+    self.dai.transferFrom(msg.sender, self.stash, _margin)
     log.Write(self)
-    return self.slate.writePut(self, prm, _margin) # Write put will need to take note of the capital deposited
+    return self.slate.write(self, prm, _margin)
 
 # Need to build DEX first
 # @public
@@ -184,7 +178,7 @@ def validate() -> bool:
     """
     assert not self.active, 'Should be inactive'
     assert not self.completed, 'Shouldnt be completed'
-    assert self.slate.premium(self.slate.wrote(self)) > 0 # Looks up capital outlay from writer, opposite from a call
+    assert self.stash.fund(self.slate.wrote(self)) > 0 # Looks up margin
     assert self.slate.premium(self.slate.bought(self)) > 0 # Looks up premium
 
     # This tx looks confusing but it's not, it's just looking up what the premium is.
@@ -206,10 +200,9 @@ def exercise() -> bool:
     assert self.active
     assert msg.sender == self.slate.bought(self)
 
-    # New
-    self.dai.transferFrom(msg.sender, self.stash, self.stash.fund(msg.sender)) # Sends tokens from option purchaser, to the stash, at the amount underwritten
-    self.slate.withdrawPut(self.strike * self.notional) # Sends slate funds to option purchaser as payment for asset
-    self.stash.withdrawPut(self.slate.wrote(self), self.stash.fund(msg.sender)) # Options writer receives underlying asset * notional amount
+    send(self.slate, msg.value) # Purchase of underlying asset * notional amount @ strike price is sent to Slate
+    self.slate.withdraw(self.strike * self.notional) # Writer receives payment from Slate
+    self.stash.withdraw(self.stash.fund(self.slate.wrote(self))) # Purchaser receives underlying asset * notional amount
 
     self.active = False
     self.completed = True

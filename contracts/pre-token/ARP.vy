@@ -1,6 +1,6 @@
-# @title A Recieving Call - Physically Settled via an ERC-20 Token
+# @title A Right to Put - Physically Settled ERC 20 Token
 # 
-# @notice Implementation of an American Call Option on the Ethereum Network
+# @notice Implementation of an American Put Option on the E thereum Network
 # 
 # @author Alexander Angel
 # 
@@ -20,16 +20,20 @@ contract Slate():
     def write(_option: address, prm: uint256, margin: uint256) -> bool:modifying
     def purchase(_option: address, prm: uint256) -> bool:modifying
     def withdraw(val: uint256) -> bool:modifying
+    def purchasePut(_option: address, prm: uint256, margin:uint256) -> bool:modifying
+    def writePut(_option: address, prm: uint256, margin: uint256) -> bool:modifying
+    def withdrawPut(val: uint256) -> bool:modifying
 
 contract Stash():
     def fund(addr: address) -> uint256:constant
     def deposit(_writer: address, margin: uint256) -> bool:modifying
     def withdraw(val: uint256) -> bool:modifying
+    def withdrawPut(addr: address, val: uint256) -> bool:modifying
     
 contract Wax():
     def timeToExpiry(time: timestamp) -> bool:constant
     
-contract Dai():
+contract Token():
     def totalSupply() -> uint256:constant
     def balanceOf(_owner: address) -> uint256:constant
     def allowance(_owner: address, _spender: address) -> uint256:constant
@@ -56,7 +60,7 @@ factory: public(Factory)
 slate: public(Slate)
 stash: public(Stash)
 wax: public(Wax)
-dai: public(Dai)
+token: public(Token)
 
 user: address
 
@@ -106,10 +110,10 @@ def setup(  _strike: uint256,
     self.slate = Slate(_slate_address)
     self.stash = Stash(_stash_address)
     self.wax = Wax(_wax_address)
-    self.dai = Dai(_token_address)
+    self.token = Token(_token_address)
     
     self.expiration = block.timestamp + (60 * 60 * 24 * 1)
-    self.dai.approve(self.stash, 1000000000000000*10**18)
+    self.token.approve(self.stash, 1000000000000000*10**18)
 
 
 # Need to fix, constant function? Or modifying function? How do I liquidate mature contracts?
@@ -123,23 +127,25 @@ def isMature() -> bool:
 
 @public
 @payable
-def purchase(prm: uint256) -> bool:
+def purchase(prm: uint256, _margin: uint256) -> bool:
     """
     @notice Buyer purchases ECO for Premium:wei, Seller can claim Premium, Buyer is authorized
     """
     send(self.slate, msg.value)
     log.Buy(self)
-    return self.slate.purchase(self, prm)
+    return self.slate.purchasePut(self, prm, _margin)
 
 @public
 @payable
 def write(prm: uint256, _margin: uint256) -> bool:
     """
     @notice Seller writes ECO Contract, Deposits margin, Seller is authorized
+            For a put, the margin capital requirement is the strike price * notional value,
+            so they fulfill the obligation to purchase an underlying asset at a predetermined price.
     """
-    self.dai.transferFrom(msg.sender, self.stash, _margin)
+    send(self.slate, msg.value)
     log.Write(self)
-    return self.slate.write(self, prm, _margin)
+    return self.slate.writePut(self, prm, _margin) # Write put will need to take note of the capital deposited
 
 # Need to build DEX first
 # @public
@@ -151,7 +157,7 @@ def write(prm: uint256, _margin: uint256) -> bool:
 #     assert self.active
 #     assert msg.sender == self.slate.wrote(self)
 #     send(self.slate, msg.value) # Send the premium price to the Slate
-#     self.dai.transferFrom(  self.stash, # Transfer margin from Stash
+#     self.token.transferFrom(  self.stash, # Transfer margin from Stash
 #                             msg.sender, # To Original writer
 #                             self.stash.fund(self.slate.wrote(self))) # Look up margin value, by looking up who wrote the option
 #     return self.slate.purchase(self, prm) # Update the slate to show a purchase order has been submitted
@@ -178,7 +184,7 @@ def validate() -> bool:
     """
     assert not self.active, 'Should be inactive'
     assert not self.completed, 'Shouldnt be completed'
-    assert self.stash.fund(self.slate.wrote(self)) > 0 # Looks up margin
+    assert self.slate.premium(self.slate.wrote(self)) > 0 # Looks up capital outlay from writer, opposite from a call
     assert self.slate.premium(self.slate.bought(self)) > 0 # Looks up premium
 
     # This tx looks confusing but it's not, it's just looking up what the premium is.
@@ -200,9 +206,10 @@ def exercise() -> bool:
     assert self.active
     assert msg.sender == self.slate.bought(self)
 
-    send(self.slate, msg.value) # Purchase of underlying asset * notional amount @ strike price is sent to Slate
-    self.slate.withdraw(self.strike * self.notional) # Writer receives payment from Slate
-    self.stash.withdraw(self.stash.fund(self.slate.wrote(self))) # Purchaser receives underlying asset * notional amount
+    # New
+    self.token.transferFrom(msg.sender, self.stash, self.stash.fund(msg.sender)) # Sends tokens from option purchaser, to the stash, at the amount underwritten
+    self.slate.withdrawPut(self.strike * self.notional) # Sends slate funds to option purchaser as payment for asset
+    self.stash.withdrawPut(self.slate.wrote(self), self.stash.fund(msg.sender)) # Options writer receives underlying asset * notional amount
 
     self.active = False
     self.completed = True

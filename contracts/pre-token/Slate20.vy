@@ -1,6 +1,6 @@
 # @title SLATE 
 # 
-# @notice Buyer and Writer Registry and Authentication
+# @notice Buyer, Writer, and Premium/Capital Registry and Authentication
 # 
 # @author Alexander Angel
 # 

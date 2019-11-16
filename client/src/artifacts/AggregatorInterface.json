@@ -32,35 +32,35 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.12+commit.7709ece9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"currentAnswer\",\"outputs\":[{\"internalType\":\"int256\",\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"updatedHeight\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/ECOPriceOracle.sol\":\"AggregatorInterface\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/ECOPriceOracle.sol\":{\"keccak256\":\"0x3028b2637d84662dc6a6f64ff34590fd42e8deb5c76f21116ddd88442c74b995\",\"urls\":[\"bzz-raw://5e7ac78bb5290be8710c8acf678f1dbd119ca0eb8e367761def4b3e296c1de60\",\"dweb:/ipfs/QmYrmt2poQM56pT88z6nX3ZD7wo79h6TYyEg3kDaCoBhW2\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.12+commit.7709ece9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"currentAnswer\",\"outputs\":[{\"internalType\":\"int256\",\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"updatedHeight\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/ECOPriceOracle.sol\":\"AggregatorInterface\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/ECOPriceOracle.sol\":{\"keccak256\":\"0x3028b2637d84662dc6a6f64ff34590fd42e8deb5c76f21116ddd88442c74b995\",\"urls\":[\"bzz-raw://5e7ac78bb5290be8710c8acf678f1dbd119ca0eb8e367761def4b3e296c1de60\",\"dweb:/ipfs/QmYrmt2poQM56pT88z6nX3ZD7wo79h6TYyEg3kDaCoBhW2\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity 0.5.12;\r\n\r\ninterface AggregatorInterface {\r\n  function currentAnswer() external view returns (int256);\r\n  function updatedHeight() external view returns (uint256);\r\n}\r\n\r\ncontract ECOPriceOracle {\r\n  AggregatorInterface internal referenceAddress;\r\n\r\n  constructor(address _aggregator) public {\r\n    referenceAddress = AggregatorInterface(_aggregator);\r\n  }\r\n\r\n  function getLatestPrice() public view returns (int256) {\r\n    return referenceAddress.currentAnswer();\r\n  }\r\n\r\n  function getLatestUpdateHeight() public view returns (uint256) {\r\n    return referenceAddress.updatedHeight();\r\n  }\r\n}",
-  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/ECOPriceOracle.sol",
+  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/ECOPriceOracle.sol",
   "ast": {
-    "absolutePath": "/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/ECOPriceOracle.sol",
+    "absolutePath": "/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/ECOPriceOracle.sol",
     "exportedSymbols": {
       "AggregatorInterface": [
-        305
+        655
       ],
       "ECOPriceOracle": [
-        340
+        690
       ]
     },
-    "id": 341,
+    "id": 691,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 294,
+        "id": 644,
         "literals": [
           "solidity",
           "0.5",
           ".12"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:1"
+        "src": "0:23:3"
       },
       {
         "baseContracts": [],
@@ -68,9 +68,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 305,
+        "id": 655,
         "linearizedBaseContracts": [
-          305
+          655
         ],
         "name": "AggregatorInterface",
         "nodeType": "ContractDefinition",
@@ -78,29 +78,29 @@
           {
             "body": null,
             "documentation": null,
-            "id": 299,
+            "id": 649,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "currentAnswer",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 295,
+              "id": 645,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "84:2:1"
+              "src": "84:2:3"
             },
             "returnParameters": {
-              "id": 298,
+              "id": 648,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 297,
+                  "id": 647,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 299,
-                  "src": "110:6:1",
+                  "scope": 649,
+                  "src": "110:6:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -108,10 +108,10 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 296,
+                    "id": 646,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "110:6:1",
+                    "src": "110:6:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
@@ -121,10 +121,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "109:8:1"
+              "src": "109:8:3"
             },
-            "scope": 305,
-            "src": "62:56:1",
+            "scope": 655,
+            "src": "62:56:3",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -132,29 +132,29 @@
           {
             "body": null,
             "documentation": null,
-            "id": 304,
+            "id": 654,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "updatedHeight",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 300,
+              "id": 650,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "144:2:1"
+              "src": "144:2:3"
             },
             "returnParameters": {
-              "id": 303,
+              "id": 653,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 302,
+                  "id": 652,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 304,
-                  "src": "170:7:1",
+                  "scope": 654,
+                  "src": "170:7:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -162,10 +162,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 301,
+                    "id": 651,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "170:7:1",
+                    "src": "170:7:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -175,17 +175,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "169:9:1"
+              "src": "169:9:3"
             },
-            "scope": 305,
-            "src": "122:57:1",
+            "scope": 655,
+            "src": "122:57:3",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 341,
-        "src": "27:155:1"
+        "scope": 691,
+        "src": "27:155:3"
       },
       {
         "baseContracts": [],
@@ -193,35 +193,35 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 340,
+        "id": 690,
         "linearizedBaseContracts": [
-          340
+          690
         ],
         "name": "ECOPriceOracle",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 307,
+            "id": 657,
             "name": "referenceAddress",
             "nodeType": "VariableDeclaration",
-            "scope": 340,
-            "src": "215:45:1",
+            "scope": 690,
+            "src": "215:45:3",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+              "typeIdentifier": "t_contract$_AggregatorInterface_$655",
               "typeString": "contract AggregatorInterface"
             },
             "typeName": {
               "contractScope": null,
-              "id": 306,
+              "id": 656,
               "name": "AggregatorInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 305,
-              "src": "215:19:1",
+              "referencedDeclaration": 655,
+              "src": "215:19:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                 "typeString": "contract AggregatorInterface"
               }
             },
@@ -230,28 +230,28 @@
           },
           {
             "body": {
-              "id": 318,
+              "id": 668,
               "nodeType": "Block",
-              "src": "307:64:1",
+              "src": "307:64:3",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 316,
+                    "id": 666,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 312,
+                      "id": 662,
                       "name": "referenceAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 307,
-                      "src": "314:16:1",
+                      "referencedDeclaration": 657,
+                      "src": "314:16:3",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                        "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                         "typeString": "contract AggregatorInterface"
                       }
                     },
@@ -262,12 +262,12 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 314,
+                          "id": 664,
                           "name": "_aggregator",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 309,
-                          "src": "353:11:1",
+                          "referencedDeclaration": 659,
+                          "src": "353:11:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
@@ -281,18 +281,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 313,
+                        "id": 663,
                         "name": "AggregatorInterface",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 305,
-                        "src": "333:19:1",
+                        "referencedDeclaration": 655,
+                        "src": "333:19:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_AggregatorInterface_$305_$",
+                          "typeIdentifier": "t_type$_t_contract$_AggregatorInterface_$655_$",
                           "typeString": "type(contract AggregatorInterface)"
                         }
                       },
-                      "id": 315,
+                      "id": 665,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -300,42 +300,42 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "333:32:1",
+                      "src": "333:32:3",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                        "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                         "typeString": "contract AggregatorInterface"
                       }
                     },
-                    "src": "314:51:1",
+                    "src": "314:51:3",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                      "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                       "typeString": "contract AggregatorInterface"
                     }
                   },
-                  "id": 317,
+                  "id": 667,
                   "nodeType": "ExpressionStatement",
-                  "src": "314:51:1"
+                  "src": "314:51:3"
                 }
               ]
             },
             "documentation": null,
-            "id": 319,
+            "id": 669,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 310,
+              "id": 660,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 309,
+                  "id": 659,
                   "name": "_aggregator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 319,
-                  "src": "279:19:1",
+                  "scope": 669,
+                  "src": "279:19:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -343,10 +343,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 308,
+                    "id": 658,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "279:7:1",
+                    "src": "279:7:3",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -357,25 +357,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "278:21:1"
+              "src": "278:21:3"
             },
             "returnParameters": {
-              "id": 311,
+              "id": 661,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "307:0:1"
+              "src": "307:0:3"
             },
-            "scope": 340,
-            "src": "267:104:1",
+            "scope": 690,
+            "src": "267:104:3",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 328,
+              "id": 678,
               "nodeType": "Block",
-              "src": "432:52:1",
+              "src": "432:52:3",
               "statements": [
                 {
                   "expression": {
@@ -385,32 +385,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 324,
+                        "id": 674,
                         "name": "referenceAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 307,
-                        "src": "446:16:1",
+                        "referencedDeclaration": 657,
+                        "src": "446:16:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                          "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                           "typeString": "contract AggregatorInterface"
                         }
                       },
-                      "id": 325,
+                      "id": 675,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "currentAnswer",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 299,
-                      "src": "446:30:1",
+                      "referencedDeclaration": 649,
+                      "src": "446:30:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$__$returns$_t_int256_$",
                         "typeString": "function () view external returns (int256)"
                       }
                     },
-                    "id": 326,
+                    "id": 676,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -418,43 +418,43 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "446:32:1",
+                    "src": "446:32:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
                     }
                   },
-                  "functionReturnParameters": 323,
-                  "id": 327,
+                  "functionReturnParameters": 673,
+                  "id": 677,
                   "nodeType": "Return",
-                  "src": "439:39:1"
+                  "src": "439:39:3"
                 }
               ]
             },
             "documentation": null,
-            "id": 329,
+            "id": 679,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "getLatestPrice",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 320,
+              "id": 670,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "400:2:1"
+              "src": "400:2:3"
             },
             "returnParameters": {
-              "id": 323,
+              "id": 673,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 322,
+                  "id": 672,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 329,
-                  "src": "424:6:1",
+                  "scope": 679,
+                  "src": "424:6:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -462,10 +462,10 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 321,
+                    "id": 671,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "424:6:1",
+                    "src": "424:6:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
@@ -475,19 +475,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "423:8:1"
+              "src": "423:8:3"
             },
-            "scope": 340,
-            "src": "377:107:1",
+            "scope": 690,
+            "src": "377:107:3",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 338,
+              "id": 688,
               "nodeType": "Block",
-              "src": "553:52:1",
+              "src": "553:52:3",
               "statements": [
                 {
                   "expression": {
@@ -497,32 +497,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 334,
+                        "id": 684,
                         "name": "referenceAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 307,
-                        "src": "567:16:1",
+                        "referencedDeclaration": 657,
+                        "src": "567:16:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                          "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                           "typeString": "contract AggregatorInterface"
                         }
                       },
-                      "id": 335,
+                      "id": 685,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "updatedHeight",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 304,
-                      "src": "567:30:1",
+                      "referencedDeclaration": 654,
+                      "src": "567:30:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$__$returns$_t_uint256_$",
                         "typeString": "function () view external returns (uint256)"
                       }
                     },
-                    "id": 336,
+                    "id": 686,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -530,43 +530,43 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "567:32:1",
+                    "src": "567:32:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 333,
-                  "id": 337,
+                  "functionReturnParameters": 683,
+                  "id": 687,
                   "nodeType": "Return",
-                  "src": "560:39:1"
+                  "src": "560:39:3"
                 }
               ]
             },
             "documentation": null,
-            "id": 339,
+            "id": 689,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "getLatestUpdateHeight",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 330,
+              "id": 680,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "520:2:1"
+              "src": "520:2:3"
             },
             "returnParameters": {
-              "id": 333,
+              "id": 683,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 332,
+                  "id": 682,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 339,
-                  "src": "544:7:1",
+                  "scope": 689,
+                  "src": "544:7:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -574,10 +574,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 331,
+                    "id": 681,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "544:7:1",
+                    "src": "544:7:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -587,43 +587,43 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "543:9:1"
+              "src": "543:9:3"
             },
-            "scope": 340,
-            "src": "490:115:1",
+            "scope": 690,
+            "src": "490:115:3",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 341,
-        "src": "186:422:1"
+        "scope": 691,
+        "src": "186:422:3"
       }
     ],
-    "src": "0:608:1"
+    "src": "0:608:3"
   },
   "legacyAST": {
-    "absolutePath": "/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/ECOPriceOracle.sol",
+    "absolutePath": "/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/ECOPriceOracle.sol",
     "exportedSymbols": {
       "AggregatorInterface": [
-        305
+        655
       ],
       "ECOPriceOracle": [
-        340
+        690
       ]
     },
-    "id": 341,
+    "id": 691,
     "nodeType": "SourceUnit",
     "nodes": [
       {
-        "id": 294,
+        "id": 644,
         "literals": [
           "solidity",
           "0.5",
           ".12"
         ],
         "nodeType": "PragmaDirective",
-        "src": "0:23:1"
+        "src": "0:23:3"
       },
       {
         "baseContracts": [],
@@ -631,9 +631,9 @@
         "contractKind": "interface",
         "documentation": null,
         "fullyImplemented": false,
-        "id": 305,
+        "id": 655,
         "linearizedBaseContracts": [
-          305
+          655
         ],
         "name": "AggregatorInterface",
         "nodeType": "ContractDefinition",
@@ -641,29 +641,29 @@
           {
             "body": null,
             "documentation": null,
-            "id": 299,
+            "id": 649,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "currentAnswer",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 295,
+              "id": 645,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "84:2:1"
+              "src": "84:2:3"
             },
             "returnParameters": {
-              "id": 298,
+              "id": 648,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 297,
+                  "id": 647,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 299,
-                  "src": "110:6:1",
+                  "scope": 649,
+                  "src": "110:6:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -671,10 +671,10 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 296,
+                    "id": 646,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "110:6:1",
+                    "src": "110:6:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
@@ -684,10 +684,10 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "109:8:1"
+              "src": "109:8:3"
             },
-            "scope": 305,
-            "src": "62:56:1",
+            "scope": 655,
+            "src": "62:56:3",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
@@ -695,29 +695,29 @@
           {
             "body": null,
             "documentation": null,
-            "id": 304,
+            "id": 654,
             "implemented": false,
             "kind": "function",
             "modifiers": [],
             "name": "updatedHeight",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 300,
+              "id": 650,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "144:2:1"
+              "src": "144:2:3"
             },
             "returnParameters": {
-              "id": 303,
+              "id": 653,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 302,
+                  "id": 652,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 304,
-                  "src": "170:7:1",
+                  "scope": 654,
+                  "src": "170:7:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -725,10 +725,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 301,
+                    "id": 651,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "170:7:1",
+                    "src": "170:7:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -738,17 +738,17 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "169:9:1"
+              "src": "169:9:3"
             },
-            "scope": 305,
-            "src": "122:57:1",
+            "scope": 655,
+            "src": "122:57:3",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "external"
           }
         ],
-        "scope": 341,
-        "src": "27:155:1"
+        "scope": 691,
+        "src": "27:155:3"
       },
       {
         "baseContracts": [],
@@ -756,35 +756,35 @@
         "contractKind": "contract",
         "documentation": null,
         "fullyImplemented": true,
-        "id": 340,
+        "id": 690,
         "linearizedBaseContracts": [
-          340
+          690
         ],
         "name": "ECOPriceOracle",
         "nodeType": "ContractDefinition",
         "nodes": [
           {
             "constant": false,
-            "id": 307,
+            "id": 657,
             "name": "referenceAddress",
             "nodeType": "VariableDeclaration",
-            "scope": 340,
-            "src": "215:45:1",
+            "scope": 690,
+            "src": "215:45:3",
             "stateVariable": true,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+              "typeIdentifier": "t_contract$_AggregatorInterface_$655",
               "typeString": "contract AggregatorInterface"
             },
             "typeName": {
               "contractScope": null,
-              "id": 306,
+              "id": 656,
               "name": "AggregatorInterface",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 305,
-              "src": "215:19:1",
+              "referencedDeclaration": 655,
+              "src": "215:19:3",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                 "typeString": "contract AggregatorInterface"
               }
             },
@@ -793,28 +793,28 @@
           },
           {
             "body": {
-              "id": 318,
+              "id": 668,
               "nodeType": "Block",
-              "src": "307:64:1",
+              "src": "307:64:3",
               "statements": [
                 {
                   "expression": {
                     "argumentTypes": null,
-                    "id": 316,
+                    "id": 666,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftHandSide": {
                       "argumentTypes": null,
-                      "id": 312,
+                      "id": 662,
                       "name": "referenceAddress",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 307,
-                      "src": "314:16:1",
+                      "referencedDeclaration": 657,
+                      "src": "314:16:3",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                        "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                         "typeString": "contract AggregatorInterface"
                       }
                     },
@@ -825,12 +825,12 @@
                       "arguments": [
                         {
                           "argumentTypes": null,
-                          "id": 314,
+                          "id": 664,
                           "name": "_aggregator",
                           "nodeType": "Identifier",
                           "overloadedDeclarations": [],
-                          "referencedDeclaration": 309,
-                          "src": "353:11:1",
+                          "referencedDeclaration": 659,
+                          "src": "353:11:3",
                           "typeDescriptions": {
                             "typeIdentifier": "t_address",
                             "typeString": "address"
@@ -844,18 +844,18 @@
                             "typeString": "address"
                           }
                         ],
-                        "id": 313,
+                        "id": 663,
                         "name": "AggregatorInterface",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 305,
-                        "src": "333:19:1",
+                        "referencedDeclaration": 655,
+                        "src": "333:19:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_AggregatorInterface_$305_$",
+                          "typeIdentifier": "t_type$_t_contract$_AggregatorInterface_$655_$",
                           "typeString": "type(contract AggregatorInterface)"
                         }
                       },
-                      "id": 315,
+                      "id": 665,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -863,42 +863,42 @@
                       "lValueRequested": false,
                       "names": [],
                       "nodeType": "FunctionCall",
-                      "src": "333:32:1",
+                      "src": "333:32:3",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                        "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                         "typeString": "contract AggregatorInterface"
                       }
                     },
-                    "src": "314:51:1",
+                    "src": "314:51:3",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                      "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                       "typeString": "contract AggregatorInterface"
                     }
                   },
-                  "id": 317,
+                  "id": 667,
                   "nodeType": "ExpressionStatement",
-                  "src": "314:51:1"
+                  "src": "314:51:3"
                 }
               ]
             },
             "documentation": null,
-            "id": 319,
+            "id": 669,
             "implemented": true,
             "kind": "constructor",
             "modifiers": [],
             "name": "",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 310,
+              "id": 660,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 309,
+                  "id": 659,
                   "name": "_aggregator",
                   "nodeType": "VariableDeclaration",
-                  "scope": 319,
-                  "src": "279:19:1",
+                  "scope": 669,
+                  "src": "279:19:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -906,10 +906,10 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 308,
+                    "id": 658,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
-                    "src": "279:7:1",
+                    "src": "279:7:3",
                     "stateMutability": "nonpayable",
                     "typeDescriptions": {
                       "typeIdentifier": "t_address",
@@ -920,25 +920,25 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "278:21:1"
+              "src": "278:21:3"
             },
             "returnParameters": {
-              "id": 311,
+              "id": 661,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "307:0:1"
+              "src": "307:0:3"
             },
-            "scope": 340,
-            "src": "267:104:1",
+            "scope": 690,
+            "src": "267:104:3",
             "stateMutability": "nonpayable",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 328,
+              "id": 678,
               "nodeType": "Block",
-              "src": "432:52:1",
+              "src": "432:52:3",
               "statements": [
                 {
                   "expression": {
@@ -948,32 +948,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 324,
+                        "id": 674,
                         "name": "referenceAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 307,
-                        "src": "446:16:1",
+                        "referencedDeclaration": 657,
+                        "src": "446:16:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                          "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                           "typeString": "contract AggregatorInterface"
                         }
                       },
-                      "id": 325,
+                      "id": 675,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "currentAnswer",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 299,
-                      "src": "446:30:1",
+                      "referencedDeclaration": 649,
+                      "src": "446:30:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$__$returns$_t_int256_$",
                         "typeString": "function () view external returns (int256)"
                       }
                     },
-                    "id": 326,
+                    "id": 676,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -981,43 +981,43 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "446:32:1",
+                    "src": "446:32:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
                     }
                   },
-                  "functionReturnParameters": 323,
-                  "id": 327,
+                  "functionReturnParameters": 673,
+                  "id": 677,
                   "nodeType": "Return",
-                  "src": "439:39:1"
+                  "src": "439:39:3"
                 }
               ]
             },
             "documentation": null,
-            "id": 329,
+            "id": 679,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "getLatestPrice",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 320,
+              "id": 670,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "400:2:1"
+              "src": "400:2:3"
             },
             "returnParameters": {
-              "id": 323,
+              "id": 673,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 322,
+                  "id": 672,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 329,
-                  "src": "424:6:1",
+                  "scope": 679,
+                  "src": "424:6:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1025,10 +1025,10 @@
                     "typeString": "int256"
                   },
                   "typeName": {
-                    "id": 321,
+                    "id": 671,
                     "name": "int256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "424:6:1",
+                    "src": "424:6:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_int256",
                       "typeString": "int256"
@@ -1038,19 +1038,19 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "423:8:1"
+              "src": "423:8:3"
             },
-            "scope": 340,
-            "src": "377:107:1",
+            "scope": 690,
+            "src": "377:107:3",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           },
           {
             "body": {
-              "id": 338,
+              "id": 688,
               "nodeType": "Block",
-              "src": "553:52:1",
+              "src": "553:52:3",
               "statements": [
                 {
                   "expression": {
@@ -1060,32 +1060,32 @@
                       "argumentTypes": [],
                       "expression": {
                         "argumentTypes": null,
-                        "id": 334,
+                        "id": 684,
                         "name": "referenceAddress",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 307,
-                        "src": "567:16:1",
+                        "referencedDeclaration": 657,
+                        "src": "567:16:3",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_contract$_AggregatorInterface_$305",
+                          "typeIdentifier": "t_contract$_AggregatorInterface_$655",
                           "typeString": "contract AggregatorInterface"
                         }
                       },
-                      "id": 335,
+                      "id": 685,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "updatedHeight",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 304,
-                      "src": "567:30:1",
+                      "referencedDeclaration": 654,
+                      "src": "567:30:3",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_external_view$__$returns$_t_uint256_$",
                         "typeString": "function () view external returns (uint256)"
                       }
                     },
-                    "id": 336,
+                    "id": 686,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1093,43 +1093,43 @@
                     "lValueRequested": false,
                     "names": [],
                     "nodeType": "FunctionCall",
-                    "src": "567:32:1",
+                    "src": "567:32:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     }
                   },
-                  "functionReturnParameters": 333,
-                  "id": 337,
+                  "functionReturnParameters": 683,
+                  "id": 687,
                   "nodeType": "Return",
-                  "src": "560:39:1"
+                  "src": "560:39:3"
                 }
               ]
             },
             "documentation": null,
-            "id": 339,
+            "id": 689,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "getLatestUpdateHeight",
             "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 330,
+              "id": 680,
               "nodeType": "ParameterList",
               "parameters": [],
-              "src": "520:2:1"
+              "src": "520:2:3"
             },
             "returnParameters": {
-              "id": 333,
+              "id": 683,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 332,
+                  "id": 682,
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 339,
-                  "src": "544:7:1",
+                  "scope": 689,
+                  "src": "544:7:3",
                   "stateVariable": false,
                   "storageLocation": "default",
                   "typeDescriptions": {
@@ -1137,10 +1137,10 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 331,
+                    "id": 681,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
-                    "src": "544:7:1",
+                    "src": "544:7:3",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
@@ -1150,20 +1150,20 @@
                   "visibility": "internal"
                 }
               ],
-              "src": "543:9:1"
+              "src": "543:9:3"
             },
-            "scope": 340,
-            "src": "490:115:1",
+            "scope": 690,
+            "src": "490:115:3",
             "stateMutability": "view",
             "superFunction": null,
             "visibility": "public"
           }
         ],
-        "scope": 341,
-        "src": "186:422:1"
+        "scope": 691,
+        "src": "186:422:3"
       }
     ],
-    "src": "0:608:1"
+    "src": "0:608:3"
   },
   "compiler": {
     "name": "solc",
@@ -1171,7 +1171,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-13T05:21:05.156Z",
+  "updatedAt": "2019-11-15T21:37:21.724Z",
   "devdoc": {
     "methods": {}
   },
