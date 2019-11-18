@@ -9,6 +9,17 @@ contract Omn():
                 _oat_address: address,
                 ): modifying
 
+contract Doz():
+    def setup(  strike: uint256,
+                underlying: uint256,
+                maturity: timestamp,
+                _slate_address: address,
+                _stash_address: address,
+                _wax_address: address,
+                _dai_address: address,
+                _oat_address: address,
+                ): modifying
+
 
 Newomn: event({
                 omn: indexed(address), 
@@ -21,6 +32,7 @@ Error: event({message: string[50]})
 Payment: event({amount: wei_value, _from: indexed(address)})
 
 omnTemplate: public(address)
+dozTemplate: public(address)
 user_to_omn: map(address, address)
 omn_to_user: map(address, address)
 
@@ -45,6 +57,7 @@ def __init__(   _omnTemplate: address,
                 _slate40_address: address, # strike asset storage
                 _stash40_address: address, # underlying asset storage
                 _wax_address: address, 
+                _dozTemplate: address,
                 ):
     assert self.omnTemplate == ZERO_ADDRESS
     assert _omnTemplate != ZERO_ADDRESS
@@ -54,6 +67,7 @@ def __init__(   _omnTemplate: address,
     self.slate40_address = _slate40_address
     self.stash40_address = _stash40_address
     self.wax_address = _wax_address
+    self.dozTemplate = _dozTemplate
     
 @public
 @payable
@@ -84,6 +98,34 @@ def createOmn(  strike: uint256, # Omn's strike is denominated in Dai, Example: 
                     )
     return omn
 
+@public
+@payable
+def createDoz(  strike: uint256, # doz's strike is denominated in Dai, Example: 10 dai for 1 Oat.
+                underlying: uint256, # doz's underlying is Oat
+                maturity: timestamp,
+                ) -> address:
+    assert msg.sender != ZERO_ADDRESS
+    assert self.dozTemplate != ZERO_ADDRESS
+
+    doz: address = create_forwarder_to(self.dozTemplate)
+    _doz: address = doz
+    Doz(doz).setup( strike,
+                    underlying,
+                    maturity,
+                    self.slate40_address,
+                    self.stash40_address,
+                    self.wax_address,
+                    self.dai_address,
+                    self.oat_address,
+                    )
+    self.user_to_omn[msg.sender] = doz
+    self.omn_to_user[doz] = msg.sender
+    log.Newomn(     doz,
+                    strike,
+                    underlying,
+                    maturity,
+                    )
+    return doz
 
 @public
 @constant

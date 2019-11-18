@@ -7,6 +7,8 @@ const Slate40 = artifacts.require('Slate40')
 const Factory = artifacts.require('Factory')
 const Omn = artifacts.require('Omn')
 const Oat = artifacts.require('Oat')
+const Doz = artifacts.require('Doz')
+const Odex = artifacts.require('Odex')
 
 var _buyer = '0xE64aF0A0D319fb613983BB1D00A2baFfEAF1aBE9'
 var admin = '0x9995d8026d970db26C8de1553957f670C2C5707b'
@@ -15,6 +17,7 @@ var ropsten_eth = '0x0Be00A19538Fac4BE07AC360C69378B870c412BF'
 var wei = 10**18
 var writer = '0xd06f1D77E53757ECDADdC5FadB908CDb3416AB3f'
 var purchaser = '0x3C8d8a68F9Cd1a9c41dE5eC8c5c14cfE73768562'
+
 
 module.exports = async (deployer, accounts) => {
   // Strike price denominated in Dai tokens -> Slate
@@ -27,6 +30,9 @@ module.exports = async (deployer, accounts) => {
   await deployer.deploy(Omn)
   let omn_template = await Omn.deployed()
 
+  await deployer.deploy(Doz)
+  let doz_template = await Doz.deployed()
+
   // Stash is the underlying asset, Oat
   await deployer.deploy(Stash40, oat.address)
   let stash40 = await Stash40.deployed()
@@ -37,7 +43,10 @@ module.exports = async (deployer, accounts) => {
   await deployer.deploy(Wax)
   let wax = await Wax.deployed()
 
-  await deployer.deploy(Factory, omn_template.address, dai.address, oat.address, slate40.address, stash40.address, wax.address)
+  await deployer.deploy(Odex)
+  let odex = await Odex.deployed()
+
+  await deployer.deploy(Factory, omn_template.address, dai.address, oat.address, slate40.address, stash40.address, wax.address, doz_template.address)
   
   
 };

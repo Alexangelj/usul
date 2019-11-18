@@ -1,5 +1,6 @@
-import TrsrToken from './artifacts/TrsrToken.json'
-import TrsrTokenCrowdsale from './artifacts/TrsrTokenCrowdsale.json'
+import Factory from './artifacts/Factory.json'
+import Doz from './artifacts/DOZ.json'
+
 
 const drizzleOptions = {
     web3: {
@@ -10,11 +11,12 @@ const drizzleOptions = {
         },
       },
     contracts: [
-        TrsrToken,
-        TrsrTokenCrowdsale
+        Factory,
+        Doz
     ],
     events: {
-        TrsrToken: ["Transfer"]
+        Factory:["Newomn"],
+        Doz: ["Transfer"]
     },
     polls: {
         // set polling interval to 30secs so we don't get buried in poll events

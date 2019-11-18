@@ -5,9 +5,9 @@ const Stash40 = artifacts.require('Stash40')
 const Wax = artifacts.require('Wax')
 const Dai = artifacts.require('Dai')
 const Oat = artifacts.require('Oat')
-const Omn = artifacts.require('Omn')
+const Doz = artifacts.require('Doz')
 
-contract('omn', accounts => {
+contract('doz', accounts => {
 
     // ** Description **
     // Purchaser will have dai to purchase the underlying
@@ -46,7 +46,7 @@ contract('omn', accounts => {
         }
     }
 
-    async function tokenBalances(omn_address, oat, dai, stash40, slate40, _omn) {
+    async function tokenBalances(doz_address, oat, dai, stash40, slate40, _doz) {
         console.log(' * Ledger Balances * ')
         // Balances of Stash/Slate
         let stash_bal = (await oat.balanceOf(stash40.address)).toString()
@@ -55,32 +55,32 @@ contract('omn', accounts => {
         console.log('Slate Dai: ', slate_dai)
 
         // oat balances of users
-        let omn_oat = (await oat.balanceOf(omn_address)).toString()
+        let doz_oat = (await oat.balanceOf(doz_address)).toString()
         let writer_oat = (await oat.balanceOf(writer)).toString()
         let purchaser_oat = (await oat.balanceOf(purchaser)).toString()
-        console.log('Omn oat: ', omn_oat)
+        console.log('doz oat: ', doz_oat)
         console.log('Writer oat: ', writer_oat)
         console.log('Purchaser oat: ', purchaser_oat)
 
         // dai balances of users
-        let omn_dai = (await dai.balanceOf(omn_address)).toString()
+        let doz_dai = (await dai.balanceOf(doz_address)).toString()
         let writer_dai = (await dai.balanceOf(writer)).toString()
         let purchaser_dai = (await dai.balanceOf(purchaser)).toString()
-        console.log('Omn dai: ', omn_dai)
+        console.log('doz dai: ', doz_dai)
         console.log('Writer dai: ', writer_dai)
         console.log('Purchaser dai: ', purchaser_dai)
 
-        // OMN token Balances
-        let omn__omn = (await _omn.balanceOf(_omn.address)).toString()
-        let writer__omn = (await _omn.balanceOf(writer)).toString()
-        let purchaser__omn = (await _omn.balanceOf(purchaser)).toString()
-        console.log('Omn _omn: ', omn__omn)
-        console.log('Writer _omn: ', writer__omn)
-        console.log('Purchaser _omn: ', purchaser__omn)
+        // doz token Balances
+        let doz__doz = (await _doz.balanceOf(_doz.address)).toString()
+        let writer__doz = (await _doz.balanceOf(writer)).toString()
+        let purchaser__doz = (await _doz.balanceOf(purchaser)).toString()
+        console.log('doz _doz: ', doz__doz)
+        console.log('Writer _doz: ', writer__doz)
+        console.log('Purchaser _doz: ', purchaser__doz)
 
-        // OMN Total Supply
-        let total = (await _omn.totalSupply()).toString()
-        console.log('Total OMN Supply: ', total)
+        // doz Total Supply
+        let total = (await _doz.totalSupply()).toString()
+        console.log('Total doz Supply: ', total)
     }
 
 
@@ -96,27 +96,27 @@ contract('omn', accounts => {
         console.log('Slate40: ', slate40.address)
     });
 
-    it('Creates omn Contract', async () => {
+    it('Creates doz Contract', async () => {
         console.log('\n')
         let slate40 = await Slate40.deployed()
         let stash40 = await Stash40.deployed()
-        let omn_fac = await Factory.deployed()
-        let omn = await omn_fac.createOmn(  strike, 
+        let doz_fac = await Factory.deployed()
+        let doz = await doz_fac.createDoz(  strike, 
                                             underlying, 
                                             maturity,
                                             )
         
         // Get gas usage
-        let omn_gas = await omn.receipt.gasUsed
-        console.log('omn Gas Internal: ', omn_gas)
-        await getGas(omn, 'omn internal')
+        let doz_gas = await doz.receipt.gasUsed
+        console.log('doz Gas Internal: ', doz_gas)
+        await getGas(doz, 'doz internal')
 
         let dai = await Dai.deployed()
         let oat = await Oat.deployed()
-        let omn_address = await omn_fac.getOmn(writer)
-        let _omn = await Omn.at(omn_address)
-        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
-        console.log(' *** End omn Create *** ')
+        let doz_address = await doz_fac.getOmn(writer)
+        let _doz = await Doz.at(doz_address)
+        await tokenBalances(doz_address, oat, dai, stash40, slate40, _doz)
+        console.log(' *** End doz Create *** ')
     });
 
     it('Write Function Test', async () => {
@@ -131,27 +131,27 @@ contract('omn', accounts => {
         let dai = await Dai.deployed()
         let oat = await Oat.deployed()
         // Options contracts
-        let omn_fac = await Factory.deployed()
-        let omn_address = await omn_fac.getOmn(writer)
-        let _omn = await Omn.at(omn_address)
+        let doz_fac = await Factory.deployed()
+        let doz_address = await doz_fac.getOmn(writer)
+        let _doz = await Doz.at(doz_address)
         // Auxillary storage
         let slate40 = await Slate40.deployed()
         let stash40 = await Stash40.deployed()
 
         // Get Oat Balance of Stash40
-        //let dai_omn = await dai.transfer(omn_address, '100000000000000000000')
+        //let dai_doz = await dai.transfer(doz_address, '100000000000000000000')
         let stash_bal_prior = (await oat.balanceOf(stash40.address)).toString()
         console.log('Stash40 Before Write: ', stash_bal_prior)
 
         // Write function
         //console.log('underlying Deposited: ', underlying)
-        //let approve = await oat.approve(omn_address, underlying)
-        //let write = await _omn.write(underlying, {from: writer})
+        //let approve = await oat.approve(doz_address, underlying)
+        //let write = await _doz.write(underlying, {from: writer})
 
         var more = (12*10**18).toFixed()
         console.log('underlying Deposited: ', more)
-        let approve = await oat.approve(omn_address, more)
-        let write = await _omn.write(more, {from: writer})
+        let approve = await oat.approve(doz_address, more)
+        let write = await _doz.write(more, {from: writer})
         
         // Get gas usage
         let write_gas = await write.receipt.gasUsed
@@ -159,30 +159,30 @@ contract('omn', accounts => {
         await getGas(write, 'write internal')
 
         // Confirm writer is writer of contract
-        let wrote = await stash40.wrote(omn_address)
-        console.log('Wrote: ', wrote)
-        assert.equal(wrote, writer, 'Should be writer writing')
+        let wrote_amount = (await _doz.writer_claim(writer)).toString()
+        console.log('Wrote: ', wrote_amount)
+        assert.equal(wrote_amount, more, 'Should be writer writing')
 
         // Confirm funds deposited, can be removed because this is for cash settled
         //let fund = await stash40.fund(writer)
         //console.log('Funded Amount: ', (fund).toString())
         //assert.strictEqual((fund).toString(), underlying.toString(), 'Writer should have funded Stash40')
 
-        let fund = await stash40.fund(writer)
-        console.log('Funded Amount: ', (fund).toString())
-        assert.strictEqual((fund).toString(), more.toString(), 'Writer should have funded Stash40')
+        //let fund = await stash40.fund(writer)
+        //console.log('Funded Amount: ', (fund).toString())
+        //assert.strictEqual((fund).toString(), more.toString(), 'Writer should have funded Stash40')
 
         // Get Balances of Accts
         console.log('Should have transferred underlying: ' + underlying.toString() + ' to Stash40')
-        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
+        await tokenBalances(doz_address, oat, dai, stash40, slate40, _doz)
 
         // Sell Function
-        let writer_bal = await _omn.balanceOf(writer)
-        await oat.approve(omn_address, writer_bal)
-        let sell = await _omn.sell(writer_bal, premium, {from: writer}) // Sell the option token for premium
+        let writer_bal = await _doz.balanceOf(writer)
+        await oat.approve(doz_address, writer_bal)
+        //let sell = await _doz.sell(writer_bal, premium, {from: writer}) // Sell the option token for premium
 
         await checkBalances()
-        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
+        await tokenBalances(doz_address, oat, dai, stash40, slate40, _doz)
     });
 
     it('Purchase Function Test', async () => {
@@ -190,27 +190,30 @@ contract('omn', accounts => {
         // Get instances
         let dai = await Dai.deployed()
         let oat = await Oat.deployed()
-        let omn_fac = await Factory.deployed()
-        let omn_address = await omn_fac.getOmn(writer)
-        let _omn = await Omn.at(omn_address)
+        let doz_fac = await Factory.deployed()
+        let doz_address = await doz_fac.getOmn(writer)
+        let _doz = await Doz.at(doz_address)
         let slate40 = await Slate40.deployed()
         let stash40 = await Stash40.deployed()
         
         // Get Ether Bal of Writer Before
         console.log('Writer Ether Bal: ', (await web3.eth.getBalance(writer))/decimals)
 
+
+        // Instead of purchase function we can just directly sell the tokens to the buyer
+        let sale = _doz.transfer(purchaser, amount)
         // Purchase function, should pay premium
-        let purchase = await _omn.purchase(amount, {from: purchaser, value: premium*3 })
-        
-        // Get gas usage
-        let purchase_gas = await purchase.receipt.gasUsed
-        console.log('purchase Gas Internal: ', purchase_gas)
-        await getGas(purchase, 'purchase internal')
+        //let purchase = await _doz.purchase(amount, {from: purchaser, value: premium*3 })
+        //
+        //// Get gas usage
+        //let purchase_gas = await purchase.receipt.gasUsed
+        //console.log('purchase Gas Internal: ', purchase_gas)
+        //await getGas(purchase, 'purchase internal')
 
         // Confirms purchase
-        let bought = await slate40.bought(omn_address)
-        console.log('Bought: ', bought)
-        assert.equal(bought, purchaser, 'Should be purchaser purchasing')
+        //let bought = await slate40.bought(doz_address)
+        //console.log('Bought: ', bought)
+        //assert.equal(bought, purchaser, 'Should be purchaser purchasing')
 
         // Confirms premium was paid
         //let prm = await slate40.premium(purchaser)
@@ -221,42 +224,42 @@ contract('omn', accounts => {
         console.log('Should have transferred premium: ' + premium.toString() + ' to Writer')
         console.log('Writer Ether Bal: ', (await web3.eth.getBalance(writer))/decimals)
         await checkBalances()
-        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
+        await tokenBalances(doz_address, oat, dai, stash40, slate40, _doz)
     });
 
-    it('omn Maturity', async () => {
+    it('doz Maturity', async () => {
         console.log('\n')
         let dai = await Dai.deployed()
-        let omn_fac = await Factory.deployed()
-        let omn_address = await omn_fac.getOmn(writer)
-        let _omn = await Omn.at(omn_address)
+        let doz_fac = await Factory.deployed()
+        let doz_address = await doz_fac.getOmn(writer)
+        let _doz = await Doz.at(doz_address)
         let slate40 = await Slate40.deployed()
         let stash40 = await Stash40.deployed()
         let wax = await Wax.deployed()
         
-        let mature = await _omn.isMature()
+        let mature = await _doz.isMature()
         
 
-        let timestamp = (await _omn.maturity())
+        let timestamp = (await _doz.maturity())
         console.log('Expiration timestamp: ', (timestamp.toNumber()))
     });
     
-    it('omn close', async () => {
+    it('doz close', async () => {
         // Get contract instances
         console.log('\n')
         let oat = await Oat.deployed()
         let dai = await Dai.deployed()
-        let omn_fac = await Factory.deployed()
-        let omn_address = await omn_fac.getOmn(writer)
-        let _omn = await Omn.at(omn_address)
+        let doz_fac = await Factory.deployed()
+        let doz_address = await doz_fac.getOmn(writer)
+        let _doz = await Doz.at(doz_address)
         let slate40 = await Slate40.deployed()
         let stash40 = await Stash40.deployed()
 
         let amount_to_close = 2
         // Buy tokens back to close
-        let buy_to_close = await _omn.purchase((amount_to_close*decimals).toFixed(), {from: writer, value: premium*2})
+        //let buy_to_close = await _doz.purchase((amount_to_close*decimals).toFixed(), {from: writer, value: premium*2})
         // close comes from buyer, where they pay for the underlying at the strike price (in wei)
-        let close = await _omn.close(amount_to_close, {from: writer})
+        let close = await _doz.close((amount_to_close*decimals).toFixed(), {from: writer})
         
         // Get gas usage
         let close_gas = await close.receipt.gasUsed
@@ -265,25 +268,25 @@ contract('omn', accounts => {
         
         // Get balances of users
         await checkBalances()
-        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
+        await tokenBalances(doz_address, oat, dai, stash40, slate40, _doz)
         console.log(gas)
     });
     
-    it('omn Exercise', async () => {
+    it('doz Exercise', async () => {
         // Get contract instances
         console.log('\n')
         let oat = await Oat.deployed()
         let dai = await Dai.deployed()
-        let omn_fac = await Factory.deployed()
-        let omn_address = await omn_fac.getOmn(writer)
-        let _omn = await Omn.at(omn_address)
+        let doz_fac = await Factory.deployed()
+        let doz_address = await doz_fac.getOmn(writer)
+        let _doz = await Doz.at(doz_address)
         let slate40 = await Slate40.deployed()
         let stash40 = await Stash40.deployed()
 
         // Exercise comes from buyer, where they pay for the underlying at the strike price (in wei)
         let amount_to_exercise = 2
-        let approve = await dai.approve(omn_address, (strike * 1 * amount_to_exercise).toString(), {from: purchaser})
-        let exercise = await _omn.exercise(amount_to_exercise, {from: purchaser})
+        let approve = await dai.approve(doz_address, (strike * 1 * amount_to_exercise).toString(), {from: purchaser})
+        let exercise = await _doz.exercise(amount_to_exercise, {from: purchaser})
         
         // Get gas usage
         let exercise_gas = await exercise.receipt.gasUsed
@@ -292,7 +295,7 @@ contract('omn', accounts => {
         
         // Get balances of users
         await checkBalances()
-        await tokenBalances(omn_address, oat, dai, stash40, slate40, _omn)
+        await tokenBalances(doz_address, oat, dai, stash40, slate40, _doz)
         console.log(gas)
     });
 

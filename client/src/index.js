@@ -5,14 +5,9 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
 
-import NavBarTop from './NavBarTop'
-import Footer from './Footer'
-
 ReactDOM.render(
     <>
-        <NavBarTop />
         <App />
-        <Footer />
     </>,
     document.getElementById('root')
 );

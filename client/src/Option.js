@@ -3,21 +3,31 @@ import { newContextComponents } from "drizzle-react-components";
 
 const { AccountData, ContractData, ContractForm } = newContextComponents;
 
-export default class MyDrizzleApp extends React.Component {
+export default class Option extends React.Component {
     state = { dataKey: null };
   
     componentDidMount() {
       const { drizzle } = this.props;
-      const contract = drizzle.contracts.TrsrToken;
+      const contract = drizzle.contracts.Factory;
   
       // get and save the key for the variable we are interested in
       const dataKey = contract.methods["name"].cacheCall();
       this.setState({ dataKey });
+
+      var contractConfig = {
+        contractName: "0x066408929e8d5Ed161e9cAA1876b60e1fBB5DB75",
+        web3Contract: new web3.eth.Contract(/* ... */)
+      }
+      var events = ['Mint']
+      
+      // Or using the Drizzle context object
+      this.context.drizzle.addContract(contractConfig, events) 
     }
-  
+
+             
     render() {
-      const { TrsrToken } = this.props.drizzleState.contracts;
-      const name = TrsrToken.name[this.state.dataKey];
+      const { Factory } = this.props.drizzleState.contracts;
+      const name = Factory.name[this.state.dataKey];
       console.log('name is', name)
 
       let { drizzle } = this.props;
@@ -28,7 +38,7 @@ export default class MyDrizzleApp extends React.Component {
             <ContractForm
               drizzle={drizzle}
               drizzleState={drizzleState}
-              contract="TrsrToken"
+              contract="Factory"
               method="transfer"
               labels={["To Address", "Amount to Send"]}
             />
