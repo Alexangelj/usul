@@ -21,8 +21,12 @@ contract('doz', accounts => {
     var token_symbol = 'DAI'
     var purchase_amount = (1*10**18).toFixed()
     var sell_amount = (1*10**18).toFixed()
-    
+    var gas = []
 
+    async function getGas(func, name) {
+        let spent = await func.receipt.gasUsed
+        gas.push([name + ' gas: ', spent])
+    }
 
     async function getBalances(dai, odex)  {
         let writer_eth = ((await web3.eth.getBalance(writer))/decimals).toFixed()
@@ -166,6 +170,11 @@ contract('doz', accounts => {
         let purchase3 = await odex.buyToken(token_symbol, (4*10**18).toFixed(), purchase_amount)
         // Sixth, purchaser will put in a sell order for 1 token at 1 ether
         let sell = await odex.sellToken(token_symbol, (10**18).toFixed(), sell_amount, {from: purchaser})
+        // Get gas usage
+        let sell_gas = await sell.receipt.gasUsed
+        console.log('sell Gas Internal: ', sell_gas)
+        await getGas(sell, 'sell internal')
+        
         await eventNames(purchase)
         await getEvents(purchase)
         await eventNames(sell2)
