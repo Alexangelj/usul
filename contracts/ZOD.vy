@@ -1,13 +1,12 @@
-# @title A Right to Call - Physically Settled ERC 20 Token
+# @title A Right to Put - Physically Settled ERC 20 Token
 # 
-# @notice Implementation of a Tokenized American Call Option on the Ethereum Network - Solo contract
+# @notice Implementation of a Tokenized American Put Option on the Ethereum Network - Solo contract
 # 
 # @author Alexander Angel
 # 
 # @dev Uses a factory to initialize and deploy option contracts
 #
 # @version 0.1.0b14
-
 
 from vyper.interfaces import ERC20
 implements: ERC20
@@ -16,7 +15,7 @@ implements: ERC20
 # Structs
 struct Account:
     user: address
-    underlying_amount: uint256
+    strike_amount: uint256
 
 
 struct LockBook:
@@ -31,7 +30,7 @@ contract Factory():
     def getContract(user_addr: address) -> address:constant
     def getUser(omn: address) -> address:constant
 
- 
+
 contract StrikeAsset(): # Strike price denominated in strike asset
     def totalSupply() -> uint256:constant
     def balanceOf(_owner: address) -> uint256:constant
@@ -142,10 +141,10 @@ def setup(  _strike: uint256,
     self.balanceOf[tx.origin] = 0
     self.total_supply = 0
     self.minter = tx.origin
-    log.Transfer(ZERO_ADDRESS, tx.origin, 0)
 
     # Set first book account to admin
     self.lockBook.locks[0].user = tx.origin
+    log.Transfer(ZERO_ADDRESS, tx.origin, 0)
 
 
 # EIP-20 Functions - Source: https://github.com/ethereum/vyper/blob/master/examples/tokens/ERC20.vy
@@ -270,6 +269,7 @@ def burnFrom(_to: address, _value: uint256):
     self._burn(_to, _value)
 
 
+# Need to fix, constant function? Or modifying function? How do I liquidate mature contracts?
 @public
 def isMature() -> bool:
     """
@@ -288,20 +288,20 @@ def write(underwritten_amount: uint256) -> bool:
     lock_key: uint256 = 0 # Memory lock key number
     if(self.user_to_key[msg.sender] > 0): # if user has a key, use their key
         lock_key = self.user_to_key[msg.sender]
-        self.lockBook.locks[lock_key].underlying_amount += underwritten_amount
+        self.lockBook.locks[lock_key].strike_amount += underwritten_amount
     else: # Else, increment key length, set a new Account
         lock_key = self.lockBook.lock_length + 1 # temporary lock key is length + 1
         self.lockBook.lock_length += 1 # Increment the lock key length
         self.user_to_key[msg.sender] = lock_key # Set user address to lock key
-        self.lockBook.locks[lock_key] = Account({user: msg.sender, underlying_amount: underwritten_amount})
+        self.lockBook.locks[lock_key] = Account({user: msg.sender, strike_amount: underwritten_amount})
     
-    if(self.lockBook.locks[lock_key].underlying_amount > self.lockBook.highest_lock): # If underlying amount is highest, set
-        self.lockBook.highest_lock = self.lockBook.locks[lock_key].underlying_amount
+    if(self.lockBook.locks[lock_key].strike_amount > self.lockBook.highest_lock): # If strike amount is highest, set
+        self.lockBook.highest_lock = self.lockBook.locks[lock_key].strike_amount
         self.highest_key = lock_key
     
-    token_amount: uint256 = underwritten_amount / self.underlying * self.decimals # Example: self.underlying = 2, so if I underwrite 12, I get 12 / 2 = 6 option tokens
-    self.underlyingAsset.transferFrom(msg.sender, self, underwritten_amount) # Store underlying in contract
-    self.mint(msg.sender, token_amount) # Mint amount of tokens equal to the underlying deposited / underlying asset amount
+    token_amount: uint256 = underwritten_amount / self.strike * self.decimals # Example: self.strike = 2, so if I underwrite 12, I get 12 / 2 = 6 option tokens
+    self.strikeAsset.transferFrom(msg.sender, self, underwritten_amount) # Store strike in contract
+    self.mint(msg.sender, token_amount) # Mint amount of tokens equal to the strike deposited / strike asset amount
     log.Write(msg.sender, token_amount, lock_key)
     return True
 
@@ -313,11 +313,11 @@ def close(option_amount: uint256) -> bool:
     @notice - Writer can burn Omn to have their underwritten assets returned. 
     """
     key: uint256 = self.user_to_key[msg.sender]
-    underlying_redeem: uint256 = self.underlying * option_amount / self.decimals
-    assert self.lockBook.locks[key].underlying_amount >= underlying_redeem # Make sure user redeeming has underwritten
+    strike_redeem: uint256 = self.strike * option_amount / self.decimals
+    assert self.lockBook.locks[key].strike_amount >= strike_redeem # Make sure user redeeming has underwritten
     assert self.balanceOf[msg.sender] >= option_amount # Check to see user has the redeeming option tokens
-    self.lockBook.locks[key].underlying_amount -= underlying_redeem 
-    self.underlyingAsset.transfer(msg.sender, underlying_redeem) # Underlying asset sent to Purchaser
+    self.lockBook.locks[key].strike_amount -= strike_redeem 
+    self.strikeAsset.transfer(msg.sender, strike_redeem) # strike asset sent to Purchaser
     self._burn(msg.sender, option_amount) # Burn the doz tokens that were closed
     log.Close(self.lockBook.locks[key].user, option_amount, key)
     return True
@@ -327,51 +327,51 @@ def close(option_amount: uint256) -> bool:
 @payable
 def exercise(option_amount: uint256) -> bool:
     """
-    @notice - Buyer sends strike asset in exchange for underlying asset. 
-    @param - Amount of options being exercised, integers where 1*10**18 = 1 option token, a coefficient
+    @notice - Buyer sends underlying asset in exchange for strike asset. 
+    @param - Amount of options to exercise with 18 decimal places, 1*10**18 = 1 option
     """
-    assert self.lockBook.locks[self.user_to_key[msg.sender]].underlying_amount == 0 # Exercising party is not underwriter
+    assert self.lockBook.locks[self.user_to_key[msg.sender]].strike_amount == 0 # Exercising party is not underwriter
     assert self.balanceOf[msg.sender] >= option_amount
     strike_payment: uint256 = self.strike * option_amount / self.decimals
     underlying_payment: uint256 = self.underlying * option_amount / self.decimals
-    self.strikeAsset.transferFrom(msg.sender, self, strike_payment) # Deposit strike asset (10 per option)
-    self.underlyingAsset.transfer(msg.sender, underlying_payment) # Withdraw underlying asset (2 per option) from contract
+    self.underlyingAsset.transferFrom(msg.sender, self, underlying_payment) # Withdraw underlying asset (2 per option) from contract
+    self.strikeAsset.transfer(msg.sender, strike_payment) # Deposit strike asset (10 per option)
     assigned_user: address = ZERO_ADDRESS
     lock_key: uint256 = 0
     for x in range(1, MAX_KEY_LENGTH + 1): # Loops over underwriters and depletes underlying_payment outlays
         lock_key = convert(x, uint256)
-        if(self.lockBook.highest_lock > underlying_payment): # If the highest underwritten amount > payment, assign that user
+        if(self.lockBook.highest_lock > strike_payment): # If the highest underwritten amount > payment, assign that user
             assigned_user = self.lockBook.locks[self.highest_key].user
             lock_key = self.highest_key
             break
-        if(self.lockBook.locks[lock_key].underlying_amount > underlying_payment): # If the looped user has underwritten > payment, assign that user
+        if(self.lockBook.locks[lock_key].strike_amount > strike_payment): # If the looped user has underwritten > payment, assign that user
             assigned_user = self.lockBook.locks[lock_key].user
             break
     if(assigned_user == ZERO_ADDRESS): # If no assigned user, need to assign multiple users
         for i in range(1, MAX_KEY_LENGTH + 1):
             lock_key = convert(i, uint256)
             user: address = self.lockBook.locks[lock_key].user # Get user address of lock_key
-            underlying_amount: uint256 = self.lockBook.locks[lock_key].underlying_amount # Get underlying amount of user
-            options_exercised: uint256 = underlying_amount / self.underlying * self.decimals # Get max amount of options that can be exercised
-            if(underlying_amount > underlying_payment): # If the looped user has underwritten > underlying left, assign that user
+            strike_amount: uint256 = self.lockBook.locks[lock_key].strike_amount # Get underlying amount of user
+            options_exercised: uint256 = strike_amount / self.strike * self.decimals # Get max amount of options that can be exercised
+            if(strike_amount > strike_payment): # If the looped user has underwritten > underlying left, assign that user
                 assigned_user = self.lockBook.locks[lock_key].user
                 break
             # We need to exercise options using multiple underwritten balances
-            self.strikeAsset.transfer(user, self.strike * options_exercised / self.decimals) # Transfer proportional strike payment to entire balance of assigned user
-            underlying_payment -= underlying_amount # Update underlying payment leftover   
+            self.underlyingAsset.transfer(user, self.underlying * options_exercised / self.decimals) # Transfer proportional strike payment to entire balance of assigned user
+            strike_payment -= strike_amount # Update underlying payment leftover   
             log.Exercise(msg.sender, options_exercised, lock_key)
             self._burn(msg.sender, options_exercised) # Burn amount of tokens proportional to entire underlying balance of user
-            self.lockBook.locks[lock_key].underlying_amount -= underlying_amount # Update user's underlying amount
+            self.lockBook.locks[lock_key].strike_amount -= strike_amount # Update user's underlying amount
         # We have a user who can pay entire leftover exercised amount
-        self.strikeAsset.transfer(assigned_user, self.strike / self.underlying * underlying_payment)
-        options_exercised: uint256 = underlying_payment / self.underlying * self.decimals
+        self.underlyingAsset.transfer(assigned_user, self.underlying / self.strike * strike_payment)
+        options_exercised: uint256 = strike_payment / self.strike * self.decimals
         log.Exercise(msg.sender, options_exercised, lock_key)
         self._burn(msg.sender, options_exercised)
-        self.lockBook.locks[lock_key].underlying_amount -= underlying_payment # Assigned user exercises the rest of the underlying payment
+        self.lockBook.locks[lock_key].strike_amount -= strike_payment # Assigned user exercises the rest of the underlying payment
         return True
     # We have a user who can pay entire exercised amount
-    self.strikeAsset.transfer(assigned_user, strike_payment)
-    self.lockBook.locks[lock_key].underlying_amount -= underlying_payment # Assigned user pays the exercised underlying amount
+    self.underlyingAsset.transfer(assigned_user, underlying_payment)
+    self.lockBook.locks[lock_key].strike_amount -= strike_payment # Assigned user pays the exercised underlying amount
     log.Exercise(msg.sender, option_amount, lock_key)
     self._burn(msg.sender, option_amount)
     return True
@@ -386,11 +386,11 @@ def expire() -> bool: # Anyone can call to close all remaining contract tokens
         if(self.lockBook.locks[convert(x, uint256)].user == ZERO_ADDRESS):
             break
         key = convert(x, uint256)
-        underlying_amt: uint256 = self.lockBook.locks[key].underlying_amount
+        strike_amt: uint256 = self.lockBook.locks[key].strike_amount
         user: address = self.lockBook.locks[key].user
-        if(underlying_amt > 0):
-            self.underlyingAsset.transfer(user, underlying_amt) # underlying asset sent to writer
-        self.lockBook.locks[key].underlying_amount = 0
-        log.Close(user, underlying_amt / self.underlying * self.decimals, key)
+        if(strike_amt > 0):
+            self.strikeAsset.transfer(user, strike_amt) # strike asset sent to writer
+        self.lockBook.locks[key].strike_amount = 0
+        log.Close(user, strike_amt / self.strike * self.decimals, key)
     self.total_supply = 0
     return True

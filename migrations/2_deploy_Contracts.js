@@ -8,6 +8,7 @@ const Factory = artifacts.require('Factory')
 const Omn = artifacts.require('Omn')
 const Oat = artifacts.require('Oat')
 const Doz = artifacts.require('Doz')
+const Zod = artifacts.require('Zod')
 const Odex = artifacts.require('Odex')
 
 var _buyer = '0xE64aF0A0D319fb613983BB1D00A2baFfEAF1aBE9'
@@ -27,18 +28,11 @@ module.exports = async (deployer, accounts) => {
   await deployer.deploy(Oat, '1000000000000000000000000', 'Oat', 18, 'OAT')
   let oat = await Oat.deployed()
 
-  await deployer.deploy(Omn)
-  let omn_template = await Omn.deployed()
+  await deployer.deploy(Zod)
+  let zod_template = await Zod.deployed()
 
   await deployer.deploy(Doz)
   let doz_template = await Doz.deployed()
-
-  // Stash is the underlying asset, Oat
-  await deployer.deploy(Stash40, oat.address)
-  let stash40 = await Stash40.deployed()
-  // Slate is strike asset, Dai
-  await deployer.deploy(Slate40, stash40.address, omn_template.address, dai.address)
-  let slate40 = await Slate40.deployed()
  
   await deployer.deploy(Wax)
   let wax = await Wax.deployed()
@@ -46,7 +40,7 @@ module.exports = async (deployer, accounts) => {
   await deployer.deploy(Odex)
   let odex = await Odex.deployed()
 
-  await deployer.deploy(Factory, omn_template.address, dai.address, oat.address, slate40.address, stash40.address, wax.address, doz_template.address)
+  await deployer.deploy(Factory, zod_template.address, doz_template.address, dai.address, oat.address, wax.address)
   
   
 };
