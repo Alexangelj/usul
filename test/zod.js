@@ -287,6 +287,8 @@ contract('zod', accounts => {
         await checkBalances()
         await tokenBalances(zod_address, oat, dai, _zod)
         console.log(gas)
+
+        console.log(await expire.receipt.logs.length)
     });
 
 })

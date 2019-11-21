@@ -2,11 +2,11 @@
   "contractName": "Factory",
   "abi": [
     {
-      "name": "Newomn",
+      "name": "Newcontract",
       "inputs": [
         {
           "type": "address",
-          "name": "omn",
+          "name": "contract_addr",
           "indexed": true
         },
         {
@@ -69,7 +69,11 @@
       "inputs": [
         {
           "type": "address",
-          "name": "_omnTemplate"
+          "name": "_zodTemplate"
+        },
+        {
+          "type": "address",
+          "name": "_dozTemplate"
         },
         {
           "type": "address",
@@ -81,52 +85,12 @@
         },
         {
           "type": "address",
-          "name": "_slate40_address"
-        },
-        {
-          "type": "address",
-          "name": "_stash40_address"
-        },
-        {
-          "type": "address",
           "name": "_wax_address"
-        },
-        {
-          "type": "address",
-          "name": "_dozTemplate"
         }
       ],
       "constant": false,
       "payable": false,
       "type": "constructor"
-    },
-    {
-      "name": "createOmn",
-      "outputs": [
-        {
-          "type": "address",
-          "name": "out"
-        }
-      ],
-      "inputs": [
-        {
-          "type": "uint256",
-          "name": "strike"
-        },
-        {
-          "type": "uint256",
-          "name": "underlying"
-        },
-        {
-          "type": "uint256",
-          "unit": "sec",
-          "name": "maturity"
-        }
-      ],
-      "constant": false,
-      "payable": true,
-      "type": "function",
-      "gas": 119985
     },
     {
       "name": "createDoz",
@@ -154,10 +118,38 @@
       "constant": false,
       "payable": true,
       "type": "function",
-      "gas": 120015
+      "gas": 119561
     },
     {
-      "name": "getOmn",
+      "name": "createZod",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "strike"
+        },
+        {
+          "type": "uint256",
+          "name": "underlying"
+        },
+        {
+          "type": "uint256",
+          "unit": "sec",
+          "name": "maturity"
+        }
+      ],
+      "constant": false,
+      "payable": true,
+      "type": "function",
+      "gas": 119591
+    },
+    {
+      "name": "getContract",
       "outputs": [
         {
           "type": "address",
@@ -186,7 +178,7 @@
       "inputs": [
         {
           "type": "address",
-          "name": "omn"
+          "name": "contract_addr"
         }
       ],
       "constant": true,
@@ -195,7 +187,7 @@
       "gas": 795
     },
     {
-      "name": "omnTemplate",
+      "name": "zodTemplate",
       "outputs": [
         {
           "type": "address",
@@ -251,34 +243,6 @@
       "gas": 761
     },
     {
-      "name": "stash40_address",
-      "outputs": [
-        {
-          "type": "address",
-          "name": "out"
-        }
-      ],
-      "inputs": [],
-      "constant": true,
-      "payable": false,
-      "type": "function",
-      "gas": 791
-    },
-    {
-      "name": "slate40_address",
-      "outputs": [
-        {
-          "type": "address",
-          "name": "out"
-        }
-      ],
-      "inputs": [],
-      "constant": true,
-      "payable": false,
-      "type": "function",
-      "gas": 821
-    },
-    {
       "name": "wax_address",
       "outputs": [
         {
@@ -290,12 +254,12 @@
       "constant": true,
       "payable": false,
       "type": "function",
-      "gas": 851
+      "gas": 791
     }
   ],
-  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05260e061076f6101403934156100a157600080fd5b602061076f60c03960c05160205181106100ba57600080fd5b506020602061076f0160c03960c05160205181106100d757600080fd5b506020604061076f0160c03960c05160205181106100f457600080fd5b506020606061076f0160c03960c051602051811061011157600080fd5b506020608061076f0160c03960c051602051811061012e57600080fd5b50602060a061076f0160c03960c051602051811061014b57600080fd5b50602060c061076f0160c03960c051602051811061016857600080fd5b506000541561017657600080fd5b6000610140511861018657600080fd5b6101405160005561016051600455610180516005556101a0516007556101c0516006556101e0516008556102005160015561075756600436101561000d5761056d565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263df4291a8600051141561023757600033186100bc57600080fd5b6000600054186100cb57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061013d57600080fd5b610140526101405161020052610140513b61015757600080fd5b61014051301861016657600080fd5b6000600061010463f83a8988610220526004356102405260243561026052604435610280526007546102a0526006546102c0526008546102e052600454610300526005546103205261023c6000610140515af16101c257600080fd5b6101405160023360e05260c052604060c020553360036101405160e05260c052604060c02055600435610380526024356103a0526044356103c052610140517fb0c0f1688ab7a8f6a25fd6af22e9356fe4d1d4266a32850acd6329a77e98c6a46060610380a26101405160005260206000f350005b63a979380760005114156103cd576000331861025257600080fd5b60006001541861026157600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006001540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806102d357600080fd5b610140526101405161020052610140513b6102ed57600080fd5b6101405130186102fc57600080fd5b6000600061010463f83a8988610220526004356102405260243561026052604435610280526007546102a0526006546102c0526008546102e052600454610300526005546103205261023c6000610140515af161035857600080fd5b6101405160023360e05260c052604060c020553360036101405160e05260c052604060c02055600435610380526024356103a0526044356103c052610140517fb0c0f1688ab7a8f6a25fd6af22e9356fe4d1d4266a32850acd6329a77e98c6a46060610380a26101405160005260206000f350005b631450fc1060005114156104145734156103e657600080fd5b60043560205181106103f757600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561045b57341561042d57600080fd5b600435602051811061043e57600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b63949a9d4c600051141561048257341561047457600080fd5b60005460005260206000f350005b63ec68ef0c60005114156104a957341561049b57600080fd5b60015460005260206000f350005b634905e59f60005114156104d05734156104c257600080fd5b60045460005260206000f350005b637980b86860005114156104f75734156104e957600080fd5b60055460005260206000f350005b6307b223db600051141561051e57341561051057600080fd5b60065460005260206000f350005b632379e6ea600051141561054557341561053757600080fd5b60075460005260206000f350005b63f9e204e8600051141561056c57341561055e57600080fd5b60085460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a25b6101bc610757036101bc6000396101bc610757036000f3",
-  "deployedBytecode": "0x600436101561000d5761056d565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263df4291a8600051141561023757600033186100bc57600080fd5b6000600054186100cb57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061013d57600080fd5b610140526101405161020052610140513b61015757600080fd5b61014051301861016657600080fd5b6000600061010463f83a8988610220526004356102405260243561026052604435610280526007546102a0526006546102c0526008546102e052600454610300526005546103205261023c6000610140515af16101c257600080fd5b6101405160023360e05260c052604060c020553360036101405160e05260c052604060c02055600435610380526024356103a0526044356103c052610140517fb0c0f1688ab7a8f6a25fd6af22e9356fe4d1d4266a32850acd6329a77e98c6a46060610380a26101405160005260206000f350005b63a979380760005114156103cd576000331861025257600080fd5b60006001541861026157600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006001540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806102d357600080fd5b610140526101405161020052610140513b6102ed57600080fd5b6101405130186102fc57600080fd5b6000600061010463f83a8988610220526004356102405260243561026052604435610280526007546102a0526006546102c0526008546102e052600454610300526005546103205261023c6000610140515af161035857600080fd5b6101405160023360e05260c052604060c020553360036101405160e05260c052604060c02055600435610380526024356103a0526044356103c052610140517fb0c0f1688ab7a8f6a25fd6af22e9356fe4d1d4266a32850acd6329a77e98c6a46060610380a26101405160005260206000f350005b631450fc1060005114156104145734156103e657600080fd5b60043560205181106103f757600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561045b57341561042d57600080fd5b600435602051811061043e57600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b63949a9d4c600051141561048257341561047457600080fd5b60005460005260206000f350005b63ec68ef0c60005114156104a957341561049b57600080fd5b60015460005260206000f350005b634905e59f60005114156104d05734156104c257600080fd5b60045460005260206000f350005b637980b86860005114156104f75734156104e957600080fd5b60055460005260206000f350005b6307b223db600051141561051e57341561051057600080fd5b60065460005260206000f350005b632379e6ea600051141561054557341561053757600080fd5b60075460005260206000f350005b63f9e204e8600051141561056c57341561055e57600080fd5b60085460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a2",
-  "source": "contract Omn():\r\n    def setup(  strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                _slate_address: address,\r\n                _stash_address: address,\r\n                _wax_address: address,\r\n                _dai_address: address,\r\n                _oat_address: address,\r\n                ): modifying\r\n\r\ncontract Doz():\r\n    def setup(  strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                _slate_address: address,\r\n                _stash_address: address,\r\n                _wax_address: address,\r\n                _dai_address: address,\r\n                _oat_address: address,\r\n                ): modifying\r\n\r\n\r\nNewomn: event({\r\n                omn: indexed(address), \r\n                strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                })\r\n\r\nError: event({message: string[50]})\r\nPayment: event({amount: wei_value, _from: indexed(address)})\r\n\r\nomnTemplate: public(address)\r\ndozTemplate: public(address)\r\nuser_to_omn: map(address, address)\r\nomn_to_user: map(address, address)\r\n\r\n# Initial tokens\r\ndai_address: public(address)\r\noat_address: public(address)\r\n# Repositories\r\nstash40_address: public(address)\r\nslate40_address: public(address)\r\n# Utility\r\nwax_address: public(address)\r\n\r\n@public\r\n@payable\r\ndef __default__():\r\n    log.Payment(msg.value, msg.sender)\r\n\r\n@public\r\ndef __init__(   _omnTemplate: address,  \r\n                _dai_address: address, # strike asset denomination\r\n                _oat_address: address, # underlying asset\r\n                _slate40_address: address, # strike asset storage\r\n                _stash40_address: address, # underlying asset storage\r\n                _wax_address: address, \r\n                _dozTemplate: address,\r\n                ):\r\n    assert self.omnTemplate == ZERO_ADDRESS\r\n    assert _omnTemplate != ZERO_ADDRESS\r\n    self.omnTemplate = _omnTemplate\r\n    self.dai_address = _dai_address\r\n    self.oat_address = _oat_address\r\n    self.slate40_address = _slate40_address\r\n    self.stash40_address = _stash40_address\r\n    self.wax_address = _wax_address\r\n    self.dozTemplate = _dozTemplate\r\n    \r\n@public\r\n@payable\r\ndef createOmn(  strike: uint256, # Omn's strike is denominated in Dai, Example: 10 dai for 1 Oat.\r\n                underlying: uint256, # Omn's underlying is Oat\r\n                maturity: timestamp,\r\n                ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.omnTemplate != ZERO_ADDRESS\r\n\r\n    omn: address = create_forwarder_to(self.omnTemplate)\r\n    _omn: address = omn\r\n    Omn(omn).setup( strike,\r\n                    underlying,\r\n                    maturity,\r\n                    self.slate40_address,\r\n                    self.stash40_address,\r\n                    self.wax_address,\r\n                    self.dai_address,\r\n                    self.oat_address,\r\n                    )\r\n    self.user_to_omn[msg.sender] = omn\r\n    self.omn_to_user[omn] = msg.sender\r\n    log.Newomn(     omn,\r\n                    strike,\r\n                    underlying,\r\n                    maturity,\r\n                    )\r\n    return omn\r\n\r\n@public\r\n@payable\r\ndef createDoz(  strike: uint256, # doz's strike is denominated in Dai, Example: 10 dai for 1 Oat.\r\n                underlying: uint256, # doz's underlying is Oat\r\n                maturity: timestamp,\r\n                ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.dozTemplate != ZERO_ADDRESS\r\n\r\n    doz: address = create_forwarder_to(self.dozTemplate)\r\n    _doz: address = doz\r\n    Doz(doz).setup( strike,\r\n                    underlying,\r\n                    maturity,\r\n                    self.slate40_address,\r\n                    self.stash40_address,\r\n                    self.wax_address,\r\n                    self.dai_address,\r\n                    self.oat_address,\r\n                    )\r\n    self.user_to_omn[msg.sender] = doz\r\n    self.omn_to_user[doz] = msg.sender\r\n    log.Newomn(     doz,\r\n                    strike,\r\n                    underlying,\r\n                    maturity,\r\n                    )\r\n    return doz\r\n\r\n@public\r\n@constant\r\ndef getOmn(user: address) -> address:\r\n    return self.user_to_omn[user]\r\n\r\n@public\r\n@constant\r\ndef getUser(omn: address) -> address:\r\n    return self.omn_to_user[omn]\r\n\r\n",
+  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05260a06106bb6101403934156100a157600080fd5b60206106bb60c03960c05160205181106100ba57600080fd5b50602060206106bb0160c03960c05160205181106100d757600080fd5b50602060406106bb0160c03960c05160205181106100f457600080fd5b50602060606106bb0160c03960c051602051811061011157600080fd5b50602060806106bb0160c03960c051602051811061012e57600080fd5b506000541561013c57600080fd5b6000610140511861014c57600080fd5b6101405160005561016051600155610180516004556101a0516005556101c0516006556106a356600436101561000d57610501565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263a9793807600051141561022857600033186100bc57600080fd5b6000600154186100cb57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006001540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061013d57600080fd5b610140526101405161020052610140513b61015757600080fd5b61014051301861016657600080fd5b6000600060c463c8404975610220526004356102405260243561026052604435610280526006546102a0526004546102c0526005546102e05261023c6000610140515af16101b357600080fd5b6101405160023360e05260c052604060c020553360036101405160e05260c052604060c02055600435610340526024356103605260443561038052610140517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610340a26101405160005260206000f350005b639c58162860005114156103af576000331861024357600080fd5b60006000541861025257600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806102c457600080fd5b610140526101405161020052610140513b6102de57600080fd5b6101405130186102ed57600080fd5b6000600060c463c8404975610220526004356102405260243561026052604435610280526006546102a0526004546102c0526005546102e05261023c6000610140515af161033a57600080fd5b6101405160023360e05260c052604060c020553360036101405160e05260c052604060c02055600435610340526024356103605260443561038052610140517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610340a26101405160005260206000f350005b630ad1c2fa60005114156103f65734156103c857600080fd5b60043560205181106103d957600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561043d57341561040f57600080fd5b600435602051811061042057600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b6372564142600051141561046457341561045657600080fd5b60005460005260206000f350005b63ec68ef0c600051141561048b57341561047d57600080fd5b60015460005260206000f350005b634905e59f60005114156104b25734156104a457600080fd5b60045460005260206000f350005b637980b86860005114156104d95734156104cb57600080fd5b60055460005260206000f350005b63f9e204e860005114156105005734156104f257600080fd5b60065460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a25b6101746106a3036101746000396101746106a3036000f3",
+  "deployedBytecode": "0x600436101561000d57610501565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263a9793807600051141561022857600033186100bc57600080fd5b6000600154186100cb57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006001540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061013d57600080fd5b610140526101405161020052610140513b61015757600080fd5b61014051301861016657600080fd5b6000600060c463c8404975610220526004356102405260243561026052604435610280526006546102a0526004546102c0526005546102e05261023c6000610140515af16101b357600080fd5b6101405160023360e05260c052604060c020553360036101405160e05260c052604060c02055600435610340526024356103605260443561038052610140517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610340a26101405160005260206000f350005b639c58162860005114156103af576000331861024357600080fd5b60006000541861025257600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806102c457600080fd5b610140526101405161020052610140513b6102de57600080fd5b6101405130186102ed57600080fd5b6000600060c463c8404975610220526004356102405260243561026052604435610280526006546102a0526004546102c0526005546102e05261023c6000610140515af161033a57600080fd5b6101405160023360e05260c052604060c020553360036101405160e05260c052604060c02055600435610340526024356103605260443561038052610140517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610340a26101405160005260206000f350005b630ad1c2fa60005114156103f65734156103c857600080fd5b60043560205181106103d957600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561043d57341561040f57600080fd5b600435602051811061042057600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b6372564142600051141561046457341561045657600080fd5b60005460005260206000f350005b63ec68ef0c600051141561048b57341561047d57600080fd5b60015460005260206000f350005b634905e59f60005114156104b25734156104a457600080fd5b60045460005260206000f350005b637980b86860005114156104d95734156104cb57600080fd5b60055460005260206000f350005b63f9e204e860005114156105005734156104f257600080fd5b60065460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a2",
+  "source": "contract Zod():\r\n    def setup(  strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                _wax_address: address,\r\n                _dai_address: address,\r\n                _oat_address: address,\r\n                ): modifying\r\n\r\ncontract Doz():\r\n    def setup(  strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                _wax_address: address,\r\n                _dai_address: address,\r\n                _oat_address: address,\r\n                ): modifying\r\n\r\n\r\nNewcontract: event({\r\n                contract_addr: indexed(address), \r\n                strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                })\r\n\r\nError: event({message: string[50]})\r\nPayment: event({amount: wei_value, _from: indexed(address)})\r\n\r\n# Contracts\r\nzodTemplate: public(address)\r\ndozTemplate: public(address)\r\nuser_to_contract: map(address, address)\r\ncontract_to_user: map(address, address)\r\n\r\n# Initial tokens\r\ndai_address: public(address)\r\noat_address: public(address)\r\n\r\n# Utility\r\nwax_address: public(address)\r\n\r\n@public\r\n@payable\r\ndef __default__():\r\n    log.Payment(msg.value, msg.sender)\r\n\r\n@public\r\ndef __init__(   _zodTemplate: address,\r\n                _dozTemplate: address,  \r\n                _dai_address: address, # strike asset denomination\r\n                _oat_address: address, # underlying asset\r\n                _wax_address: address, \r\n                ):\r\n    assert self.zodTemplate == ZERO_ADDRESS\r\n    assert _zodTemplate != ZERO_ADDRESS\r\n    self.zodTemplate = _zodTemplate\r\n    self.dozTemplate = _dozTemplate\r\n    self.dai_address = _dai_address\r\n    self.oat_address = _oat_address\r\n    self.wax_address = _wax_address\r\n    \r\n    \r\n@public\r\n@payable\r\ndef createDoz(  strike: uint256, # doz's strike is denominated in Dai, Example: 10 dai for 1 Oat.\r\n                underlying: uint256, # doz's underlying is Oat\r\n                maturity: timestamp,\r\n                ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.dozTemplate != ZERO_ADDRESS\r\n\r\n    doz: address = create_forwarder_to(self.dozTemplate)\r\n    _doz: address = doz\r\n    Doz(doz).setup( strike,\r\n                    underlying,\r\n                    maturity,\r\n                    self.wax_address,\r\n                    self.dai_address,\r\n                    self.oat_address,\r\n                    )\r\n    self.user_to_contract[msg.sender] = doz\r\n    self.contract_to_user[doz] = msg.sender\r\n    log.Newcontract(doz,\r\n                    strike,\r\n                    underlying,\r\n                    maturity,\r\n                    )\r\n    return doz\r\n\r\n@public\r\n@payable\r\ndef createZod(  strike: uint256, # doz's strike is denominated in Dai, Example: 10 dai for 1 Oat.\r\n                underlying: uint256, # doz's underlying is Oat\r\n                maturity: timestamp,\r\n                ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.zodTemplate != ZERO_ADDRESS\r\n\r\n    zod: address = create_forwarder_to(self.zodTemplate)\r\n    _zod: address = zod\r\n    Zod(zod).setup( strike,\r\n                    underlying,\r\n                    maturity,\r\n                    self.wax_address,\r\n                    self.dai_address,\r\n                    self.oat_address,\r\n                    )\r\n    self.user_to_contract[msg.sender] = zod\r\n    self.contract_to_user[zod] = msg.sender\r\n    log.Newcontract(zod,\r\n                    strike,\r\n                    underlying,\r\n                    maturity,\r\n                    )\r\n    return zod\r\n\r\n@public\r\n@constant\r\ndef getContract(user: address) -> address:\r\n    return self.user_to_contract[user]\r\n\r\n@public\r\n@constant\r\ndef getUser(contract_addr: address) -> address:\r\n    return self.contract_to_user[contract_addr]\r\n\r\n",
   "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/Factory.vy",
   "compiler": {
     "name": "vyper",
@@ -405,14 +369,43 @@
           "anonymous": false,
           "type": "event",
           "signature": "0xb0c0f1688ab7a8f6a25fd6af22e9356fe4d1d4266a32850acd6329a77e98c6a4"
+        },
+        "0xe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf06": {
+          "name": "Newcontract",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "contract_addr",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "underlying",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "maturity",
+              "indexed": false,
+              "unit": "sec"
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf06"
         }
       },
       "links": {},
-      "address": "0x999FDcFAeDD009b497bDde1f272c6200A1a9411B",
-      "transactionHash": "0xe8cee45178a29021ff388b2fcee9b9442b69a9cc08fb329808efd69af804bf15"
+      "address": "0x4083a8F85F7327b51B800E38D53612485369B6AB",
+      "transactionHash": "0x5bd5089aee252305afb4d4a74f729a83f4b495a73facfb2093ad8159b75758be"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-16T19:46:03.509Z",
+  "updatedAt": "2019-11-20T20:54:50.879Z",
   "networkType": "ethereum"
 }

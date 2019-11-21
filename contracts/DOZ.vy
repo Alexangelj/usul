@@ -28,7 +28,7 @@ struct LockBook:
 
 # Interfaces
 contract Factory():
-    def getContract(user_addr: address) -> address:constant
+    def getDoz(user_addr: address) -> address:constant
     def getUser(omn: address) -> address:constant
 
  
@@ -283,7 +283,7 @@ def isMature() -> bool:
 @payable
 def write(underwritten_amount: uint256) -> bool:
     """
-    @notice - Writer mints Omn tokens which represent underlying asset deposits.
+    @notice - Writer mints DOZ tokens which represent underlying asset deposits.
     """
     lock_key: uint256 = 0 # Memory lock key number
     if(self.user_to_key[msg.sender] > 0): # if user has a key, use their key
@@ -299,7 +299,7 @@ def write(underwritten_amount: uint256) -> bool:
         self.lockBook.highest_lock = self.lockBook.locks[lock_key].underlying_amount
         self.highest_key = lock_key
     
-    token_amount: uint256 = underwritten_amount / self.underlying * self.decimals # Example: self.underlying = 2, so if I underwrite 12, I get 12 / 2 = 6 option tokens
+    token_amount: uint256 = underwritten_amount * self.decimals / self.underlying  # Example: self.underlying = 2, so if I underwrite 12, I get 12 / 2 = 6 option tokens
     self.underlyingAsset.transferFrom(msg.sender, self, underwritten_amount) # Store underlying in contract
     self.mint(msg.sender, token_amount) # Mint amount of tokens equal to the underlying deposited / underlying asset amount
     log.Write(msg.sender, token_amount, lock_key)

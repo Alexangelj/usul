@@ -2,7 +2,8 @@
 # 
 # @notice Implementation of a fulfilling orderbook with bid/ask
 # 
-# @author Alexander Angel
+# @author Alexander Angel, 
+#         Luke Schoen's Solidity Dex: https://github.com/ltfschoen/dex/blob/master/contracts/Exchange.sol
 # 
 # @dev 
 #
@@ -87,6 +88,8 @@ admin: address
 decimals: uint256
 listBuyPrices: wei_value[10]
 listBuyVolume: uint256[10]
+
+MAX_ORDERS: constant(uint256) = 2**10 - 1
 
 # Initialize
 @public
@@ -213,14 +216,14 @@ def getBuyOrderBook(symbol_name: string[64]) -> wei_value[10]:
     whilePrice: wei_value = self.tokens[_symbolIndex].lowest_buy_price
     counter: uint256 = 0
     if(self.tokens[_symbolIndex].current_buy_price > as_wei_value(0, 'ether')):
-        for x in range(10):
+        for x in range(MAX_ORDERS):
             if(whilePrice > self.tokens[_symbolIndex].current_buy_price):
                 break
             self.listBuyPrices[counter] = whilePrice
             buyVolumeAtPrice: uint256 = 0
             buyOffersKey: uint256 = 0
             buyOffersKey = self.tokens[_symbolIndex].buyBook[whilePrice].offers_key
-            for i in range(10):
+            for i in range(MAX_ORDERS):
                 if(buyOffersKey > self.tokens[_symbolIndex].buyBook[whilePrice].offers_len):
                     break
                 buyVolumeAtPrice += self.tokens[_symbolIndex].buyBook[whilePrice].offers[buyOffersKey].amount_tokens
@@ -265,7 +268,7 @@ def addBuyOffer(symbol_index: int128, priceWei: wei_value, amount: uint256, user
         else: # New Buy offer is between existing lowest and highest buy prices
             buyPrice: wei_value = self.tokens[symbol_index].current_buy_price
             foundInsert: bool = False
-            for i in range(10):
+            for i in range(MAX_ORDERS):
                 if(buyPrice < priceWei and self.tokens[symbol_index].buyBook[buyPrice].highPrice > priceWei):
                     self.tokens[symbol_index].buyBook[priceWei].lowPrice = buyPrice
                     self.tokens[symbol_index].buyBook[priceWei].highPrice = self.tokens[symbol_index].buyBook[buyPrice].highPrice
@@ -307,11 +310,11 @@ def buyToken(symbol_name: string[64], priceWei: wei_value, amount: uint256):
         whilePrice: wei_value = self.tokens[_symbolIndex].current_sell_price
         offers_key: uint256 = 0
         
-        for i in range(10):
+        for i in range(MAX_ORDERS):
             if(whilePrice > priceWei or amount_tokens_required == 0):
                 break
             offers_key = self.tokens[_symbolIndex].sellBook[whilePrice].offers_key
-            for x in range(10):
+            for x in range(MAX_ORDERS):
                 if(offers_key > self.tokens[_symbolIndex].sellBook[whilePrice].offers_len or amount_tokens_required == 0):
                     break
                 volume_price_address: uint256 = self.tokens[_symbolIndex].sellBook[whilePrice].offers[offers_key].amount_tokens
@@ -382,7 +385,7 @@ def addSellOffer(symbol_index: int128, priceWei: wei_value, amount: uint256, use
         else: # New sell offer is between existing highest and highest sell prices
             sellPrice: wei_value = self.tokens[symbol_index].current_sell_price
             foundInsert: bool = False
-            for i in range(10):
+            for i in range(MAX_ORDERS):
                 if(sellPrice < priceWei and self.tokens[symbol_index].sellBook[sellPrice].highPrice > priceWei):
                     self.tokens[symbol_index].sellBook[priceWei].lowPrice = sellPrice
                     self.tokens[symbol_index].sellBook[priceWei].highPrice = self.tokens[symbol_index].sellBook[sellPrice].highPrice
@@ -424,11 +427,11 @@ def sellToken(symbol_name: string[64], priceWei: wei_value, amount: uint256):
         whilePrice: wei_value = self.tokens[_symbolIndex].current_buy_price
         offers_key: uint256 = 0
         
-        for i in range(10):
+        for i in range(MAX_ORDERS):
             if(whilePrice < priceWei or amount_tokens_required == 0):
                 break
             offers_key = self.tokens[_symbolIndex].buyBook[whilePrice].offers_key
-            for x in range(10):
+            for x in range(MAX_ORDERS):
                 if(offers_key >= self.tokens[_symbolIndex].buyBook[whilePrice].offers_len or amount_tokens_required == 0):
                     break
                 volume_price_address: uint256 = self.tokens[_symbolIndex].buyBook[whilePrice].offers[offers_key].amount_tokens

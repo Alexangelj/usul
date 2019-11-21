@@ -27,7 +27,7 @@ struct LockBook:
 
 # Interfaces
 contract Factory():
-    def getContract(user_addr: address) -> address:constant
+    def getZod(user_addr: address) -> address:constant
     def getUser(omn: address) -> address:constant
 
 
@@ -135,8 +135,8 @@ def setup(  _strike: uint256,
     self.wax = Wax(_wax_address)
 
     # EIP-20 Compliant Option Token
-    self.name = "Dai Oat December"
-    self.symbol = "DOZ"
+    self.name = "Opposite of DOZ"
+    self.symbol = "ZOD"
     self.decimals = 10**18
     self.balanceOf[tx.origin] = 0
     self.total_supply = 0
@@ -299,7 +299,7 @@ def write(underwritten_amount: uint256) -> bool:
         self.lockBook.highest_lock = self.lockBook.locks[lock_key].strike_amount
         self.highest_key = lock_key
     
-    token_amount: uint256 = underwritten_amount / self.strike * self.decimals # Example: self.strike = 2, so if I underwrite 12, I get 12 / 2 = 6 option tokens
+    token_amount: uint256 = underwritten_amount * self.decimals / self.strike  # Example: self.strike = 2, so if I underwrite 12, I get 12 / 2 = 6 option tokens
     self.strikeAsset.transferFrom(msg.sender, self, underwritten_amount) # Store strike in contract
     self.mint(msg.sender, token_amount) # Mint amount of tokens equal to the strike deposited / strike asset amount
     log.Write(msg.sender, token_amount, lock_key)
@@ -330,7 +330,7 @@ def exercise(option_amount: uint256) -> bool:
     @notice - Buyer sends underlying asset in exchange for strike asset. 
     @param - Amount of options to exercise with 18 decimal places, 1*10**18 = 1 option
     """
-    assert self.lockBook.locks[self.user_to_key[msg.sender]].strike_amount == 0 # Exercising party is not underwriter
+    #assert self.lockBook.locks[self.user_to_key[msg.sender]].strike_amount == 0 # Exercising party is not underwriter
     assert self.balanceOf[msg.sender] >= option_amount
     strike_payment: uint256 = self.strike * option_amount / self.decimals
     underlying_payment: uint256 = self.underlying * option_amount / self.decimals

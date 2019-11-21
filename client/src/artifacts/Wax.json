@@ -43,7 +43,7 @@
       "constant": true,
       "payable": false,
       "type": "function",
-      "gas": 404
+      "gas": 1540
     },
     {
       "name": "expiration",
@@ -66,9 +66,9 @@
       "gas": 735
     }
   ],
-  "bytecode": "0x61013556600436101561000d5761012b565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be160005114156100e35734156100ba57600080fd5b426004351015156100d557600160005260206000f3506100e1565b600060005260206000f3505b005b6304dbe3fe600051141561012a5734156100fc57600080fd5b600435602051811061010d57600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd5b61000461013503610004600039610004610135036000f3",
-  "deployedBytecode": "0x600436101561000d5761012b565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be160005114156100e35734156100ba57600080fd5b426004351015156100d557600160005260206000f3506100e1565b600060005260206000f3505b005b6304dbe3fe600051141561012a5734156100fc57600080fd5b600435602051811061010d57600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd",
-  "source": "# @title WAX \r\n# \r\n# @notice Time Expiration Record and Maturity Condition Validation\r\n# \r\n# @author Alexander Angel\r\n# \r\n# @dev SStore of time\r\n\r\n\r\nWaxing: event({eco: indexed(address)})\r\nWaning: event({eco: indexed(address)})\r\n\r\nexpiration: public(map(address, timestamp)) # maps ECOs to timestamp of their expiration\r\n\r\n@public\r\n@constant\r\ndef timeToExpiry(time: timestamp) -> bool:\r\n    #self.expiration[msg.sender] = time\r\n    if(time >= block.timestamp):\r\n        #log.Waning(msg.sender)\r\n        return True\r\n    else:\r\n        #log.Waxing(msg.sender)\r\n        # Function that exercises ECO Actually cannot call exercise function because both these calls are 80k, so 160k is above limit\r\n        return False\r\n",
+  "bytecode": "0x61015c56600436101561000d57610152565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be1600051141561010a5734156100ba57600080fd5b426004351015156100d557600160005260206000f350610108565b337f540346575222d36aebe2e2ff7c86a1966989ca1531c6028fd354792e2fabb3c760006000a2600060005260206000f3505b005b6304dbe3fe600051141561015157341561012357600080fd5b600435602051811061013457600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd5b61000461015c0361000460003961000461015c036000f3",
+  "deployedBytecode": "0x600436101561000d57610152565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526307757be1600051141561010a5734156100ba57600080fd5b426004351015156100d557600160005260206000f350610108565b337f540346575222d36aebe2e2ff7c86a1966989ca1531c6028fd354792e2fabb3c760006000a2600060005260206000f3505b005b6304dbe3fe600051141561015157341561012357600080fd5b600435602051811061013457600080fd5b50600060043560e05260c052604060c0205460005260206000f350005b5b60006000fd",
+  "source": "# @title WAX \r\n# \r\n# @notice Time Expiration Record and Maturity Condition Validation\r\n# \r\n# @author Alexander Angel\r\n# \r\n# @dev SStore of time\r\n\r\n\r\nWaxing: event({eco: indexed(address)})\r\nWaning: event({eco: indexed(address)})\r\n\r\nexpiration: public(map(address, timestamp)) # maps ECOs to timestamp of their expiration\r\n\r\n@public\r\n@constant\r\ndef timeToExpiry(time: timestamp) -> bool:\r\n    #self.expiration[msg.sender] = time\r\n    if(time >= block.timestamp):\r\n        #log.Waning(msg.sender)\r\n        return True\r\n    else:\r\n        log.Waxing(msg.sender)\r\n        # Function that exercises ECO Actually cannot call exercise function because both these calls are 80k, so 160k is above limit\r\n        return False\r\n",
   "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/Wax.vy",
   "compiler": {
     "name": "vyper",
@@ -105,11 +105,11 @@
         }
       },
       "links": {},
-      "address": "0x42871A3Ae4d09C0Cc8bF461BC5BFfDf1E2ec5bff",
-      "transactionHash": "0x73e17ad054b755fac53195ce0775615f9e6fdaed51557eed54b9f37ec8b14df4"
+      "address": "0xf21B7FD70867f52452521e4B5AA46BE5af31c19a",
+      "transactionHash": "0x848cb8f64d867efc6bf3e3fd325ddcafe01981d0492b1ea31c5ed5f7e0e96432"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-16T19:46:03.491Z",
+  "updatedAt": "2019-11-20T20:54:50.869Z",
   "networkType": "ethereum"
 }

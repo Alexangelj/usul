@@ -7772,12 +7772,12 @@
         }
       },
       "links": {},
-      "address": "0x65434A394b9Be7DBcef1b1da39fD436EE42a43bC",
-      "transactionHash": "0x4675e35d68f63955f78a5fd209c6f2169b5eace715947558a4e4b6b0cd4ea207"
+      "address": "0xB96A6A6FDf844Ab7c6fBc6CbBf6176711FdE3e04",
+      "transactionHash": "0x3152cc5ce1663c7cd33596fb7040e27fc9d345d5f2ec73ae4655ec891f8a46f6"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-16T19:46:03.495Z",
+  "updatedAt": "2019-11-20T20:54:50.872Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

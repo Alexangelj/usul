@@ -30,7 +30,8 @@ Payment: event({amount: wei_value, _from: indexed(address)})
 # Contracts
 zodTemplate: public(address)
 dozTemplate: public(address)
-user_to_contract: map(address, address)
+user_to_doz: map(address, address)
+user_to_zod: map(address, address)
 contract_to_user: map(address, address)
 
 # Initial tokens
@@ -79,7 +80,7 @@ def createDoz(  strike: uint256, # doz's strike is denominated in Dai, Example: 
                     self.dai_address,
                     self.oat_address,
                     )
-    self.user_to_contract[msg.sender] = doz
+    self.user_to_doz[msg.sender] = doz
     self.contract_to_user[doz] = msg.sender
     log.Newcontract(doz,
                     strike,
@@ -106,7 +107,7 @@ def createZod(  strike: uint256, # doz's strike is denominated in Dai, Example: 
                     self.dai_address,
                     self.oat_address,
                     )
-    self.user_to_contract[msg.sender] = zod
+    self.user_to_zod[msg.sender] = zod
     self.contract_to_user[zod] = msg.sender
     log.Newcontract(zod,
                     strike,
@@ -117,8 +118,13 @@ def createZod(  strike: uint256, # doz's strike is denominated in Dai, Example: 
 
 @public
 @constant
-def getContract(user: address) -> address:
-    return self.user_to_contract[user]
+def getDoz(user: address) -> address:
+    return self.user_to_doz[user]
+
+@public
+@constant
+def getZod(user: address) -> address:
+    return self.user_to_zod[user]
 
 @public
 @constant

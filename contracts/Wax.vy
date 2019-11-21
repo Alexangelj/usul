@@ -20,6 +20,6 @@ def timeToExpiry(time: timestamp) -> bool:
         #log.Waning(msg.sender)
         return True
     else:
-        #log.Waxing(msg.sender)
+        log.Waxing(msg.sender)
         # Function that exercises ECO Actually cannot call exercise function because both these calls are 80k, so 160k is above limit
         return False
