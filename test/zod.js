@@ -129,7 +129,7 @@ contract('zod', accounts => {
         let oat = await Oat.deployed()
         // Options contracts
         let zod_fac = await Factory.deployed()
-        let zod_address = await zod_fac.getContract(writer)
+        let zod_address = await zod_fac.getZod(writer)
         let _zod = await Zod.at(zod_address)
 
         var more = (30*10**18).toFixed()
@@ -165,7 +165,7 @@ contract('zod', accounts => {
         let dai = await Dai.deployed()
         let oat = await Oat.deployed()
         let zod_fac = await Factory.deployed()
-        let zod_address = await zod_fac.getContract(writer)
+        let zod_address = await zod_fac.getZod(writer)
         let _zod = await Zod.at(zod_address)
 
         // Instead of purchase function we can just directly sell the tokens to the buyer
@@ -185,7 +185,7 @@ contract('zod', accounts => {
         console.log('\n')
         let dai = await Dai.deployed()
         let zod_fac = await Factory.deployed()
-        let zod_address = await zod_fac.getContract(writer)
+        let zod_address = await zod_fac.getZod(writer)
         let _zod = await Zod.at(zod_address)
         let wax = await Wax.deployed()
         
@@ -201,7 +201,7 @@ contract('zod', accounts => {
         let oat = await Oat.deployed()
         let dai = await Dai.deployed()
         let zod_fac = await Factory.deployed()
-        let zod_address = await zod_fac.getContract(writer)
+        let zod_address = await zod_fac.getZod(writer)
         let _zod = await Zod.at(zod_address)
 
         let amount_to_close = 2
@@ -225,7 +225,7 @@ contract('zod', accounts => {
         let oat = await Oat.deployed()
         let dai = await Dai.deployed()
         let zod_fac = await Factory.deployed()
-        let zod_address = await zod_fac.getContract(writer)
+        let zod_address = await zod_fac.getZod(writer)
         let _zod = await Zod.at(zod_address)
 
         // Strike Amounts underwritten
@@ -266,7 +266,7 @@ contract('zod', accounts => {
         let oat = await Oat.deployed()
         let dai = await Dai.deployed()
         let zod_fac = await Factory.deployed()
-        let zod_address = await zod_fac.getContract(writer)
+        let zod_address = await zod_fac.getZod(writer)
         let _zod = await Zod.at(zod_address)
 
         
@@ -287,8 +287,8 @@ contract('zod', accounts => {
         await checkBalances()
         await tokenBalances(zod_address, oat, dai, _zod)
         console.log(gas)
-
-        console.log(await expire.receipt.logs.length)
+        let bal = await _zod.balanceOf(writer, {from: writer})
+        console.log(((bal).toString()) * 1)
     });
 
 })

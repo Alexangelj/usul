@@ -1,4 +1,4 @@
-Multilateral Optionality Asset Transfer: M.O.A.T
+M.O.A.T: Multilateral Optionality Asset Transfer
 ================================================
 
 The buyer of a two party contract 

@@ -330,7 +330,7 @@ def exercise(option_amount: uint256) -> bool:
     @notice - Buyer sends strike asset in exchange for underlying asset. 
     @param - Amount of options being exercised, integers where 1*10**18 = 1 option token, a coefficient
     """
-    assert self.lockBook.locks[self.user_to_key[msg.sender]].underlying_amount == 0 # Exercising party is not underwriter
+    #assert self.lockBook.locks[self.user_to_key[msg.sender]].underlying_amount == 0 # Exercising party is not underwriter
     assert self.balanceOf[msg.sender] >= option_amount
     strike_payment: uint256 = self.strike * option_amount / self.decimals
     underlying_payment: uint256 = self.underlying * option_amount / self.decimals

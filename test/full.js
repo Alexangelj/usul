@@ -17,6 +17,8 @@ const Oat = artifacts.require('Oat') // Underlying Asset
 const Doz = artifacts.require('Doz') // Optionality Purchase Transfer Right -> Purchaser underlying for strike
 const Zod = artifacts.require('Zod') // Optionality Sale Transfer Right -> Sell underlying for strike
 const Odex = artifacts.require('Odex')
+var BN = require('bn.js')
+
 
 contract('Full Test', accounts => {
 
@@ -321,6 +323,12 @@ There is a function that manages the transfers and it will operate for 100 tx be
             }
         }
 
+        for(var x = 0; x < acc_ray.length; x++) {
+            var eth = (50*10**18).toString()
+            let eth_deposit = await odex.depositEth({from: acc_ray[x][1], value: eth})
+            await getGas(eth_deposit, 'eth_deposit' + 'ETH')
+        }
+
         await getLockBook('Write and Deposit into DEX', _doz, _zod)
         await getLedger('Deposit Tokens into DEX', dai, oat, _doz, _zod)
         await getDexLedger('Deposited Tokens into DEX', dai, oat, _doz, _zod, odex)
@@ -384,7 +392,7 @@ There is a function that manages the transfers and it will operate for 100 tx be
     });
 
 
-    it('Users Exercise Half and Close Half of their MOATS', async () => {
+    it('Users Exercise their MOATs', async () => {
         console.log('\n')
         // Core Tokens
         let dai = await Dai.deployed()
@@ -396,7 +404,7 @@ There is a function that manages the transfers and it will operate for 100 tx be
         let zod_address = await fac.getZod(Alice)
         let _zod = await Zod.at(zod_address)
         let odex = await Odex.deployed()
-
+        // Tokens Array
         var tokens = [
             [(await dai.symbol()).toString(), dai],
             [(await oat.symbol()).toString(), oat],
@@ -405,46 +413,42 @@ There is a function that manages the transfers and it will operate for 100 tx be
         ]
 
 
-        // For each user, get their MOAT balance and divide it in half, then close and exercise each half.
-        //for(var x = 0; x < acc_ray.length; x++) { // Users
-        //    for(var i = 2; i < tokens.length; i++){ // Tokens
-        //        let close_half = ((Math.floor((Math.random() * (((await tokens[i][1].balanceOf(acc_ray[x][1], {from: acc_ray[x][1]}))/decimals) - 1)) + 1)*10**18).toFixed())
-        //        let close = (await tokens[i][1].close((close_half), {from: acc_ray[x][1]}))
-        //        await getGas(close, 'Close' + (tokens[i][0]).toString())
-        //    }
-        //}
+        for(var i = 0; i < 2; i++) {
+            for(var x = 0; x < acc_ray.length; x++) {
+                let strike_balance = await dai.balanceOf(acc_ray[x][1], {from: acc_ray[x][1]})
+                let underlying_balance = await oat.balanceOf(acc_ray[x][1], {from: acc_ray[x][1]})
+                let doz_balance = await _doz.balanceOf(acc_ray[x][1], {from: acc_ray[x][1]})
+                let doz_approve = await dai.approve(doz_address, (strike), {from: acc_ray[x][1]})
+                if((doz_balance).toString() * 1 > 2*10**18){
+                    console.log(acc_ray[x][0], tokens[2][0], doz_balance.toString(), tokens[0][0], strike_balance.toString())
+                    let doz_exercise = await _doz.exercise((10**18).toFixed(), {from: acc_ray[x][1]})
+                }
+                if((doz_balance).toString() * 1 < 2*10**18){
+                    continue
+                }
+            }
 
-        console.log(ledger)
-
-
-
-        for(var x = 0; x < acc_ray.length; x++) { // Close DOZ
-            let close_half = ((Math.floor((Math.random() * ((await tokens[2][1].lockBook__locks__underlying_amount(x)) / underlying) ) + 1)*10**18).toFixed())
-            let close = (await tokens[2][1].close((close_half), {from: acc_ray[x][1]}))
-            await getGas(close, 'Close' + (tokens[2][0]).toString())
-        }
-
-
-        for(var x = 0; x < acc_ray.length; x++) { // Close ZOD
-            let close_half = ((Math.floor((Math.random() * ((await tokens[3][1].lockBook__locks__strike_amount(x)) / strike) ) + 1)*10**18).toFixed())
-            let close = (await tokens[3][1].close((close_half), {from: acc_ray[x][1]}))
-            await getGas(close, 'Close' + (tokens[3][0]).toString())
-        }
-
-        for(var x = 0; x < acc_ray.length; x++) { // Users
-            for(var i = 2; i < tokens.length; i++){ // Tokens
-                let exercise_half = ((await tokens[i][1].balanceOf(acc_ray[x][1], {from: acc_ray[x][1]})).toFixed())
-                let exercise = (await tokens[i][1].exercise(exercise_half, {from: acc_ray[x][1]}))
-                await getGas(exercise, 'Exercise' + (tokens[i][0]).toString())
+            for(var x = 0; x < acc_ray.length; x++) {
+                let strike_balance = await dai.balanceOf(acc_ray[x][1], {from: acc_ray[x][1]})
+                let underlying_balance = await oat.balanceOf(acc_ray[x][1], {from: acc_ray[x][1]})
+                let zod_balance = await _zod.balanceOf(acc_ray[x][1], {from: acc_ray[x][1]})
+                let zod_approve = await oat.approve(zod_address, (underlying), {from: acc_ray[x][1]})
+                
+                if((zod_balance).toString() * 1 > 3*10**18){
+                    console.log(acc_ray[x][0], tokens[3][0], zod_balance.toString(), tokens[1][0], underlying_balance.toString())
+                    let zod_exercise = await _zod.exercise((10**18).toFixed(), {from: acc_ray[x][1]})
+                }
+                if((zod_balance).toString() * 1 < 2*10**18){
+                    continue
+                }
             }
         }
         
 
-        before_after.push(await getLedger('Exercise and Close MOATS', dai, oat, _doz, _zod))
         await getLockBook('Should be withdrawn from DEX', _doz, _zod)
         await getLedger('Exercise and Close MOATS', dai, oat, _doz, _zod)
         await getDexLedger('All tokens withdrawn from DEX', dai, oat, _doz, _zod, odex)
-        console.log(before_after)
+        console.log(ledger)
     });
 
 

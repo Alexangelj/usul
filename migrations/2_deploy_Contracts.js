@@ -16,8 +16,8 @@ var admin = '0x9995d8026d970db26C8de1553957f670C2C5707b'
 var rinkbey_eth = '0x1AddCFF77Ca0F032c7dCA322fd8bFE61Cae66A62'
 var ropsten_eth = '0x0Be00A19538Fac4BE07AC360C69378B870c412BF'
 var wei = 10**18
-var writer = '0xd06f1D77E53757ECDADdC5FadB908CDb3416AB3f'
-var purchaser = '0x3C8d8a68F9Cd1a9c41dE5eC8c5c14cfE73768562'
+var writer = '0xe19e523d82AB36C5bDE391F2e74c38bB4A5dC02d'
+var purchaser = '0x7caBC0510f24a281DBEcCd451fB23C17e7cDc489'
 
 
 module.exports = async (deployer, accounts) => {
