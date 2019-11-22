@@ -1,14 +1,11 @@
 const Wax = artifacts.require('Wax')
-const Dai = artifacts.require('Dai')
-const Stash40 = artifacts.require('Stash40')
-const Slate40 = artifacts.require('Slate40')
+const Stk = artifacts.require('STK')
 
 // New
 const Factory = artifacts.require('Factory')
-const Omn = artifacts.require('Omn')
-const Oat = artifacts.require('Oat')
-const Doz = artifacts.require('Doz')
-const Zod = artifacts.require('Zod')
+const Udr = artifacts.require('UDR')
+const cMoat = artifacts.require('cMoat')
+const pMoat = artifacts.require('pMoat')
 const Odex = artifacts.require('Odex')
 
 var _buyer = '0xE64aF0A0D319fb613983BB1D00A2baFfEAF1aBE9'
@@ -22,17 +19,17 @@ var purchaser = '0x7caBC0510f24a281DBEcCd451fB23C17e7cDc489'
 
 module.exports = async (deployer, accounts) => {
   // Strike price denominated in Dai tokens -> Slate
-  await deployer.deploy(Dai, '1000000000000000000000000', 'Dai', 18, 'DAI', {from: purchaser})
-  let dai = await Dai.deployed()
+  await deployer.deploy(Stk, '1000000000000000000000000', 'Strike Asset', 18, 'STK', {from: purchaser})
+  let STK = await Stk.deployed()
   // Underlying asset denominated in Oat -> Stash
-  await deployer.deploy(Oat, '1000000000000000000000000', 'Oat', 18, 'OAT')
-  let oat = await Oat.deployed()
+  await deployer.deploy(Udr, '1000000000000000000000000', 'Underlying Asset', 18, 'UDR')
+  let UDR = await Udr.deployed()
 
-  await deployer.deploy(Zod)
-  let zod_template = await Zod.deployed()
+  await deployer.deploy(pMoat)
+  let pMoat_template = await pMoat.deployed()
 
-  await deployer.deploy(Doz)
-  let doz_template = await Doz.deployed()
+  await deployer.deploy(cMoat)
+  let cMoat_template = await cMoat.deployed()
  
   await deployer.deploy(Wax)
   let wax = await Wax.deployed()
@@ -40,7 +37,7 @@ module.exports = async (deployer, accounts) => {
   await deployer.deploy(Odex)
   let odex = await Odex.deployed()
 
-  await deployer.deploy(Factory, zod_template.address, doz_template.address, dai.address, oat.address, wax.address)
+  await deployer.deploy(Factory, pMoat_template.address, cMoat_template.address, STK.address, UDR.address, wax.address)
   
   
 };

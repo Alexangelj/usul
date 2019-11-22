@@ -126,3 +126,4 @@ node_modules
 # VS Code
 .vscode/
 settings.json
+.vscode

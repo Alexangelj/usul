@@ -38,6 +38,7 @@ contract StrikeAsset(): # Strike price denominated in strike asset
     def transfer(_to: address, _value: uint256) -> bool:modifying
     def transferFrom(_from: address, _to: address, _value: uint256) -> bool:modifying
     def approve(_spender: address, _value: uint256) -> bool:modifying
+    def symbol() -> string[64]:constant
 
 
 contract UnderlyingAsset():
@@ -47,6 +48,7 @@ contract UnderlyingAsset():
     def transfer(_to: address, _value: uint256) -> bool:modifying
     def transferFrom(_from: address, _to: address, _value: uint256) -> bool:modifying
     def approve(_spender: address, _value: uint256) -> bool:modifying
+    def symbol() -> string[64]:constant
 
 
 contract Wax():
@@ -85,7 +87,7 @@ expired: public(bool)
 
 # EIP-20
 name: public(string[64])
-symbol: public(string[32])
+symbol: public(string[64])
 decimals: public(uint256)
 balanceOf: public(map(address, uint256))
 allowances: map(address, map(address, uint256))
@@ -116,6 +118,8 @@ def setup(  _strike: uint256,
             _wax_address: address,
             _strikeAsset_address: address,
             _underlyingAsset_address: address,
+            _name: string[64],
+            _symbol: string[64],
             ):
     """
     @notice - Setup is called from the factory contract using a contract template address
@@ -135,8 +139,8 @@ def setup(  _strike: uint256,
     self.wax = Wax(_wax_address)
 
     # EIP-20 Compliant Option Token
-    self.name = "Opposite of DOZ"
-    self.symbol = "ZOD"
+    self.name = _name
+    self.symbol = _symbol
     self.decimals = 10**18
     self.balanceOf[tx.origin] = 0
     self.total_supply = 0
@@ -338,6 +342,8 @@ def exercise(option_amount: uint256) -> bool:
     self.strikeAsset.transfer(msg.sender, strike_payment) # Deposit strike asset (10 per option)
     assigned_user: address = ZERO_ADDRESS
     lock_key: uint256 = 0
+    
+    
     for x in range(1, MAX_KEY_LENGTH + 1): # Loops over underwriters and depletes underlying_payment outlays
         lock_key = convert(x, uint256)
         if(self.lockBook.highest_lock > strike_payment): # If the highest underwritten amount > payment, assign that user
@@ -347,6 +353,8 @@ def exercise(option_amount: uint256) -> bool:
         if(self.lockBook.locks[lock_key].strike_amount > strike_payment): # If the looped user has underwritten > payment, assign that user
             assigned_user = self.lockBook.locks[lock_key].user
             break
+    
+    
     if(assigned_user == ZERO_ADDRESS): # If no assigned user, need to assign multiple users
         for i in range(1, MAX_KEY_LENGTH + 1):
             lock_key = convert(i, uint256)
@@ -369,6 +377,8 @@ def exercise(option_amount: uint256) -> bool:
         self._burn(msg.sender, options_exercised)
         self.lockBook.locks[lock_key].strike_amount -= strike_payment # Assigned user exercises the rest of the underlying payment
         return True
+    
+    
     # We have a user who can pay entire exercised amount
     self.underlyingAsset.transfer(assigned_user, underlying_payment)
     self.lockBook.locks[lock_key].strike_amount -= strike_payment # Assigned user pays the exercised underlying amount

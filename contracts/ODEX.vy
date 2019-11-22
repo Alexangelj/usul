@@ -1,4 +1,4 @@
-# @title A Decentralized Exchange for Option Tokens
+# @title A Decentralized Exchange for MOAT Tokens
 # 
 # @notice Implementation of a fulfilling orderbook with bid/ask
 # 

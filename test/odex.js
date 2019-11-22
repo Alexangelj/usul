@@ -1,24 +1,18 @@
 const assert = require('assert').strict;
-const Factory = artifacts.require('Factory')
-const Slate40 = artifacts.require('Slate40')
-const Stash40 = artifacts.require('Stash40')
-const Wax = artifacts.require('Wax')
-const Dai = artifacts.require('Dai')
-const Oat = artifacts.require('Oat')
-const Doz = artifacts.require('Doz')
+const Stk = artifacts.require('STK')
 const Odex = artifacts.require('Odex')
 
 
 
-contract('doz', accounts => {
+contract('cMOat', accounts => {
 
 
     var writer = accounts[0]
     var purchaser = accounts[1]
     let decimals = 10**18
     var eth = (10*10**18).toFixed()
-    var dai_deposit = (10*10**18).toFixed()
-    var token_symbol = 'DAI'
+    var STK_deposit = (10*10**18).toFixed()
+    var token_symbol = 'STK'
     var purchase_amount = (1*10**18).toFixed()
     var sell_amount = (1*10**18).toFixed()
     var gas = []
@@ -28,12 +22,12 @@ contract('doz', accounts => {
         gas.push([name + ' gas: ', spent])
     }
 
-    async function getBalances(dai, odex)  {
+    async function getBalances(STK, odex)  {
         let writer_eth = ((await web3.eth.getBalance(writer))/decimals).toFixed()
         console.log('writer Eth Balance: ', writer_eth)
 
-        let writer_bal = ((await dai.balanceOf(writer))/decimals).toString()
-        console.log('writer Dai Balance: ', writer_bal)
+        let writer_bal = ((await STK.balanceOf(writer))/decimals).toString()
+        console.log('writer STK Balance: ', writer_bal)
 
         let writer_dex_bal = ((await odex.getTokenBalance(token_symbol))/decimals).toString()
         console.log('writer DEX Token Balance: ', writer_dex_bal)
@@ -44,8 +38,8 @@ contract('doz', accounts => {
         let purchaser_eth = ((await web3.eth.getBalance(purchaser))/decimals).toFixed()
         console.log('purchaser Eth Balance: ', purchaser_eth)
 
-        let purchaser_bal = ((await dai.balanceOf(purchaser, {from: purchaser}))/decimals).toString()
-        console.log('purchaser Dai Balance: ', purchaser_bal)
+        let purchaser_bal = ((await STK.balanceOf(purchaser, {from: purchaser}))/decimals).toString()
+        console.log('purchaser STK Balance: ', purchaser_bal)
 
         let purchaser_dex_bal = ((await odex.getTokenBalance(token_symbol, {from: purchaser}))/decimals).toString()
         console.log('purchaser DEX Token Balance: ', purchaser_dex_bal)
@@ -73,12 +67,12 @@ contract('doz', accounts => {
 
     it('Creates Token Contract', async () => {
         console.log('\n')
-        let dai = await Dai.deployed()
-        console.log('Dai: ', dai.address)
-        await dai.transfer(writer, dai_deposit, {from: purchaser})
-        await dai.transfer(writer, dai_deposit, {from: purchaser})
-        let user_bal = (await dai.balanceOf(writer)).toString()
-        console.log('User Dai Balance: ', user_bal)
+        let STK = await Stk.deployed()
+        console.log('STK: ', STK.address)
+        await STK.transfer(writer, STK_deposit, {from: purchaser})
+        await STK.transfer(writer, STK_deposit, {from: purchaser})
+        let user_bal = (await STK.balanceOf(writer)).toString()
+        console.log('User STK Balance: ', user_bal)
     });
 
     it('Deposits and Withdraws Eth', async () => {
@@ -92,58 +86,58 @@ contract('doz', accounts => {
 
     it('Adds Token to DEX', async () => {
         console.log('\n')
-        let dai = await Dai.deployed()
+        let STK = await Stk.deployed()
         let odex = await Odex.deployed()
-        let add = await odex.addToken(token_symbol, dai.address)
+        let add = await odex.addToken(token_symbol, STK.address)
         
         let args = add.receipt.logs[0].args
         console.log('Symbol Added: ', args._token)
         console.log('Index: ', (args._symbolIndex).toNumber())
         
-        await getBalances(dai, odex)
+        await getBalances(STK, odex)
     });
 
 
     it('Deposits Tokens into Dex', async () => {
         console.log('\n')
-        let dai = await Dai.deployed()
+        let STK = await Stk.deployed()
         let odex = await Odex.deployed()
-        let approve = await dai.approve(odex.address, dai_deposit)
-        let deposit = await odex.depositToken(token_symbol, dai_deposit)
+        let approve = await STK.approve(odex.address, STK_deposit)
+        let deposit = await odex.depositToken(token_symbol, STK_deposit)
 
-        let approve2 = await dai.approve(odex.address, dai_deposit)
-        let approve3 = await dai.approve(odex.address, dai_deposit, {from: purchaser})
-        let writer_deposit = await odex.depositToken(token_symbol, dai_deposit)
-        let purchaser_deposit = await odex.depositToken(token_symbol, dai_deposit, {from: purchaser})
+        let approve2 = await STK.approve(odex.address, STK_deposit)
+        let approve3 = await STK.approve(odex.address, STK_deposit, {from: purchaser})
+        let writer_deposit = await odex.depositToken(token_symbol, STK_deposit)
+        let purchaser_deposit = await odex.depositToken(token_symbol, STK_deposit, {from: purchaser})
 
         
         let args = await deposit.receipt.logs[0].args
         console.log('Token Index: ', (args._symbolIndex).toString())
         console.log('Tokens Deposited: ', (args._amount_tokens).toString())
         
-        await getBalances(dai, odex)
+        await getBalances(STK, odex)
     });
 
 
     it('Withdraws Tokens from Dex', async () => {
         console.log('\n')
-        let dai = await Dai.deployed()
+        let STK = await Stk.deployed()
         let odex = await Odex.deployed()
-        let withdrawToken = await odex.withdrawToken(token_symbol, dai_deposit)
+        let withdrawToken = await odex.withdrawToken(token_symbol, STK_deposit)
         
         let args = await withdrawToken.receipt.logs[0].args
         console.log('Token Index: ', (args._symbolIndex).toString())
         console.log('Tokens Withdrawn: ', (args._amount_tokens).toString())
         
-        await getBalances(dai, odex)
+        await getBalances(STK, odex)
     });
 
 
     // Initiates exchange
     // Writer is selling: 1:1ETH, 1:2ETH, 1:4ETH
     // Purchaser is buying: 1:1ETH, 1:2ETH, 1:4ETH 
-    // Purchaser deposits 10 Dai and 10 Eth to trade with
-    // Writer deposits 10 Dai and 10 Eth to trade
+    // Purchaser deposits 10 STK and 10 Eth to trade with
+    // Writer deposits 10 STK and 10 Eth to trade
     // First, writer will put in a buy order for 1 token at 1 ether
     // Second, purchaser will put in a sell order for 1 token at 2 ether
     // Third, purchaser will put in another sell order for 1 token at 4 ether
@@ -155,7 +149,7 @@ contract('doz', accounts => {
     
     it('Exchange', async () => {
         console.log('\n')
-        let dai = await Dai.deployed()
+        let STK = await Stk.deployed()
         let odex = await Odex.deployed()
         // First, writer will put in a buy order for 1 token at 1 ether
         let purchase = await odex.buyToken(token_symbol, (10**18).toFixed(), purchase_amount)
@@ -189,12 +183,12 @@ contract('doz', accounts => {
         await getEvents(purchase3)
         await eventNames(sell)
         await getEvents(sell)
-        await getBalances(dai, odex)
+        await getBalances(STK, odex)
     });
 
     it('Continuous Exchange', async () => {
         console.log('\n')
-        let dai = await Dai.deployed()
+        let STK = await Stk.deployed()
         let odex = await Odex.deployed()
 
         // Get list of users
@@ -222,24 +216,24 @@ contract('doz', accounts => {
             for(var i = 0; i < list.length; i++){
                 // Deposit eth
                 await odex.depositEth({from: list[i][1], value: fundEth})
-                // transfer dai to other accounts
-                await dai.transfer(list[i][1], fundToken, {from: purchaser})
+                // transfer STK to other accounts
+                await STK.transfer(list[i][1], fundToken, {from: purchaser})
                 // approve token transfer
-                await dai.approve(odex.address, fundToken, {from: list[i][1]})
+                await STK.approve(odex.address, fundToken, {from: list[i][1]})
                 // deposit Tokens
                 await odex.depositToken(token_symbol, fundToken, {from: list[i][1]})
             }
         }
 
-        async function getListBalances(dai, odex, list)  {
+        async function getListBalances(STK, odex, list)  {
             for(var i = 0; i < list.length; i++){
                 console.log(' *** ACCOUNT *** ', list[i][0])
                 
                 let _eth = ((await web3.eth.getBalance(list[i][1]))/decimals).toFixed()
                 console.log('Eth Balance: ', _eth)
                 
-                let _bal = ((await dai.balanceOf(list[i][1], {from: list[i][1]}))/decimals).toString()
-                console.log('Dai Balance: ', _bal)
+                let _bal = ((await STK.balanceOf(list[i][1], {from: list[i][1]}))/decimals).toString()
+                console.log('STK Balance: ', _bal)
                 
                 let _dex_bal = ((await odex.getTokenBalance(token_symbol, {from: list[i][1]}))/decimals).toString()
                 console.log('DEX Token Balance: ', _dex_bal)
@@ -267,8 +261,8 @@ contract('doz', accounts => {
         await fund(buyers)
         await randomSellOrder(sellers)
         await randomBuyOrder(buyers)
-        await getListBalances(dai, odex, buyers)
-        await getListBalances(dai, odex, sellers)
+        await getListBalances(STK, odex, buyers)
+        await getListBalances(STK, odex, sellers)
     });
 
 

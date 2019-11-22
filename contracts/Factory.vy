@@ -1,19 +1,23 @@
-contract Zod():
+contract pMoat():
     def setup(  strike: uint256,
                 underlying: uint256,
                 maturity: timestamp,
                 _wax_address: address,
-                _dai_address: address,
-                _oat_address: address,
+                _strike_address: address,
+                _underlying_address: address,
+                _name: string[64],
+                _symbol: string[64],
                 ): modifying
 
-contract Doz():
+contract cMoat():
     def setup(  strike: uint256,
                 underlying: uint256,
                 maturity: timestamp,
                 _wax_address: address,
-                _dai_address: address,
-                _oat_address: address,
+                _strike_address: address,
+                _underlying_address: address,
+                _name: string[64],
+                _symbol: string[64],
                 ): modifying
 
 
@@ -28,15 +32,15 @@ Error: event({message: string[50]})
 Payment: event({amount: wei_value, _from: indexed(address)})
 
 # Contracts
-zodTemplate: public(address)
-dozTemplate: public(address)
-user_to_doz: map(address, address)
-user_to_zod: map(address, address)
+pMoatTemplate: public(address)
+cMoatTemplate: public(address)
+user_to_cMoat: map(address, address)
+user_to_pMoat: map(address, address)
 contract_to_user: map(address, address)
 
 # Initial tokens
-dai_address: public(address)
-oat_address: public(address)
+strike_address: public(address)
+underlying_address: public(address)
 
 # Utility
 wax_address: public(address)
@@ -47,84 +51,92 @@ def __default__():
     log.Payment(msg.value, msg.sender)
 
 @public
-def __init__(   _zodTemplate: address,
-                _dozTemplate: address,  
-                _dai_address: address, # strike asset denomination
-                _oat_address: address, # underlying asset
+def __init__(   _pMoatTemplate: address,
+                _cMoatTemplate: address,  
+                _strike_address: address, # strike asset denomination
+                _underlying_address: address, # underlying asset
                 _wax_address: address, 
                 ):
-    assert self.zodTemplate == ZERO_ADDRESS
-    assert _zodTemplate != ZERO_ADDRESS
-    self.zodTemplate = _zodTemplate
-    self.dozTemplate = _dozTemplate
-    self.dai_address = _dai_address
-    self.oat_address = _oat_address
+    assert self.pMoatTemplate == ZERO_ADDRESS
+    assert _pMoatTemplate != ZERO_ADDRESS
+    self.pMoatTemplate = _pMoatTemplate
+    self.cMoatTemplate = _cMoatTemplate
+    self.strike_address = _strike_address
+    self.underlying_address = _underlying_address
     self.wax_address = _wax_address
     
     
 @public
 @payable
-def createDoz(  strike: uint256, # doz's strike is denominated in Dai, Example: 10 dai for 1 Oat.
-                underlying: uint256, # doz's underlying is Oat
+def createcMoat(strike: uint256, # cMoat's strike is denominated in strike, Example: 10 strike for 1 Oat.
+                underlying: uint256, # cMoat's underlying is Oat
                 maturity: timestamp,
+                _name: string[64],
+                _symbol: string[64],
                 ) -> address:
     assert msg.sender != ZERO_ADDRESS
-    assert self.dozTemplate != ZERO_ADDRESS
+    assert self.cMoatTemplate != ZERO_ADDRESS
 
-    doz: address = create_forwarder_to(self.dozTemplate)
-    _doz: address = doz
-    Doz(doz).setup( strike,
+    cMoat: address = create_forwarder_to(self.cMoatTemplate)
+    _cMoat: address = cMoat
+    cMoat(cMoat).setup( strike,
                     underlying,
                     maturity,
                     self.wax_address,
-                    self.dai_address,
-                    self.oat_address,
+                    self.strike_address,
+                    self.underlying_address,
+                    _name,
+                    _symbol
                     )
-    self.user_to_doz[msg.sender] = doz
-    self.contract_to_user[doz] = msg.sender
-    log.Newcontract(doz,
+    self.user_to_cMoat[msg.sender] = cMoat
+    self.contract_to_user[cMoat] = msg.sender
+    log.Newcontract(cMoat,
                     strike,
                     underlying,
                     maturity,
                     )
-    return doz
+    return cMoat
 
 @public
 @payable
-def createZod(  strike: uint256, # doz's strike is denominated in Dai, Example: 10 dai for 1 Oat.
-                underlying: uint256, # doz's underlying is Oat
+def createpMoat(strike: uint256, # cMoat's strike is denominated in strike, Example: 10 strike for 1 Oat.
+                underlying: uint256, # cMoat's underlying is Oat
                 maturity: timestamp,
+                _name: string[64],
+                _symbol: string[64],
                 ) -> address:
     assert msg.sender != ZERO_ADDRESS
-    assert self.zodTemplate != ZERO_ADDRESS
+    assert self.pMoatTemplate != ZERO_ADDRESS
 
-    zod: address = create_forwarder_to(self.zodTemplate)
-    _zod: address = zod
-    Zod(zod).setup( strike,
+    pMoat: address = create_forwarder_to(self.pMoatTemplate)
+    _pMoat: address = pMoat
+    pMoat(pMoat).setup(strike,
                     underlying,
                     maturity,
                     self.wax_address,
-                    self.dai_address,
-                    self.oat_address,
+                    self.strike_address,
+                    self.underlying_address,
+                    _name,
+                    _symbol
                     )
-    self.user_to_zod[msg.sender] = zod
-    self.contract_to_user[zod] = msg.sender
-    log.Newcontract(zod,
+    self.user_to_pMoat[msg.sender] = pMoat
+    self.contract_to_user[pMoat] = msg.sender
+    log.Newcontract(pMoat,
                     strike,
                     underlying,
                     maturity,
                     )
-    return zod
+    return pMoat
 
 @public
 @constant
-def getDoz(user: address) -> address:
-    return self.user_to_doz[user]
+def getcMoat(user: address) -> address:
+    return self.user_to_cMoat[user]
 
 @public
 @constant
-def getZod(user: address) -> address:
-    return self.user_to_zod[user]
+def getpMoat(user: address) -> address:
+    return self.user_to_pMoat[user]
 
 @public
 @constant

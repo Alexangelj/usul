@@ -1,7 +1,7 @@
 {
-    "name": "emerald",
+    "name": "MOAT",
     "version": "0.1.0",
-    "description": "A decentralized options exchange",
+    "description": "Multilateral Optionality Asset Transfers",
     "engines": {
         "node": "8.10.0"
     },

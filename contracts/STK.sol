@@ -56,7 +56,7 @@ contract EIP20Interface {
 }
 
 
-contract Oat is EIP20Interface {
+contract STK is EIP20Interface {
 
     uint256 constant private MAX_UINT256 = 2**256 - 1;
     mapping (address => uint256) public balances;

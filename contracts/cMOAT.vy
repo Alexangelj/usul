@@ -1,10 +1,10 @@
-# @title A Right to Call - Physically Settled ERC 20 Token
+# @title c.M.O.A.T: Call - Multilateral Optionality Asset Transfer
 # 
-# @notice Implementation of a Tokenized American Call Option on the Ethereum Network - Solo contract
+# @notice Implementation of a Tokenized Asset Transfer Agreement on the Ethereum Network
 # 
 # @author Alexander Angel
 # 
-# @dev Uses a factory to initialize and deploy option contracts
+# @dev Uses a factory to initialize and deploy MOAT templates
 #
 # @version 0.1.0b14
 
@@ -31,8 +31,8 @@ contract Factory():
     def getDoz(user_addr: address) -> address:constant
     def getUser(omn: address) -> address:constant
 
- 
-contract StrikeAsset(): # Strike price denominated in strike asset
+
+contract StrikeAsset():
     def totalSupply() -> uint256:constant
     def balanceOf(_owner: address) -> uint256:constant
     def allowance(_owner: address, _spender: address) -> uint256:constant
@@ -60,6 +60,8 @@ Exercise: event({_from: indexed(address), amount: uint256, key: uint256})
 Close: event({_from: indexed(address), amount: uint256, key: uint256})
 Mature: event({contract_addr: indexed(address)})
 Payment: event({amount: wei_value, source: indexed(address)})
+
+
 # EIP-20 Events
 Transfer: event({_from: indexed(address), _to: indexed(address), _value: uint256})
 Approval: event({_owner: indexed(address), _spender: indexed(address), _value: uint256})
@@ -72,36 +74,36 @@ underlyingAsset: public(UnderlyingAsset)
 wax: public(Wax)
 
 
-# Probably can delete
-owner: address
+# Administrator - For Early Versions ONLY
+admin: address
 
 
-# Contract parameters
-strike: public(uint256)
-underlying: public(uint256)
-maturity: public(timestamp)
-premium: public(uint256)
-expired: public(bool)
+# Contract specific parameters
+strike: public(uint256) # Denominated in strike asset
+underlying: public(uint256) # Denominated in underlying asset
+maturity: public(timestamp) # UNIX Timestamp
+premium: public(uint256) # Temporary and initial value per MOAT token
+expired: public(bool) # Expired MOAT tokens are worthless
 
 
 # EIP-20
 name: public(string[64])
-symbol: public(string[32])
+symbol: public(string[64])
 decimals: public(uint256)
 balanceOf: public(map(address, uint256))
 allowances: map(address, map(address, uint256))
-total_supply: uint256
-minter: address
+total_supply: public(uint256)
+minter: public(address)
 
 
 # User Claims
-lockBook: public(LockBook)
-highest_key: uint256
-user_to_key: public(map(address, uint256))
+lockBook: public(LockBook) # Struct for lists of underlying deposits
+highest_key: public(uint256) # Largest underlying deposit respective key
+user_to_key: public(map(address, uint256)) # Link users to their keys, 1 key per address
 
 
 # Constants
-MAX_KEY_LENGTH: constant(uint256) = 2**10-1
+MAX_KEY_LENGTH: constant(uint256) = 2**10-1 # Used for looping over the book
 
 
 @public
@@ -110,6 +112,7 @@ def __default__():
     log.Payment(msg.value, msg.sender)
 
 
+# Initializer
 @public
 def setup(  _strike: uint256,
             _underlying: uint256,
@@ -117,27 +120,42 @@ def setup(  _strike: uint256,
             _wax_address: address,
             _strikeAsset_address: address,
             _underlyingAsset_address: address,
+            _name: string[64],
+            _symbol: string[64],
             ):
     """
-    @notice - Setup is called from the factory contract using a contract template address
+    @notice                         Setup is called from the factory contract using a contract template address
+    @param _strike                  Number of strike asset tokens, 18 decimals
+    @param _underlying              Number of underlying asset tokens, 18 decimals
+    @param _maturity                UNIX timestamp for token expiry
+    @param _wax_address             Contract address for auxillarly maturity condition checking
+    @param _strikeAsset_address     Address of strike asset contract
+    @param _underlyingAsst_address  Address of underlying asset contract
+    @param _name                    Name of this contract linked to its parameters
+    @param _symbol                  Naming convention to represent the paramers -> 
+                                    Strike Symbol + Underlying Symbol + UNIX Timestamp + 
+                                    Type (C or P) + # of Strike tokens per # of Underlying tokens
     """
-    assert(self.factory == ZERO_ADDRESS and self.owner == ZERO_ADDRESS) and msg.sender != ZERO_ADDRESS
+    assert(self.factory == ZERO_ADDRESS and self.admin == ZERO_ADDRESS) and msg.sender != ZERO_ADDRESS
+    
+    
+    # Administrative variables
     self.factory = Factory(msg.sender)
-    self.owner = tx.origin
+    self.admin = tx.origin
     
     # Contract Parameters
-    self.strike = _strike # Strike denominated in Strike Asset Amount -> 10 Dai
-    self.underlying = _underlying # Underlying denominated in Underlying Asset Amount -> 2 Oat
-    self.maturity = _maturity # Timestamp of maturity date
+    self.strike = _strike
+    self.underlying = _underlying
+    self.maturity = _maturity
 
     # Interfaces
     self.strikeAsset = StrikeAsset(_strikeAsset_address)
     self.underlyingAsset = UnderlyingAsset(_underlyingAsset_address)
     self.wax = Wax(_wax_address)
 
-    # EIP-20 Compliant Option Token
-    self.name = "Dai Oat December"
-    self.symbol = "DOZ"
+    # EIP-20 Standard
+    self.name = _name
+    self.symbol = _symbol
     self.decimals = 10**18
     self.balanceOf[tx.origin] = 0
     self.total_supply = 0
@@ -270,74 +288,80 @@ def burnFrom(_to: address, _value: uint256):
     self._burn(_to, _value)
 
 
+# Utility
 @public
 def isMature() -> bool:
     """
-    @notice - Checks to see if this Omn contract has expired.
+    @dev Checks maturity conditions
     """
     self.expired = self.wax.timeToExpiry(self.maturity)
     return self.expired
 
 
+# Core
 @public
 @payable
-def write(underwritten_amount: uint256) -> bool:
+def write(deposit: uint256) -> bool:
     """
-    @notice - Writer mints DOZ tokens which represent underlying asset deposits.
+    @dev   Writer mints tokens: 
+                   Underwritten Amount 
+           cMOAT = ___________________
+                   Underlying Parameter
+    @param deposit Deposit amount of underlying assets, 18 decimal places
     """
-    lock_key: uint256 = 0 # Memory lock key number
-    if(self.user_to_key[msg.sender] > 0): # if user has a key, use their key
+    lock_key: uint256 = 0 # Temp variable lock key number
+    if(self.user_to_key[msg.sender] > 0): # If user has a key, use their key
         lock_key = self.user_to_key[msg.sender]
-        self.lockBook.locks[lock_key].underlying_amount += underwritten_amount
-    else: # Else, increment key length, set a new Account
-        lock_key = self.lockBook.lock_length + 1 # temporary lock key is length + 1
+        self.lockBook.locks[lock_key].underlying_amount += deposit
+    else: # Else, increment key length, and set a new Account
+        lock_key = self.lockBook.lock_length + 1 # Temporary lock key is length + 1
         self.lockBook.lock_length += 1 # Increment the lock key length
         self.user_to_key[msg.sender] = lock_key # Set user address to lock key
-        self.lockBook.locks[lock_key] = Account({user: msg.sender, underlying_amount: underwritten_amount})
-    
-    if(self.lockBook.locks[lock_key].underlying_amount > self.lockBook.highest_lock): # If underlying amount is highest, set
+        self.lockBook.locks[lock_key] = Account({user: msg.sender, underlying_amount: deposit}) # Create new account at [key]
+    if(self.lockBook.locks[lock_key].underlying_amount > self.lockBook.highest_lock): # If underlying amount is greater, set new highest_key
         self.lockBook.highest_lock = self.lockBook.locks[lock_key].underlying_amount
         self.highest_key = lock_key
-    
-    token_amount: uint256 = underwritten_amount * self.decimals / self.underlying  # Example: self.underlying = 2, so if I underwrite 12, I get 12 / 2 = 6 option tokens
-    self.underlyingAsset.transferFrom(msg.sender, self, underwritten_amount) # Store underlying in contract
-    self.mint(msg.sender, token_amount) # Mint amount of tokens equal to the underlying deposited / underlying asset amount
+    token_amount: uint256 = deposit * self.decimals / self.underlying  # Example: Underlying Parameter = 2, so if underwriten amount is  12, 12 / 2 = 6 cMOAT tokens minted
+    self.underlyingAsset.transferFrom(msg.sender, self, deposit) # User deposits underwritten amount into contract
+    self.mint(msg.sender, token_amount)
     log.Write(msg.sender, token_amount, lock_key)
     return True
 
 
 @public
 @payable
-def close(option_amount: uint256) -> bool:
+def close(amount: uint256) -> bool:
     """
-    @notice - Writer can burn Omn to have their underwritten assets returned. 
+    @dev          Writer can burn cMOAT tokens to redeem their underlying deposits
+    @param amount Amount of cMOAT tokens to burn, 18 decimals  
     """
     key: uint256 = self.user_to_key[msg.sender]
-    underlying_redeem: uint256 = self.underlying * option_amount / self.decimals
-    assert self.lockBook.locks[key].underlying_amount >= underlying_redeem # Make sure user redeeming has underwritten
-    assert self.balanceOf[msg.sender] >= option_amount # Check to see user has the redeeming option tokens
+    underlying_redeem: uint256 = self.underlying * amount / self.decimals
+    assert self.lockBook.locks[key].underlying_amount >= underlying_redeem # Check user redeeming has underwritten
+    assert self.balanceOf[msg.sender] >= amount # Check user has cMOAT tokens to burn
     self.lockBook.locks[key].underlying_amount -= underlying_redeem 
-    self.underlyingAsset.transfer(msg.sender, underlying_redeem) # Underlying asset sent to Purchaser
-    self._burn(msg.sender, option_amount) # Burn the doz tokens that were closed
-    log.Close(self.lockBook.locks[key].user, option_amount, key)
+    self.underlyingAsset.transfer(msg.sender, underlying_redeem) # Underlying asset redeemed to user
+    self._burn(msg.sender, amount) # Burn the cMOAT tokens that were redeemed for underwritten assets
+    log.Close(self.lockBook.locks[key].user, amount, key)
     return True
 
 
 @public
 @payable
-def exercise(option_amount: uint256) -> bool:
+def exercise(amount: uint256) -> bool:
     """
-    @notice - Buyer sends strike asset in exchange for underlying asset. 
-    @param - Amount of options being exercised, integers where 1*10**18 = 1 option token, a coefficient
+    @dev   Exercising party exchanges strike asset for underlying asset
+    @param Amount of cMOAT tokens being exercised, 18 decimals
     """
-    #assert self.lockBook.locks[self.user_to_key[msg.sender]].underlying_amount == 0 # Exercising party is not underwriter
-    assert self.balanceOf[msg.sender] >= option_amount
-    strike_payment: uint256 = self.strike * option_amount / self.decimals
-    underlying_payment: uint256 = self.underlying * option_amount / self.decimals
+    assert self.balanceOf[msg.sender] >= amount
+    strike_payment: uint256 = self.strike * amount / self.decimals
+    underlying_payment: uint256 = self.underlying * amount / self.decimals
     self.strikeAsset.transferFrom(msg.sender, self, strike_payment) # Deposit strike asset (10 per option)
     self.underlyingAsset.transfer(msg.sender, underlying_payment) # Withdraw underlying asset (2 per option) from contract
     assigned_user: address = ZERO_ADDRESS
     lock_key: uint256 = 0
+    
+    
     for x in range(1, MAX_KEY_LENGTH + 1): # Loops over underwriters and depletes underlying_payment outlays
         lock_key = convert(x, uint256)
         if(self.lockBook.highest_lock > underlying_payment): # If the highest underwritten amount > payment, assign that user
@@ -347,6 +371,8 @@ def exercise(option_amount: uint256) -> bool:
         if(self.lockBook.locks[lock_key].underlying_amount > underlying_payment): # If the looped user has underwritten > payment, assign that user
             assigned_user = self.lockBook.locks[lock_key].user
             break
+
+    
     if(assigned_user == ZERO_ADDRESS): # If no assigned user, need to assign multiple users
         for i in range(1, MAX_KEY_LENGTH + 1):
             lock_key = convert(i, uint256)
@@ -369,21 +395,27 @@ def exercise(option_amount: uint256) -> bool:
         self._burn(msg.sender, options_exercised)
         self.lockBook.locks[lock_key].underlying_amount -= underlying_payment # Assigned user exercises the rest of the underlying payment
         return True
+    
+    
     # We have a user who can pay entire exercised amount
     self.strikeAsset.transfer(assigned_user, strike_payment)
     self.lockBook.locks[lock_key].underlying_amount -= underlying_payment # Assigned user pays the exercised underlying amount
-    log.Exercise(msg.sender, option_amount, lock_key)
-    self._burn(msg.sender, option_amount)
+    log.Exercise(msg.sender, amount, lock_key)
+    self._burn(msg.sender, amount)
     return True
 
 
 @public
-def expire() -> bool: # Anyone can call to close all remaining contract tokens
-    self.expired = True
-    assert self.expired
-    key: uint256 = 1
-    for x in range(1, MAX_KEY_LENGTH): # for each key, redeem the tokens to their owners and burn the contract tokens
-        if(self.lockBook.locks[convert(x, uint256)].user == ZERO_ADDRESS):
+def expire() -> bool:
+    """
+    @notice Any user can call this public function to expire this specific cMOAT token
+    @dev    Sets total supply to 0, does not burn any tokens
+    """
+    self.expired = True # FIX: temporary test store
+    assert self.expired # cMOAT's UNIX timestamp < block.timestamp
+    key: uint256 = 1 # Temporary key value 
+    for x in range(1, MAX_KEY_LENGTH): # For each key, redeem the tokens to their underwriters, burn the cMOAT tokens
+        if(self.lockBook.locks[convert(x, uint256)].user == ZERO_ADDRESS): # If we reach end of users in the lock book, end the loop
             break
         key = convert(x, uint256)
         underlying_amt: uint256 = self.lockBook.locks[key].underlying_amount
