@@ -374,16 +374,19 @@ def exercise(amount: uint256) -> bool:
 
     
     if(assigned_user == ZERO_ADDRESS): # If no assigned user, need to assign multiple users
-        for i in range(1, MAX_KEY_LENGTH + 1):
+        for i in range(1, 3):
             lock_key = convert(i, uint256)
             user: address = self.lockBook.locks[lock_key].user # Get user address of lock_key
             underlying_amount: uint256 = self.lockBook.locks[lock_key].underlying_amount # Get underlying amount of user
-            options_exercised: uint256 = underlying_amount / self.underlying * self.decimals # Get max amount of options that can be exercised
+            options_exercised: uint256 = underlying_amount * self.decimals / self.underlying  # Get max amount of options that can be exercised
             if(underlying_amount > underlying_payment): # If the looped user has underwritten > underlying left, assign that user
                 assigned_user = self.lockBook.locks[lock_key].user
                 break
             # We need to exercise options using multiple underwritten balances
-            self.strikeAsset.transfer(user, self.strike * options_exercised / self.decimals) # Transfer proportional strike payment to entire balance of assigned user
+            if(user == ZERO_ADDRESS): # If we pass over all users but there are still options oustanding to be exercised, set previous user as user
+                user = self.lockBook.locks[lock_key - 1].user
+                break
+            self.strikeAsset.transfer(user, self.strike / self.decimals * options_exercised ) # Transfer proportional strike payment to entire balance of assigned user
             underlying_payment -= underlying_amount # Update underlying payment leftover   
             log.Exercise(msg.sender, options_exercised, lock_key)
             self._burn(msg.sender, options_exercised) # Burn amount of tokens proportional to entire underlying balance of user

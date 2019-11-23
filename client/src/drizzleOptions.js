@@ -1,5 +1,8 @@
 import Factory from './artifacts/Factory.json'
-import Doz from './artifacts/DOZ.json'
+import cMoat from './artifacts/cMOAT.json'
+import pMoat from './artifacts/pMOAT.json'
+import Stk from './artifacts/STK.json'
+import Udr from './artifacts/UDR.json'
 
 
 const drizzleOptions = {
@@ -12,11 +15,12 @@ const drizzleOptions = {
       },
     contracts: [
         Factory,
-        Doz
+        cMoat,
+        pMoat,
+        Stk,
+        Udr
     ],
     events: {
-        Factory:["Newomn"],
-        Doz: ["Transfer"]
     },
     polls: {
         // set polling interval to 30secs so we don't get buried in poll events

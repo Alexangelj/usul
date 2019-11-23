@@ -418,7 +418,6 @@ def sellToken(symbol_name: string[64], priceWei: wei_value, amount: uint256):
     amount_tokens_required: uint256 = amount
 
     if(self.tokens[_symbolIndex].amount_buy_prices == 0 or self.tokens[_symbolIndex].current_buy_price < priceWei):
-        #log.Error('Create Sell limit order for unmatched 1')
         self.createSellLimitOrderUnmatched(msg.sender, symbol_name, _symbolIndex, priceWei, amount_tokens_required, total_eth_required)
     else:
         # Execute market sell order
@@ -467,7 +466,6 @@ def sellToken(symbol_name: string[64], priceWei: wei_value, amount: uint256):
             whilePrice = self.tokens[_symbolIndex].current_buy_price
         if(amount_tokens_required > 0):
             # create Sell limit order for tokens unable to match with a sell order for a Seller
-            #log.Error('Create Sell limit order for unmatched 2')
             self.createSellLimitOrderUnmatched(msg.sender, symbol_name, _symbolIndex, priceWei, amount_tokens_required, total_eth_required)
 
 

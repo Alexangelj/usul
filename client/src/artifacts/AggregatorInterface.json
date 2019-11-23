@@ -32,15 +32,15 @@
       "type": "function"
     }
   ],
-  "metadata": "{\"compiler\":{\"version\":\"0.5.12+commit.7709ece9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"currentAnswer\",\"outputs\":[{\"internalType\":\"int256\",\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"updatedHeight\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/v0-legacy/ECOPriceOracle.sol\":\"AggregatorInterface\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/v0-legacy/ECOPriceOracle.sol\":{\"keccak256\":\"0x3028b2637d84662dc6a6f64ff34590fd42e8deb5c76f21116ddd88442c74b995\",\"urls\":[\"bzz-raw://5e7ac78bb5290be8710c8acf678f1dbd119ca0eb8e367761def4b3e296c1de60\",\"dweb:/ipfs/QmYrmt2poQM56pT88z6nX3ZD7wo79h6TYyEg3kDaCoBhW2\"]}},\"version\":1}",
+  "metadata": "{\"compiler\":{\"version\":\"0.5.12+commit.7709ece9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"currentAnswer\",\"outputs\":[{\"internalType\":\"int256\",\"name\":\"\",\"type\":\"int256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"updatedHeight\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/v0-legacy/ECOPriceOracle.sol\":\"AggregatorInterface\"},\"evmVersion\":\"byzantium\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/v0-legacy/ECOPriceOracle.sol\":{\"keccak256\":\"0x3028b2637d84662dc6a6f64ff34590fd42e8deb5c76f21116ddd88442c74b995\",\"urls\":[\"bzz-raw://5e7ac78bb5290be8710c8acf678f1dbd119ca0eb8e367761def4b3e296c1de60\",\"dweb:/ipfs/QmYrmt2poQM56pT88z6nX3ZD7wo79h6TYyEg3kDaCoBhW2\"]}},\"version\":1}",
   "bytecode": "0x",
   "deployedBytecode": "0x",
   "sourceMap": "",
   "deployedSourceMap": "",
   "source": "pragma solidity 0.5.12;\r\n\r\ninterface AggregatorInterface {\r\n  function currentAnswer() external view returns (int256);\r\n  function updatedHeight() external view returns (uint256);\r\n}\r\n\r\ncontract ECOPriceOracle {\r\n  AggregatorInterface internal referenceAddress;\r\n\r\n  constructor(address _aggregator) public {\r\n    referenceAddress = AggregatorInterface(_aggregator);\r\n  }\r\n\r\n  function getLatestPrice() public view returns (int256) {\r\n    return referenceAddress.currentAnswer();\r\n  }\r\n\r\n  function getLatestUpdateHeight() public view returns (uint256) {\r\n    return referenceAddress.updatedHeight();\r\n  }\r\n}",
-  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/v0-legacy/ECOPriceOracle.sol",
+  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/v0-legacy/ECOPriceOracle.sol",
   "ast": {
-    "absolutePath": "/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/v0-legacy/ECOPriceOracle.sol",
+    "absolutePath": "/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/v0-legacy/ECOPriceOracle.sol",
     "exportedSymbols": {
       "AggregatorInterface": [
         655
@@ -603,7 +603,7 @@
     "src": "0:608:3"
   },
   "legacyAST": {
-    "absolutePath": "/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/v0-legacy/ECOPriceOracle.sol",
+    "absolutePath": "/C/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/legacy/v0-legacy/ECOPriceOracle.sol",
     "exportedSymbols": {
       "AggregatorInterface": [
         655
@@ -1171,7 +1171,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-20T20:54:43.211Z",
+  "updatedAt": "2019-11-22T19:17:59.854Z",
   "devdoc": {
     "methods": {}
   },

@@ -69,19 +69,19 @@
       "inputs": [
         {
           "type": "address",
-          "name": "_zodTemplate"
+          "name": "_pMoatTemplate"
         },
         {
           "type": "address",
-          "name": "_dozTemplate"
+          "name": "_cMoatTemplate"
         },
         {
           "type": "address",
-          "name": "_dai_address"
+          "name": "_strike_address"
         },
         {
           "type": "address",
-          "name": "_oat_address"
+          "name": "_underlying_address"
         },
         {
           "type": "address",
@@ -93,7 +93,7 @@
       "type": "constructor"
     },
     {
-      "name": "createDoz",
+      "name": "createcMoat",
       "outputs": [
         {
           "type": "address",
@@ -113,15 +113,23 @@
           "type": "uint256",
           "unit": "sec",
           "name": "maturity"
+        },
+        {
+          "type": "string",
+          "name": "_name"
+        },
+        {
+          "type": "string",
+          "name": "_symbol"
         }
       ],
       "constant": false,
       "payable": true,
       "type": "function",
-      "gas": 119561
+      "gas": 121914
     },
     {
-      "name": "createZod",
+      "name": "createpMoat",
       "outputs": [
         {
           "type": "address",
@@ -141,15 +149,23 @@
           "type": "uint256",
           "unit": "sec",
           "name": "maturity"
+        },
+        {
+          "type": "string",
+          "name": "_name"
+        },
+        {
+          "type": "string",
+          "name": "_symbol"
         }
       ],
       "constant": false,
       "payable": true,
       "type": "function",
-      "gas": 119591
+      "gas": 121944
     },
     {
-      "name": "getDoz",
+      "name": "getcMoat",
       "outputs": [
         {
           "type": "address",
@@ -168,7 +184,7 @@
       "gas": 765
     },
     {
-      "name": "getZod",
+      "name": "getpMoat",
       "outputs": [
         {
           "type": "address",
@@ -206,7 +222,7 @@
       "gas": 825
     },
     {
-      "name": "zodTemplate",
+      "name": "pMoatTemplate",
       "outputs": [
         {
           "type": "address",
@@ -220,7 +236,7 @@
       "gas": 701
     },
     {
-      "name": "dozTemplate",
+      "name": "cMoatTemplate",
       "outputs": [
         {
           "type": "address",
@@ -234,7 +250,7 @@
       "gas": 731
     },
     {
-      "name": "dai_address",
+      "name": "strike_address",
       "outputs": [
         {
           "type": "address",
@@ -248,7 +264,7 @@
       "gas": 761
     },
     {
-      "name": "oat_address",
+      "name": "underlying_address",
       "outputs": [
         {
           "type": "address",
@@ -276,15 +292,83 @@
       "gas": 821
     }
   ],
-  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05260a06107026101403934156100a157600080fd5b602061070260c03960c05160205181106100ba57600080fd5b50602060206107020160c03960c05160205181106100d757600080fd5b50602060406107020160c03960c05160205181106100f457600080fd5b50602060606107020160c03960c051602051811061011157600080fd5b50602060806107020160c03960c051602051811061012e57600080fd5b506000541561013c57600080fd5b6000610140511861014c57600080fd5b6101405160005561016051600155610180516005556101a0516006556101c0516007556106ea56600436101561000d57610548565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263a9793807600051141561022857600033186100bc57600080fd5b6000600154186100cb57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006001540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061013d57600080fd5b610140526101405161020052610140513b61015757600080fd5b61014051301861016657600080fd5b6000600060c463c8404975610220526004356102405260243561026052604435610280526007546102a0526005546102c0526006546102e05261023c6000610140515af16101b357600080fd5b6101405160023360e05260c052604060c020553360046101405160e05260c052604060c02055600435610340526024356103605260443561038052610140517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610340a26101405160005260206000f350005b639c58162860005114156103af576000331861024357600080fd5b60006000541861025257600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806102c457600080fd5b610140526101405161020052610140513b6102de57600080fd5b6101405130186102ed57600080fd5b6000600060c463c8404975610220526004356102405260243561026052604435610280526007546102a0526005546102c0526006546102e05261023c6000610140515af161033a57600080fd5b6101405160033360e05260c052604060c020553360046101405160e05260c052604060c02055600435610340526024356103605260443561038052610140517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610340a26101405160005260206000f350005b63023977e360005114156103f65734156103c857600080fd5b60043560205181106103d957600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b636531f920600051141561043d57341561040f57600080fd5b600435602051811061042057600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561048457341561045657600080fd5b600435602051811061046757600080fd5b50600460043560e05260c052604060c0205460005260206000f350005b637256414260005114156104ab57341561049d57600080fd5b60005460005260206000f350005b63ec68ef0c60005114156104d25734156104c457600080fd5b60015460005260206000f350005b634905e59f60005114156104f95734156104eb57600080fd5b60055460005260206000f350005b637980b868600051141561052057341561051257600080fd5b60065460005260206000f350005b63f9e204e8600051141561054757341561053957600080fd5b60075460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a25b6101746106ea036101746000396101746106ea036000f3",
-  "deployedBytecode": "0x600436101561000d57610548565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263a9793807600051141561022857600033186100bc57600080fd5b6000600154186100cb57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006001540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f08061013d57600080fd5b610140526101405161020052610140513b61015757600080fd5b61014051301861016657600080fd5b6000600060c463c8404975610220526004356102405260243561026052604435610280526007546102a0526005546102c0526006546102e05261023c6000610140515af16101b357600080fd5b6101405160023360e05260c052604060c020553360046101405160e05260c052604060c02055600435610340526024356103605260443561038052610140517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610340a26101405160005260206000f350005b639c58162860005114156103af576000331861024357600080fd5b60006000541861025257600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610160526c010000000000000000000000006000540261017b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061018f5260606101606000f0806102c457600080fd5b610140526101405161020052610140513b6102de57600080fd5b6101405130186102ed57600080fd5b6000600060c463c8404975610220526004356102405260243561026052604435610280526007546102a0526005546102c0526006546102e05261023c6000610140515af161033a57600080fd5b6101405160033360e05260c052604060c020553360046101405160e05260c052604060c02055600435610340526024356103605260443561038052610140517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610340a26101405160005260206000f350005b63023977e360005114156103f65734156103c857600080fd5b60043560205181106103d957600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b636531f920600051141561043d57341561040f57600080fd5b600435602051811061042057600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b636f77926b600051141561048457341561045657600080fd5b600435602051811061046757600080fd5b50600460043560e05260c052604060c0205460005260206000f350005b637256414260005114156104ab57341561049d57600080fd5b60005460005260206000f350005b63ec68ef0c60005114156104d25734156104c457600080fd5b60015460005260206000f350005b634905e59f60005114156104f95734156104eb57600080fd5b60055460005260206000f350005b637980b868600051141561052057341561051257600080fd5b60065460005260206000f350005b63f9e204e8600051141561054757341561053957600080fd5b60075460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a2",
-  "source": "contract Zod():\r\n    def setup(  strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                _wax_address: address,\r\n                _dai_address: address,\r\n                _oat_address: address,\r\n                ): modifying\r\n\r\ncontract Doz():\r\n    def setup(  strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                _wax_address: address,\r\n                _dai_address: address,\r\n                _oat_address: address,\r\n                ): modifying\r\n\r\n\r\nNewcontract: event({\r\n                contract_addr: indexed(address), \r\n                strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                })\r\n\r\nError: event({message: string[50]})\r\nPayment: event({amount: wei_value, _from: indexed(address)})\r\n\r\n# Contracts\r\nzodTemplate: public(address)\r\ndozTemplate: public(address)\r\nuser_to_doz: map(address, address)\r\nuser_to_zod: map(address, address)\r\ncontract_to_user: map(address, address)\r\n\r\n# Initial tokens\r\ndai_address: public(address)\r\noat_address: public(address)\r\n\r\n# Utility\r\nwax_address: public(address)\r\n\r\n@public\r\n@payable\r\ndef __default__():\r\n    log.Payment(msg.value, msg.sender)\r\n\r\n@public\r\ndef __init__(   _zodTemplate: address,\r\n                _dozTemplate: address,  \r\n                _dai_address: address, # strike asset denomination\r\n                _oat_address: address, # underlying asset\r\n                _wax_address: address, \r\n                ):\r\n    assert self.zodTemplate == ZERO_ADDRESS\r\n    assert _zodTemplate != ZERO_ADDRESS\r\n    self.zodTemplate = _zodTemplate\r\n    self.dozTemplate = _dozTemplate\r\n    self.dai_address = _dai_address\r\n    self.oat_address = _oat_address\r\n    self.wax_address = _wax_address\r\n    \r\n    \r\n@public\r\n@payable\r\ndef createDoz(  strike: uint256, # doz's strike is denominated in Dai, Example: 10 dai for 1 Oat.\r\n                underlying: uint256, # doz's underlying is Oat\r\n                maturity: timestamp,\r\n                ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.dozTemplate != ZERO_ADDRESS\r\n\r\n    doz: address = create_forwarder_to(self.dozTemplate)\r\n    _doz: address = doz\r\n    Doz(doz).setup( strike,\r\n                    underlying,\r\n                    maturity,\r\n                    self.wax_address,\r\n                    self.dai_address,\r\n                    self.oat_address,\r\n                    )\r\n    self.user_to_doz[msg.sender] = doz\r\n    self.contract_to_user[doz] = msg.sender\r\n    log.Newcontract(doz,\r\n                    strike,\r\n                    underlying,\r\n                    maturity,\r\n                    )\r\n    return doz\r\n\r\n@public\r\n@payable\r\ndef createZod(  strike: uint256, # doz's strike is denominated in Dai, Example: 10 dai for 1 Oat.\r\n                underlying: uint256, # doz's underlying is Oat\r\n                maturity: timestamp,\r\n                ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.zodTemplate != ZERO_ADDRESS\r\n\r\n    zod: address = create_forwarder_to(self.zodTemplate)\r\n    _zod: address = zod\r\n    Zod(zod).setup( strike,\r\n                    underlying,\r\n                    maturity,\r\n                    self.wax_address,\r\n                    self.dai_address,\r\n                    self.oat_address,\r\n                    )\r\n    self.user_to_zod[msg.sender] = zod\r\n    self.contract_to_user[zod] = msg.sender\r\n    log.Newcontract(zod,\r\n                    strike,\r\n                    underlying,\r\n                    maturity,\r\n                    )\r\n    return zod\r\n\r\n@public\r\n@constant\r\ndef getDoz(user: address) -> address:\r\n    return self.user_to_doz[user]\r\n\r\n@public\r\n@constant\r\ndef getZod(user: address) -> address:\r\n    return self.user_to_zod[user]\r\n\r\n@public\r\n@constant\r\ndef getUser(contract_addr: address) -> address:\r\n    return self.contract_to_user[contract_addr]\r\n\r\n",
+  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05260a06108a26101403934156100a157600080fd5b60206108a260c03960c05160205181106100ba57600080fd5b50602060206108a20160c03960c05160205181106100d757600080fd5b50602060406108a20160c03960c05160205181106100f457600080fd5b50602060606108a20160c03960c051602051811061011157600080fd5b50602060806108a20160c03960c051602051811061012e57600080fd5b506000541561013c57600080fd5b6000610140511861014c57600080fd5b6101405160005561016051600155610180516005556101a0516006556101c05160075561088a56600436101561000d576106e8565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263c05ca18460005114156102f85760606064356004016101403760406064356004013511156100cf57600080fd5b60606084356004016101c03760406084356004013511156100ef57600080fd5b600033186100fc57600080fd5b60006001541861010b57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610260526c010000000000000000000000006001540261027b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061028f5260606102606000f08061017d57600080fd5b610240526102405161030052610240513b61019757600080fd5b6102405130186101a657600080fd5b600060006101c4610100633375dc94610320526004356103405260243561036052604435610380526007546103a0526005546103c0526006546103e0528061040052610140808051602001808461034001828460006004600a8704601201f161020e57600080fd5b50508051820160206001820306601f820103905060200191505080610420526101c0808051602001808461034001828460006004600a8704601201f161025357600080fd5b50508051820160206001820306601f820103905060200191505061033c90506000610240515af161028357600080fd5b6102405160023360e05260c052604060c020553360046102405160e05260c052604060c02055600435610540526024356105605260443561058052610240517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610540a26102405160005260206000f350005b63126a2239600051141561054f57606060643560040161014037604060643560040135111561032657600080fd5b60606084356004016101c037604060843560040135111561034657600080fd5b6000331861035357600080fd5b60006000541861036257600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610260526c010000000000000000000000006000540261027b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061028f5260606102606000f0806103d457600080fd5b610240526102405161030052610240513b6103ee57600080fd5b6102405130186103fd57600080fd5b600060006101c4610100633375dc94610320526004356103405260243561036052604435610380526007546103a0526005546103c0526006546103e0528061040052610140808051602001808461034001828460006004600a8704601201f161046557600080fd5b50508051820160206001820306601f820103905060200191505080610420526101c0808051602001808461034001828460006004600a8704601201f16104aa57600080fd5b50508051820160206001820306601f820103905060200191505061033c90506000610240515af16104da57600080fd5b6102405160033360e05260c052604060c020553360046102405160e05260c052604060c02055600435610540526024356105605260443561058052610240517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610540a26102405160005260206000f350005b63d1f0dd58600051141561059657341561056857600080fd5b600435602051811061057957600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63dc9af61560005114156105dd5734156105af57600080fd5b60043560205181106105c057600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b636f77926b60005114156106245734156105f657600080fd5b600435602051811061060757600080fd5b50600460043560e05260c052604060c0205460005260206000f350005b63a96598f4600051141561064b57341561063d57600080fd5b60005460005260206000f350005b631be96ca0600051141561067257341561066457600080fd5b60015460005260206000f350005b6389f34744600051141561069957341561068b57600080fd5b60055460005260206000f350005b63d79a7a5660005114156106c05734156106b257600080fd5b60065460005260206000f350005b63f9e204e860005114156106e75734156106d957600080fd5b60075460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a25b61017461088a0361017460003961017461088a036000f3",
+  "deployedBytecode": "0x600436101561000d576106e8565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263c05ca18460005114156102f85760606064356004016101403760406064356004013511156100cf57600080fd5b60606084356004016101c03760406084356004013511156100ef57600080fd5b600033186100fc57600080fd5b60006001541861010b57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610260526c010000000000000000000000006001540261027b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061028f5260606102606000f08061017d57600080fd5b610240526102405161030052610240513b61019757600080fd5b6102405130186101a657600080fd5b600060006101c4610100633375dc94610320526004356103405260243561036052604435610380526007546103a0526005546103c0526006546103e0528061040052610140808051602001808461034001828460006004600a8704601201f161020e57600080fd5b50508051820160206001820306601f820103905060200191505080610420526101c0808051602001808461034001828460006004600a8704601201f161025357600080fd5b50508051820160206001820306601f820103905060200191505061033c90506000610240515af161028357600080fd5b6102405160023360e05260c052604060c020553360046102405160e05260c052604060c02055600435610540526024356105605260443561058052610240517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610540a26102405160005260206000f350005b63126a2239600051141561054f57606060643560040161014037604060643560040135111561032657600080fd5b60606084356004016101c037604060843560040135111561034657600080fd5b6000331861035357600080fd5b60006000541861036257600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610260526c010000000000000000000000006000540261027b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061028f5260606102606000f0806103d457600080fd5b610240526102405161030052610240513b6103ee57600080fd5b6102405130186103fd57600080fd5b600060006101c4610100633375dc94610320526004356103405260243561036052604435610380526007546103a0526005546103c0526006546103e0528061040052610140808051602001808461034001828460006004600a8704601201f161046557600080fd5b50508051820160206001820306601f820103905060200191505080610420526101c0808051602001808461034001828460006004600a8704601201f16104aa57600080fd5b50508051820160206001820306601f820103905060200191505061033c90506000610240515af16104da57600080fd5b6102405160033360e05260c052604060c020553360046102405160e05260c052604060c02055600435610540526024356105605260443561058052610240517fe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf066060610540a26102405160005260206000f350005b63d1f0dd58600051141561059657341561056857600080fd5b600435602051811061057957600080fd5b50600260043560e05260c052604060c0205460005260206000f350005b63dc9af61560005114156105dd5734156105af57600080fd5b60043560205181106105c057600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b636f77926b60005114156106245734156105f657600080fd5b600435602051811061060757600080fd5b50600460043560e05260c052604060c0205460005260206000f350005b63a96598f4600051141561064b57341561063d57600080fd5b60005460005260206000f350005b631be96ca0600051141561067257341561066457600080fd5b60015460005260206000f350005b6389f34744600051141561069957341561068b57600080fd5b60055460005260206000f350005b63d79a7a5660005114156106c05734156106b257600080fd5b60065460005260206000f350005b63f9e204e860005114156106e75734156106d957600080fd5b60075460005260206000f350005b5b3461014052337ff817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e6020610140a2",
+  "source": "contract pMoat():\r\n    def setup(  strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                _wax_address: address,\r\n                _strike_address: address,\r\n                _underlying_address: address,\r\n                _name: string[64],\r\n                _symbol: string[64],\r\n                ): modifying\r\n\r\ncontract cMoat():\r\n    def setup(  strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                _wax_address: address,\r\n                _strike_address: address,\r\n                _underlying_address: address,\r\n                _name: string[64],\r\n                _symbol: string[64],\r\n                ): modifying\r\n\r\n\r\nNewcontract: event({\r\n                contract_addr: indexed(address), \r\n                strike: uint256,\r\n                underlying: uint256,\r\n                maturity: timestamp,\r\n                })\r\n\r\nError: event({message: string[50]})\r\nPayment: event({amount: wei_value, _from: indexed(address)})\r\n\r\n# Contracts\r\npMoatTemplate: public(address)\r\ncMoatTemplate: public(address)\r\nuser_to_cMoat: map(address, address)\r\nuser_to_pMoat: map(address, address)\r\ncontract_to_user: map(address, address)\r\n\r\n# Initial tokens\r\nstrike_address: public(address)\r\nunderlying_address: public(address)\r\n\r\n# Utility\r\nwax_address: public(address)\r\n\r\n@public\r\n@payable\r\ndef __default__():\r\n    log.Payment(msg.value, msg.sender)\r\n\r\n@public\r\ndef __init__(   _pMoatTemplate: address,\r\n                _cMoatTemplate: address,  \r\n                _strike_address: address, # strike asset denomination\r\n                _underlying_address: address, # underlying asset\r\n                _wax_address: address, \r\n                ):\r\n    assert self.pMoatTemplate == ZERO_ADDRESS\r\n    assert _pMoatTemplate != ZERO_ADDRESS\r\n    self.pMoatTemplate = _pMoatTemplate\r\n    self.cMoatTemplate = _cMoatTemplate\r\n    self.strike_address = _strike_address\r\n    self.underlying_address = _underlying_address\r\n    self.wax_address = _wax_address\r\n    \r\n    \r\n@public\r\n@payable\r\ndef createcMoat(strike: uint256, # cMoat's strike is denominated in strike, Example: 10 strike for 1 Oat.\r\n                underlying: uint256, # cMoat's underlying is Oat\r\n                maturity: timestamp,\r\n                _name: string[64],\r\n                _symbol: string[64],\r\n                ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.cMoatTemplate != ZERO_ADDRESS\r\n\r\n    cMoat: address = create_forwarder_to(self.cMoatTemplate)\r\n    _cMoat: address = cMoat\r\n    cMoat(cMoat).setup( strike,\r\n                    underlying,\r\n                    maturity,\r\n                    self.wax_address,\r\n                    self.strike_address,\r\n                    self.underlying_address,\r\n                    _name,\r\n                    _symbol\r\n                    )\r\n    self.user_to_cMoat[msg.sender] = cMoat\r\n    self.contract_to_user[cMoat] = msg.sender\r\n    log.Newcontract(cMoat,\r\n                    strike,\r\n                    underlying,\r\n                    maturity,\r\n                    )\r\n    return cMoat\r\n\r\n@public\r\n@payable\r\ndef createpMoat(strike: uint256, # cMoat's strike is denominated in strike, Example: 10 strike for 1 Oat.\r\n                underlying: uint256, # cMoat's underlying is Oat\r\n                maturity: timestamp,\r\n                _name: string[64],\r\n                _symbol: string[64],\r\n                ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.pMoatTemplate != ZERO_ADDRESS\r\n\r\n    pMoat: address = create_forwarder_to(self.pMoatTemplate)\r\n    _pMoat: address = pMoat\r\n    pMoat(pMoat).setup(strike,\r\n                    underlying,\r\n                    maturity,\r\n                    self.wax_address,\r\n                    self.strike_address,\r\n                    self.underlying_address,\r\n                    _name,\r\n                    _symbol\r\n                    )\r\n    self.user_to_pMoat[msg.sender] = pMoat\r\n    self.contract_to_user[pMoat] = msg.sender\r\n    log.Newcontract(pMoat,\r\n                    strike,\r\n                    underlying,\r\n                    maturity,\r\n                    )\r\n    return pMoat\r\n\r\n@public\r\n@constant\r\ndef getcMoat(user: address) -> address:\r\n    return self.user_to_cMoat[user]\r\n\r\n@public\r\n@constant\r\ndef getpMoat(user: address) -> address:\r\n    return self.user_to_pMoat[user]\r\n\r\n@public\r\n@constant\r\ndef getUser(contract_addr: address) -> address:\r\n    return self.contract_to_user[contract_addr]\r\n\r\n",
   "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/Factory.vy",
   "compiler": {
     "name": "vyper",
     "version": "0.1.0b14+commit.49b201c"
   },
   "networks": {
+    "4": {
+      "events": {
+        "0xe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf06": {
+          "name": "Newcontract",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "contract_addr",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "underlying",
+              "indexed": false
+            },
+            {
+              "type": "uint256",
+              "name": "maturity",
+              "indexed": false,
+              "unit": "sec"
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xe0d464d131540b6d7adf0d02d658b2f57913688a784d2ac775968e9c3c6daf06"
+        },
+        "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa": {
+          "name": "Error",
+          "inputs": [
+            {
+              "type": "string",
+              "name": "message",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa"
+        },
+        "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e": {
+          "name": "Payment",
+          "inputs": [
+            {
+              "type": "uint256",
+              "name": "amount",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "address",
+              "name": "_from",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e"
+        }
+      },
+      "links": {},
+      "address": "0x2d4Bb00e5B8419482d482d30409E05CFcaEef16E",
+      "transactionHash": "0x57ef8c466a213a039a28e0112c5faf445e724479c4551614bff7a459bb60abf6"
+    },
     "5777": {
       "events": {
         "0xd57eef9fa764a7d8bd34ce431cca31eabb9ed6b5334e77d213aeac802a51ad44": {
@@ -420,10 +504,11 @@
         }
       },
       "links": {},
-      "address": "0x4083a8F85F7327b51B800E38D53612485369B6AB",
-      "transactionHash": "0x5bd5089aee252305afb4d4a74f729a83f4b495a73facfb2093ad8159b75758be"
+      "address": "0x50a836fA7256278908D29B2CbfF652Da17966C62",
+      "transactionHash": "0x9415a3463fe6b6432a1c062b38b7479a9cf4cc8d60eeb632af1feb96df657156"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-21T17:05:51.860Z"
+  "updatedAt": "2019-11-23T02:35:41.893Z",
+  "networkType": "ethereum"
 }

@@ -15,7 +15,7 @@ var ropsten_eth = '0x0Be00A19538Fac4BE07AC360C69378B870c412BF'
 var wei = 10**18
 var writer = '0xe19e523d82AB36C5bDE391F2e74c38bB4A5dC02d'
 var purchaser = '0x7caBC0510f24a281DBEcCd451fB23C17e7cDc489'
-
+var rinkeby_accounts1 = '0x81fd2e1a63402119be2922fcc577fe7a4fac2358'
 
 module.exports = async (deployer, accounts) => {
   // Strike price denominated in Dai tokens -> Slate

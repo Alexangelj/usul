@@ -1,7 +1,7 @@
 /*
-@title A full test which implements multiple parts, UDR, STK, cMoat, pMoat, and ODEX for the rinkeby testnet
+@title A full test which implements multiple parts, UDR, STK, cMoat, and pMoat for the rinkeby testnet
 
-@notice Sets up user's accounts on the ODEX, users can then buy, write, trade, exercise, and close the MOATs
+@notice Users can buy, write, trade, exercise, and close the MOATs
 
 @author Alexander Angel
 
@@ -16,7 +16,6 @@ const Stk = artifacts.require('STK') // Strike Asset
 const Udr = artifacts.require('UDR') // Underlying Asset
 const cMoat = artifacts.require('cMoat') // Optionality Purchase Transfer Right -> Purchaser underlying for strike
 const pMoat = artifacts.require('pMoat') // Optionality Sale Transfer Right -> Sell underlying for strike
-const Odex = artifacts.require('Odex')
 
 contract('Full Test', accounts => {
 
@@ -62,6 +61,7 @@ contract('Full Test', accounts => {
     var premium = (0.25*10**18).toFixed() // Premium price is 0.25 Ether
     var decimals = (10**18)
     var initial_tokens = '100000000000000000000000'
+    var max_tokens = initial_tokens
 
 
     // Parameters Array
@@ -108,27 +108,6 @@ contract('Full Test', accounts => {
             let cMoat_bal = ((await cMoat.balanceOf(acc_ray[i][1]))).toString()
             let pMoat_bal = ((await pMoat.balanceOf(acc_ray[i][1]))).toString()
             ledger.push([test, acc_ray[i][0], acc_ray[i][1], ether_bal, STK_bal, UDR_bal, cMoat_bal, pMoat_bal])
-        }
-    }
-
-
-    async function getDexLedger(test, STK, UDR, cMoat, pMoat, odex) {
-        /*
-        @param test String of test name
-        @param STK Address of token
-        @param UDR Address of token
-        @param cMOAT Address of Token
-        @param pMOAT Address of Token
-        @param odex Odex contract instance
-        @return Appends ODEX ledger array with each user's balance of each token in parameters
-        */
-        for(var i = 0; i < users_test; i++) { // For each account, append the ledger array with data
-            let ether_bal = (await odex.ethBalances(acc_ray[i][1])).toString()
-            let STK_bal = ((await odex.getTokenBalance((await STK.symbol()).toString(), {from: acc_ray[i][1]}))).toString()
-            let UDR_bal = ((await odex.getTokenBalance((await UDR.symbol()).toString(), {from: acc_ray[i][1]}))).toString()
-            let cMoat_bal = ((await odex.getTokenBalance((await cMoat.symbol()).toString(), {from: acc_ray[i][1]}))).toString()
-            let pMoat_bal = ((await odex.getTokenBalance((await pMoat.symbol()).toString(), {from: acc_ray[i][1]}))).toString()
-            dex_ledger.push([test, acc_ray[i][0], acc_ray[i][1], ether_bal, STK_bal, UDR_bal, cMoat_bal, pMoat_bal])
         }
     }
 
@@ -199,18 +178,18 @@ contract('Full Test', accounts => {
 
         // Transfer
         await UDR.transfer(Bob, initial_tokens, {from: Alice}) // From Accounts[0]
-        await STK.transfer(Alice, initial_tokens, {from: Bob}) // From Accounts[1]
+        await STK.transfer(Bob, initial_tokens, {from: Alice}) // From Accounts[1]
 
 
         // Verify
         for(var i = 0; i < users_test; i++) { // For each account
-            assert.strictEqual((await STK.balanceOf(Alice)).toString(), initial_tokens, ' User should have initial tokens.')
+            assert.strictEqual((await STK.balanceOf(Alice)).toString(), '900000000000000000000000', ' User should have initial tokens.')
             assert.strictEqual((await UDR.balanceOf(Bob)).toString(), initial_tokens, ' User should have initial tokens.')
         }
     });
 
 
-    it('Initialize MOATs and Add Tokens to ODEX', async () => {
+    it('Initialize MOATs', async () => {
         console.log('\n')
         /*
             @dev Instances of contracts 
@@ -243,10 +222,6 @@ contract('Full Test', accounts => {
         let pMoat_address = await fac.getpMoat(Alice)
         let _pMoat = await pMoat.at(pMoat_address)
         
-        
-        // ODEX
-        let odex = await Odex.deployed()
-        
 
         /*
             @dev Verify create
@@ -267,110 +242,9 @@ contract('Full Test', accounts => {
             [(await _pMoat.symbol()).toString(), _pMoat.address],
         ]
 
-
-    
-        // Add MOAT tokens to ODEX
-        for(var i = 0; i < tokens.length; i++) { // For each token, add it to ODEX
-            let add = await odex.addToken(tokens[i][0], tokens[i][1])
-            await getGas(add, 'Add' + (tokens[i][0]).toString())
-        }
-
         
         // Information update
         await getLedger('Tokens Added on DEX, not Deposited', STK, UDR, _cMoat, _pMoat) // Update and append legder array
-        await getDexLedger('Added Tokens', STK, UDR, _cMoat, _pMoat, odex) // Update and append DEX ledger array
-    });
-
-
-    it('Users Deposit and Withdraw Tokens from DEX', async () => {
-        console.log('\n')
-
-
-        // Core Tokens
-        let STK = await Stk.deployed()
-        let UDR = await Udr.deployed()
-
-
-        // MOAT Tokens
-        let fac = await Factory.deployed()
-        let cMoat_address = await fac.getcMoat(Alice)
-        let _cMoat = await cMoat.at(cMoat_address)
-        let pMoat_address = await fac.getpMoat(Alice)
-        let _pMoat = await pMoat.at(pMoat_address)
-
-        
-        // ODEX
-        let odex = await Odex.deployed()
-        var tokens = [
-            [(await STK.symbol()).toString(), STK],
-            [(await UDR.symbol()).toString(), UDR],
-            [(await _cMoat.symbol()).toString(), _cMoat],
-            [(await _pMoat.symbol()).toString(), _pMoat],
-        ]
-
-
-        /*
-            @dev ODEX function: depositToken
-        */
-        
-
-        for(var x = 0; x < users_test; x++) { // For each user, deposit each intial token STK and UDR
-            for(var i = 0; i < tokens.length - 2; i++) {
-                await tokens[i][1].approve(odex.address, initial_tokens, {from: acc_ray[x][1]})
-                let deposit = await odex.depositToken(tokens[i][0], initial_tokens, {from: acc_ray[x][1]})
-                await getGas(deposit, 'Deposit' + (tokens[i][0]).toString())
-            }
-        }
-
-
-        /*
-            @dev Verify Deposit
-        */
-
-
-        for(var x = 0; x < users_test; x++) { // For each user in test
-            for(var i = 0; i < tokens.length - 2; i++) { // For each token deposited
-                assert.strictEqual((await odex.getTokenBalance(tokens[i][0], {from: acc_ray[x][1]})).toString(), initial_tokens, 'Balance should equal parameter given.')
-            }
-        }
-
-        await getLedger('Deposit Tokens into DEX', STK, UDR, _cMoat, _pMoat)
-        await getDexLedger('Deposited Tokens', STK, UDR, _cMoat, _pMoat, odex)
-
-
-        /*
-            @dev ODEX function: withdrawToken
-        */
-
-
-        for(var x = 0; x < users_test; x++) { // For each user, withdraw each intial tokens
-            for(var i = 0; i < tokens.length - 2; i++) {
-                await tokens[i][1].approve(odex.address, initial_tokens, {from: acc_ray[x][1]})
-                let withdraw = await odex.withdrawToken(tokens[i][0], initial_tokens, {from: acc_ray[x][1]})
-                await getGas(withdraw, 'Withdraw' + (tokens[i][0]).toString())
-            }
-        }
-
-
-        /*
-            @dev Verify Withdraw
-        */
-
-
-        for(var x = 0; x < users_test; x++) { // For each user in test
-            for(var i = 0; i < tokens.length - 2; i++) { // For each token deposited
-                assert.strictEqual((await odex.getTokenBalance(tokens[i][0], {from: acc_ray[x][1]})).toString(), '0', 'ODEX Token Balance should be 0.')
-            }
-        }
-
-
-        assert.strictEqual((await tokens[0][1].balanceOf(Alice, {from: Alice})).toString(), initial_tokens, 'User balance should be initial amount in parameter.')
-        assert.strictEqual((await tokens[1][1].balanceOf(Bob, {from: Bob})).toString(), initial_tokens, 'User balance should be initial amount in parameter.')
-
-
-        // Information update
-        await getLedger('Withdraw Tokens from DEX', STK, UDR, _cMoat, _pMoat)
-        await getDexLedger('Withdrawed Tokens', STK, UDR, _cMoat, _pMoat, odex)
     });
 
 
@@ -391,8 +265,6 @@ contract('Full Test', accounts => {
         let _pMoat = await pMoat.at(pMoat_address)
 
 
-        // ODEX
-        let odex = await Odex.deployed()
         var tokens = [
             [(await STK.symbol()).toString(), STK],
             [(await UDR.symbol()).toString(), UDR],
@@ -409,12 +281,12 @@ contract('Full Test', accounts => {
         for(var i = 0; i < users_test; i++) { // For each user, mint a random amount of tokens between 10 and 100
             // cMOAT write
             var underlying_amount = ((Math.floor((Math.random() * 90) + 10))*10**18).toFixed()
-            let underlying_approve = await UDR.approve(cMoat_address, underlying_amount, {from: acc_ray[i][1]})
+            let underlying_approve = await UDR.approve(cMoat_address, max_tokens, {from: acc_ray[i][1]})
             let cMoat_write = await _cMoat.write(underlying_amount, {from: acc_ray[i][1]})
             console.log('cMoat', acc_ray[i][0], underlying_amount)
             // pMOAT write
             var strike_amount = ((Math.floor((Math.random() * 90) + 10))*10**18).toFixed()
-            let strike_approve = await STK.approve(pMoat_address, strike_amount, {from: acc_ray[i][1]})
+            let strike_approve = await STK.approve(pMoat_address, max_tokens, {from: acc_ray[i][1]})
             let pMoat_write = await _pMoat.write(strike_amount, {from: acc_ray[i][1]})
             console.log('pMoat', acc_ray[i][0], strike_amount)
             /*
@@ -432,52 +304,9 @@ contract('Full Test', accounts => {
         }
 
 
-        /*
-            @notice ODEX function: depositToken
-        */
-
-
-        for(var x = 0; x < users_test; x++) { // For each user
-            for(var i = 2; i < tokens.length; i++) { // For each token, cMoat and pMoat
-                let deposit_amount = (await tokens[i][1].balanceOf(acc_ray[x][1])).toString()
-                let deposit_approve = (await tokens[i][1].approve(odex.address, deposit_amount, {from: acc_ray[x][1]}))
-                let deposit = await odex.depositToken(tokens[i][0], (await tokens[i][1].balanceOf(acc_ray[x][1])), {from: acc_ray[x][1]})
-                /*
-                @dev Verify Deposit
-                */
-               console.log('deposit: ', acc_ray[x][0], tokens[i][0], deposit_amount)
-                assert.strictEqual((await odex.getTokenBalance(tokens[i][0], {from: acc_ray[x][1]})).toString(), deposit_amount, 'Balance should equal parameter given.')
-                await getGas(deposit, 'Deposit' + (tokens[i][0]).toString())
-            }
-        }
-
-
-        /*
-            @notice ODEX function: depositEth
-        */
-
-
-        for(var x = 0; x < users_test; x++) {
-            var eth = (50*10**18).toString()
-            let eth_deposit = await odex.depositEth({from: acc_ray[x][1], value: eth})
-            await getGas(eth_deposit, 'eth_deposit' + 'ETH')
-        }
-
-
-        /*
-            @dev Verify Deposit
-        */
-
-
-        for(var x = 0; x < users_test; x++) { // For each user in test
-            assert.strictEqual((await odex.ethBalances(acc_ray[x][1], {from: acc_ray[x][1]})).toString(), eth, 'Balance should equal parameter given.')
-        }
-
-
         // Update information
         await getLockBook('Write and Deposit into DEX', _cMoat, _pMoat)
         await getLedger('Deposit Tokens into DEX', STK, UDR, _cMoat, _pMoat)
-        await getDexLedger('Deposited Tokens into DEX', STK, UDR, _cMoat, _pMoat, odex)
     });
 
 
@@ -497,8 +326,7 @@ contract('Full Test', accounts => {
         let pMoat_address = await fac.getpMoat(Alice)
         let _pMoat = await pMoat.at(pMoat_address)
 
-        // ODEX
-        let odex = await Odex.deployed()
+
         var tokens = [
             [(await STK.symbol()).toString(), STK],
             [(await UDR.symbol()).toString(), UDR],
@@ -508,8 +336,7 @@ contract('Full Test', accounts => {
 
 
         /*
-            @dev ODEX function: buyToken, sellToken
-                 Alice and Bob will effectively swap their tokens through the ODEX order book
+            @dev cMoat and pMoat function: Transfer
         */
         
         // Purchase/Sale Prices
@@ -517,49 +344,16 @@ contract('Full Test', accounts => {
         var sell_price = (1*10**18).toFixed() 
 
 
-        // Alice will purchase Bob's balance of pMOAT and sell her balance of cMoat
-        let alice_buy_amount = (await odex.getTokenBalance(tokens[3][0], {from: Bob})).toString()
-        let alice_buy = (await odex.buyToken(tokens[3][0], buy_price, alice_buy_amount, {from: Alice}))
-        let alice_sell_amount = (await odex.getTokenBalance(tokens[2][0], {from: Alice})).toString()
-        let alice_sell = (await odex.sellToken(tokens[2][0], sell_price, alice_sell_amount, {from: Alice}))
-        await getGas(alice_buy, 'Alice Buy' + (tokens[3][0]).toString())
-        await getGas(alice_sell, 'Alice Sell' + (tokens[2][0]).toString())
+       // Alice and Bob swap balances, Alice sends cMoat -> Bob, Bob sends pMoat -> Alice
+       let alice_cMoat_balance = (await _cMoat.balanceOf(Alice, {from: Alice})).toString()
+       let alice_transfer = await _cMoat.transfer(Bob, alice_cMoat_balance, {from: Alice})
+       let bob_cMoat_balance = (await _pMoat.balanceOf(Bob, {from: Bob})).toString()
+       let bob_transfer = await _pMoat.transfer(Alice, bob_cMoat_balance, {from: Bob})
 
-        // Bob will purchase Alice's balance of cMOAT and sell his balance of pMoat
-        let bob_buy_amount = alice_sell_amount
-        let bob_buy = (await odex.buyToken(tokens[2][0], buy_price, bob_buy_amount, {from: Bob}))
-        let bob_sell_amount = alice_buy_amount
-        let bob_sell = (await odex.sellToken(tokens[3][0], sell_price, bob_sell_amount, {from: Bob}))
-        await getGas(bob_buy, 'Bob Buy' + (tokens[2][0]).toString())
-        await getGas(bob_sell, 'Bob Sell' + (tokens[3][0]).toString())
-
-
-        /*
-            @dev ODEX function: withdrawToken
-        */
-
-        for(var x = 0; x < users_test; x++) { // For each user, withdraw
-            for(var i = 2; i < tokens.length; i++) {
-                let withdraw = await odex.withdrawToken(tokens[i][0], ((await odex.getTokenBalance(tokens[i][0], {from: acc_ray[x][1]}))), {from: acc_ray[x][1]})
-                await getGas(withdraw, 'Withdraw' + (tokens[i][0]).toString())
-            }
-        }
-
-
-        /*
-            @dev Verify Withdraw
-        */
-
-        assert.strictEqual((await odex.getTokenBalance(tokens[3][0], {from: Alice})).toString(), '0', 'ODEX Token Balance should be 0.')
-        assert.strictEqual((await tokens[2][1].balanceOf(Alice, {from: Alice})).toString(), '0', 'User should have sold all of one of their tokens.')
-        assert.strictEqual((await odex.getTokenBalance(tokens[2][0], {from: Bob})).toString(), '0', 'ODEX Token Balance should be 0.')
-        assert.strictEqual((await tokens[3][1].balanceOf(Bob, {from: Bob})).toString(), '0', 'User should have sold all of one of their tokens.')
-        
 
         // Information update
         await getLockBook('Users Swapped MOATs', _cMoat, _pMoat)
         await getLedger('Withdrawn from DEX after MUDR Swaps', STK, UDR, _cMoat, _pMoat)
-        await getDexLedger('Withdrawn from DEX after MUDR Swaps', STK, UDR, _cMoat, _pMoat, odex)
     });
 
 
@@ -580,8 +374,6 @@ contract('Full Test', accounts => {
         let _pMoat = await pMoat.at(pMoat_address)
 
 
-        // ODEX
-        let odex = await Odex.deployed()
         var tokens = [
             [(await STK.symbol()).toString(), STK],
             [(await UDR.symbol()).toString(), UDR],
@@ -597,15 +389,15 @@ contract('Full Test', accounts => {
 
         let alice_underlying_balance = (await UDR.balanceOf(Alice, {from: Alice})).toString()
         let alice_pMoat_balance = (await _pMoat.balanceOf(Alice, {from: Alice})).toString()
-        let alice_pMoat_approve = await UDR.approve(pMoat_address, (alice_underlying_balance), {from: Alice})
+        let alice_pMoat_approve = await UDR.approve(pMoat_address, (max_tokens), {from: Alice})
         let alice_pMoat_exercise = await _pMoat.exercise(alice_pMoat_balance, {from: Alice})
-        await getGas(alice_pMoat_exercise, 'Alice pMOAT exercise' + (tokens[3][0]).toString())
+
 
         let bob_strike_balance = (await STK.balanceOf(Bob, {from: Bob})).toString()
         let bob_cMoat_balance = (await _cMoat.balanceOf(Bob, {from: Bob})).toString()
-        let bob_cMoat_approve = await STK.approve(cMoat_address, (bob_strike_balance), {from: Bob})
+        let bob_cMoat_approve = await STK.approve(cMoat_address, (max_tokens), {from: Bob})
         let bob_cMoat_exercise = await _cMoat.exercise(bob_cMoat_balance, {from: Bob})
-        await getGas(bob_cMoat_exercise, 'Bob cMOAT Exercise' + (tokens[2][0]).toString())
+
 
         /*
             @dev Verify Exercise
@@ -619,7 +411,6 @@ contract('Full Test', accounts => {
         // Information update
         await getLockBook('Should be withdrawn from DEX', _cMoat, _pMoat)
         await getLedger('Exercise and Close MOATs', STK, UDR, _cMoat, _pMoat)
-        await getDexLedger('All tokens withdrawn from DEX', STK, UDR, _cMoat, _pMoat, odex)
 
 
         // Log
