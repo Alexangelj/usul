@@ -504,11 +504,11 @@
         }
       },
       "links": {},
-      "address": "0x50a836fA7256278908D29B2CbfF652Da17966C62",
-      "transactionHash": "0x9415a3463fe6b6432a1c062b38b7479a9cf4cc8d60eeb632af1feb96df657156"
+      "address": "0xE3A403205087d8d0cf5F6A985884c0A1bD53cBC7",
+      "transactionHash": "0xd54235ea12f095e349daf7e45030264591b5bc61825c186d573764ef844a88bf"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-23T02:35:41.893Z",
+  "updatedAt": "2019-11-23T20:52:35.668Z",
   "networkType": "ethereum"
 }

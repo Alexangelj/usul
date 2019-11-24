@@ -16,10 +16,12 @@ var wei = 10**18
 var writer = '0xe19e523d82AB36C5bDE391F2e74c38bB4A5dC02d'
 var purchaser = '0x7caBC0510f24a281DBEcCd451fB23C17e7cDc489'
 var rinkeby_accounts1 = '0x81fd2e1a63402119be2922fcc577fe7a4fac2358'
+var ganache0 = '0x9cfDd4267225D9D557658e5d758978bEAdAf7B15'
+var ganache1 = '0xe329fc17a8F0FEa579413fE4a641a97835F07E6E'
 
 module.exports = async (deployer, accounts) => {
   // Strike price denominated in Dai tokens -> Slate
-  await deployer.deploy(Stk, '1000000000000000000000000', 'Strike Asset', 18, 'STK', {from: purchaser})
+  await deployer.deploy(Stk, '1000000000000000000000000', 'Strike Asset', 18, 'STK', {from: ganache1})
   let STK = await Stk.deployed()
   // Underlying asset denominated in Oat -> Stash
   await deployer.deploy(Udr, '1000000000000000000000000', 'Underlying Asset', 18, 'UDR')

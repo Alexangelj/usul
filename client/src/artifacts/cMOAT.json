@@ -1064,11 +1064,11 @@
         }
       },
       "links": {},
-      "address": "0x371f9051672C18D5d2c67adBD2e04df55D8f300B",
-      "transactionHash": "0x8dda6f39657add29b8819410f7329d369911181f5392d56aceddf03f1f28c44f"
+      "address": "0xBa291A0c3ed4f9DBA30BeaC4d5236bE769bAf626",
+      "transactionHash": "0x664a7968edcadb31a8e7de699f8e140afd771e26e2ffa0f5b3ea6c8e1c040cd6"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-23T02:35:41.906Z",
+  "updatedAt": "2019-11-23T20:52:35.676Z",
   "networkType": "ethereum"
 }
