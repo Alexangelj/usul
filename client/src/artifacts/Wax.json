@@ -138,11 +138,11 @@
         }
       },
       "links": {},
-      "address": "0x4B1714C080961A63671FC98a886a71160d9ab19a",
-      "transactionHash": "0xb73f5b988ae959af5f8adc6e3d2f0ed55b1ab483413fd3685b58d1144496f57e"
+      "address": "0x2fdbD57fB8d64b8b2E510C3eDe2823F71b6D9572",
+      "transactionHash": "0x544467321e7138101a2c00c5ae96631d552e94bd9b6ab4153e7aa942c27e9b81"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-23T20:52:35.653Z",
+  "updatedAt": "2019-11-25T09:13:32.674Z",
   "networkType": "ethereum"
 }

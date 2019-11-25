@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Form, FormGroup, FormControl, Button, Container } from 'react-bootstrap'
+import { Row, Col, Form, FormGroup, FormControl, Button, Container, Card } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Web3 from 'web3';
 import getWeb3 from '../getWeb3'
@@ -117,58 +117,64 @@ class UdrComponent extends React.Component {
         }];
 
         return (
-          <Col>
-            <h1>{this.state.name}: {this.state.symbol}</h1>
-            <p>Wallet Balance: {this.state.balanceOf} {this.state.symbol} </p>
-            <h2>Transfer Function</h2>
-            <Form onSubmit={this.handleTransfer}>
-              <FormGroup controlId="fromTransferUdr">
-                <FormControl 
-                  componentclass="textarea"
-                  name="transferTo"
-                  value={this.state.transferTo}
-                  placeholder="Enter Transfer 'to' address"
-                  onChange={this.handleChange}
+
+          <Card>
+            <Card.Body>
+
+                <h1>{this.state.name}: {this.state.symbol}</h1>
+                <p>Wallet Balance: {this.state.balanceOf} {this.state.symbol} </p>
+                <h2>Transfer Function</h2>
+                <Form onSubmit={this.handleTransfer}>
+                  <FormGroup controlId="fromTransferUdr">
+                    <FormControl 
+                      componentclass="textarea"
+                      name="transferTo"
+                      value={this.state.transferTo}
+                      placeholder="Enter Transfer 'to' address"
+                      onChange={this.handleChange}
+                    />
+                    <FormControl
+                      type="text"
+                      name='transferAmount'
+                      value={this.state.transferAmount}
+                      placeholder='Enter transfer amount'
+                      onChange={this.handleChange}
+                    />
+                    <Button type='submit'>Transfer</Button>
+                  </FormGroup>
+                </Form>
+                <h2>Approve Function</h2>
+                <Form onSubmit={this.handleApprove}>
+                  <FormGroup controlId="approveUdr">
+                    <FormControl 
+                      componentclass="textarea"
+                      name="spender"
+                      value={this.state.spender}
+                      placeholder="Enter Approve 'spender' address"
+                      onChange={this.handleChange}
+                    />
+                    <FormControl
+                      type="text"
+                      name='approveAmount'
+                      value={this.state.approveAmount}
+                      placeholder='Enter Approve amount'
+                      onChange={this.handleChange}
+                    />
+                    <Button type='submit'>Approve</Button>
+                  </FormGroup>
+                </Form>
+                <h2>Transfers</h2>
+                <BootstrapTable
+                  bootstrap4 striped hover condensed
+                  id='transaction_id' 
+                  keyField='transaction_id' 
+                  data={this.state.transactions} 
+                  columns={columns}
                 />
-                <FormControl
-                  type="text"
-                  name='transferAmount'
-                  value={this.state.transferAmount}
-                  placeholder='Enter transfer amount'
-                  onChange={this.handleChange}
-                />
-                <Button type='submit'>Transfer</Button>
-              </FormGroup>
-            </Form>
-            <h2>Approve Function</h2>
-            <Form onSubmit={this.handleApprove}>
-              <FormGroup controlId="approveUdr">
-                <FormControl 
-                  componentclass="textarea"
-                  name="spender"
-                  value={this.state.spender}
-                  placeholder="Enter Approve 'spender' address"
-                  onChange={this.handleChange}
-                />
-                <FormControl
-                  type="text"
-                  name='approveAmount'
-                  value={this.state.approveAmount}
-                  placeholder='Enter Approve amount'
-                  onChange={this.handleChange}
-                />
-                <Button type='submit'>Approve</Button>
-              </FormGroup>
-            </Form>
-            <h2>Transfers</h2>
-            <BootstrapTable
-              bootstrap4 striped hover
-              id='transaction_id' 
-              keyField='transaction_id' 
-              data={this.state.transactions} 
-              columns={columns}
-            />
-          </Col>
+
+            </Card.Body>
+          </Card>
+
         )
     }
 }

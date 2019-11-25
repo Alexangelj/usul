@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Form, FormGroup, FormControl, Button, Container } from 'react-bootstrap'
+import { Row, Col, Form, FormGroup, FormControl, Button, Container, Card, Dropdown, ListGroup } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Web3 from 'web3';
 import getWeb3 from '../getWeb3'
@@ -16,6 +16,9 @@ class MoatComponent extends React.Component {
             contracts: [],
             name: undefined,
             symbol: undefined,
+            strike: undefined,
+            underlying: undefined,
+            maturity: undefined,
             web3: this.props.web3,
             account: this.props.account,
             writes: [],
@@ -23,10 +26,13 @@ class MoatComponent extends React.Component {
             userBalance: undefined,
             exercises: [],
             exerciseAmount: undefined,
+            closes: [],
+            closeAmount: undefined,
         }
         this.handleWrite = this.handleWrite.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.handleExercise = this.handleExercise.bind(this)
+        this.handleClose = this.handleClose.bind(this)
     }
 
     componentDidMount = async () => {
@@ -64,7 +70,25 @@ class MoatComponent extends React.Component {
           const name = await this.state.cMoatInstance.methods.name().call()
           const symbol = await this.state.cMoatInstance.methods.symbol().call()
           const bal = await this.state.cMoatInstance.methods.balanceOf(this.state.account).call()
-          this.setState({name: name, symbol: symbol, userBalance: this.state.web3.utils.fromWei(bal, 'ether')})
+          const strike = await this.state.cMoatInstance.methods.strike().call()
+          const underlying = await this.state.cMoatInstance.methods.underlying().call()
+          const maturity_timestamp = await this.state.cMoatInstance.methods.maturity().call()
+          var date = new Date(maturity_timestamp*1000);
+          var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+          var year = date.getFullYear();
+          var month = months[date.getMonth()];
+          var day = date.getDate();
+          var hours = date.getHours();
+          var minutes = '0' + date.getMinutes();
+          var seconds = '0' + date.getSeconds();
+          var maturity = day + ' ' + month + ' ' + year + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+          this.setState({name: name, 
+            symbol: symbol, 
+            userBalance: this.state.web3.utils.fromWei(bal, 'ether'),
+            strike: this.state.web3.utils.fromWei(strike, 'ether'),
+            underlying: this.state.web3.utils.fromWei(underlying, 'ether'),
+            maturity: maturity,
+          })
         } 
       }
 
@@ -87,6 +111,15 @@ class MoatComponent extends React.Component {
           }
     }
 
+    async handleClose(event) {
+      if(typeof this.state.cMoatInstance !== 'undefined') {
+          event.preventDefault();
+          let result = await this.state.cMoatInstance.methods.close(
+              this.state.web3.utils.toWei(this.state.closeAmount))
+              .send({from: this.state.account})
+        }
+  }
+
     addEventListener(component) {
         if(typeof this.state.cMoatInstance !== 'undefined') {
             this.state.cMoatInstance.events.Write({fromBlock: 0, toBlock: 'latest'})
@@ -102,8 +135,16 @@ class MoatComponent extends React.Component {
             const newExercisesArray = component.state.exercises.slice()
             newExercisesArray.push(event.returnValues)
             component.setState({exercises: newExercisesArray})
-          })
-          .on('error', console.error);
+            })
+            .on('error', console.error);
+            this.state.cMoatInstance.events.Close({fromBlock: 0, toBlock: 'latest'})
+            .on('data', function(event) {
+            console.log(event);
+            const newClosesArray = component.state.closes.slice()
+            newClosesArray.push(event.returnValues)
+            component.setState({closes: newClosesArray})
+            })
+            .on('error', console.error);
         }
     }
 
@@ -114,6 +155,9 @@ class MoatComponent extends React.Component {
           break;
         case 'exerciseAmount':
             this.setState({'exerciseAmount': event.target.value})
+            break;
+        case 'closeAmount':
+            this.setState({'closeAmount': event.target.value})
             break;
         default:
           break;
@@ -128,9 +172,6 @@ class MoatComponent extends React.Component {
             return <div>Loading Web3, accounts, and contract...</div>
           }
         const columns = [{
-          dataField: 'transaction_id',
-          text: '#'
-        }, {
           dataField: '_from',
           text: 'User Address',
         }, {
@@ -142,9 +183,6 @@ class MoatComponent extends React.Component {
         }];
 
         const exerciseColumns = [{
-            dataField: 'transaction_id',
-            text: '#'
-          }, {
             dataField: '_from',
             text: 'User Address',
           }, {
@@ -154,14 +192,30 @@ class MoatComponent extends React.Component {
             dataField: 'key',
             text: 'Lock Key ID',
           }];
+        const closeColumns = [{
+          dataField: '_from',
+          text: 'User Address',
+        }, {
+          dataField: 'amount',
+          text: 'Options Closed/Burned',
+        }, {
+          dataField: 'key',
+          text: 'Lock Key ID',
+        }];
 
         return (
-        <Container>
-            <Col>
-                <p>cMoat Address: {this.state.cMoat_address}</p>
-                <p>Balance: {this.state.userBalance}</p>
-                <p>{this.state.name}</p>
-                <p>{this.state.symbol}</p>
+          <Container>
+          <Card>
+            <Card.Body>
+                <h1>cMoat Address: {this.state.cMoat_address}</h1>
+                <h3>Name: {this.state.name}</h3>
+                <ListGroup as='ul'>
+                  <ListGroup.Item as='li'>Balance: {this.state.userBalance} {this.state.symbol}</ListGroup.Item>
+                  <ListGroup.Item as='li'>Symbol: {this.state.symbol}</ListGroup.Item>
+                  <ListGroup.Item as='li'>Strike: {this.state.strike}</ListGroup.Item>
+                  <ListGroup.Item as='li'>Underlying: {this.state.underlying}</ListGroup.Item>
+                  <ListGroup.Item as='li'>Maturity: {this.state.maturity}</ListGroup.Item>
+                </ListGroup>
                 <h2>Write Function</h2>
             <Form onSubmit={this.handleWrite}>
               <FormGroup controlId="writecMoat">
@@ -176,35 +230,56 @@ class MoatComponent extends React.Component {
               </FormGroup>
             </Form>
             <BootstrapTable
-                  bootstrap4 striped hover
-                  id='write_id' 
-                  keyField='write_id' 
+                  bootstrap4 striped hover condensed
+                  id='key' 
+                  keyField='key' 
                   data={this.state.writes} 
                   columns={columns}
                 />
-            </Col>
-            <Col>
+            <h2>Exercise Function</h2>
             <Form onSubmit={this.handleExercise}>
               <FormGroup controlId="exercisecMoat">
                 <FormControl 
                   componentclass="textarea"
                   name="exerciseAmount"
                   value={this.state.exerciseAmount}
-                  placeholder="Enter exercise amount"
+                  placeholder="Enter Exercise amount"
                   onChange={this.handleChange}
                 />
-                <Button type='submit'>Exercise Contract</Button>
+                <Button type='submit'>Exercise options</Button>
               </FormGroup>
             </Form>
                 <BootstrapTable
-                  bootstrap4 striped hover
-                  id='exercise_id' 
-                  keyField='exercise_id' 
+                  bootstrap4 striped hover condensed
+                  id='key' 
+                  keyField='key' 
                   data={this.state.exercises} 
                   columns={exerciseColumns}
                 />
-            </Col>
-        </Container>
+            <h2>Close Function</h2>
+            <Form onSubmit={this.handleClose}>
+              <FormGroup controlId="closecMoat">
+                <FormControl 
+                  componentclass="textarea"
+                  name="closeAmount"
+                  value={this.state.closeAmount}
+                  placeholder="Enter Close amount"
+                  onChange={this.handleChange}
+                />
+                <Button type='submit'>Close options</Button>
+              </FormGroup>
+            </Form>
+                <BootstrapTable
+                  bootstrap4 striped hover condensed
+                  id='key' 
+                  keyField='key' 
+                  data={this.state.closes} 
+                  columns={closeColumns}
+                />
+            </Card.Body>
+          </Card>
+          </Container>
+
         )
     }
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Row, Col, Form, FormGroup, FormControl, Button, Container } from 'react-bootstrap'
+import { Row, Col, Form, FormGroup, FormControl, Button, Container, Card } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Web3 from 'web3';
 import getWeb3 from '../getWeb3'
@@ -11,12 +11,14 @@ class FactoryComponent extends React.Component {
         super(props);
         this.state = {
             instance: this.props.instance,
+            factoryAddress: this.props.factoryAddress,
             strike_address: undefined,
             cMoat_address: undefined,
             cMoatInstance: undefined,
             contracts: [],
             web3: this.props.web3,
             account: this.props.account,
+            underlying: undefined,
         }
         this.handleCreatecMoat = this.handleCreatecMoat.bind(this)
         this.handleChange = this.handleChange.bind(this)
@@ -104,8 +106,12 @@ class FactoryComponent extends React.Component {
             text: 'Maturity UNIX timestamp',
           }];
         return (
-        <Container>
-            <h1>Instance: {this.state.strike_address}</h1>
+        <Container fluid>
+          <Row>
+          <Card>
+            <Card.Body>
+            <h1>Factory: {this.state.factoryAddress}</h1>
+            <Col>
             <Form onSubmit={this.handleCreatecMoat}>
               <FormGroup controlId="fromTransferUdr">
                 <FormControl 
@@ -146,24 +152,27 @@ class FactoryComponent extends React.Component {
                 <Button type='submit'>Create cMoat</Button>
               </FormGroup>
             </Form>
+            </Col>
             <Col>
-                <p>cMoat Address: {this.state.cMoat_address}</p>
                 <BootstrapTable
-                  bootstrap4 striped hover
+                  bootstrap4 striped hover condensed
                   id='contract_id' 
                   keyField='contract_id' 
                   data={this.state.contracts} 
                   columns={columns}
                 />
             </Col>
-            <Col>
+            </Card.Body>
+          </Card>
+          <Col>
             <MoatComponent
                 instance={this.state.instance}
                 web3={this.state.web3}
                 account={this.state.account}
                 cMoat_address={this.state.cMoat_address}
             />
-            </Col>
+          </Col>
+          </Row>      
         </Container>
         )
     }

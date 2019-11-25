@@ -66,7 +66,7 @@ class App extends React.Component {
         factoryDeployedNetwork && factoryDeployedNetwork.address,
       )
 
-      this.setState({ web3: web3, account: accounts[0], udrInstance: instance, stkInstance: stkInstance, cMoatInstance: cMoatInstance, pMoatInstance: pMoatInstance, factoryInstance: factoryInstance});
+      this.setState({ web3: web3, account: accounts[0], udrInstance: instance, stkInstance: stkInstance, cMoatInstance: cMoatInstance, pMoatInstance: pMoatInstance, factoryInstance: factoryInstance, factoryAddress: factoryDeployedNetwork.address});
     } catch (error) {
       alert(
         'Failed to load web3, accounts, or contract.'
@@ -82,29 +82,28 @@ class App extends React.Component {
 
     return (
       <div className="App">
-        <Container>
+        <Container fluid>
         <Navigation/>
         </Container>
 
-        <Container>
+        <Container fluid>
           <Row>
-            <Col>
               <FactoryComponent
                 instance={this.state.factoryInstance}
+                factoryAddress={this.state.factoryAddress}
                 web3={this.state.web3}
                 account={this.state.account}
               />
-            </Col>
           </Row>
         <Row>
-          <Col sm>
+          <Col>
             <UdrComponent
               instance={this.state.udrInstance}
               web3={this.state.web3}
               account={this.state.account}
             />
           </Col>
-          <Col sm>
+          <Col>
             <UdrComponent
               instance={this.state.stkInstance}
               web3={this.state.web3}

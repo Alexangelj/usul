@@ -1022,11 +1022,11 @@
         }
       },
       "links": {},
-      "address": "0xDeD909030590B3f0655Da735B9A1829A7Ab761C4",
-      "transactionHash": "0xd5a69b07b3f5d772f1245eac4a92684b469472a76c26b475daf0401a4cb73a1a"
+      "address": "0xC4ffd316BB3205F10BAc939507f63196E88Ea3EE",
+      "transactionHash": "0x44ab7edcc916aab5f68f86972133d567f43ebcf78f87249a45a1ac3ae9e21d3b"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-23T20:52:35.679Z",
+  "updatedAt": "2019-11-25T09:13:32.691Z",
   "networkType": "ethereum"
 }
