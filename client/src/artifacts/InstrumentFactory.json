@@ -2,11 +2,102 @@
   "contractName": "InstrumentFactory",
   "abi": [
     {
+      "name": "Newcontract",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "contract_addr",
+          "indexed": true
+        },
+        {
+          "type": "uint256",
+          "name": "strike",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Error",
+      "inputs": [
+        {
+          "type": "string",
+          "name": "message",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Payment",
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "amount",
+          "indexed": false,
+          "unit": "wei"
+        },
+        {
+          "type": "address",
+          "name": "_from",
+          "indexed": true
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
       "outputs": [],
-      "inputs": [],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_genesisTemplate"
+        }
+      ],
       "constant": false,
       "payable": false,
       "type": "constructor"
+    },
+    {
+      "name": "createInstrument",
+      "outputs": [
+        {
+          "type": "address",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "string",
+          "name": "_name"
+        },
+        {
+          "type": "string",
+          "name": "_symbol"
+        },
+        {
+          "type": "uint256",
+          "name": "_ratio"
+        },
+        {
+          "type": "address",
+          "name": "_saddr"
+        },
+        {
+          "type": "address",
+          "name": "_uaddr"
+        },
+        {
+          "type": "uint256[4]",
+          "name": "_set"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 120420
     },
     {
       "name": "name",
@@ -20,12 +111,12 @@
       "constant": true,
       "payable": false,
       "type": "function",
-      "gas": 5153
+      "gas": 5183
     }
   ],
-  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052341561009857600080fd5b6007610140527f466163746f7279000000000000000000000000000000000000000000000000006101605261014080600060c052602060c020602082510161012060006002818352015b826101205160200211156100f557610117565b61012051602002850151610120518501555b81516001018083528114156100e2575b50505050505061027e56600436101561000d57610156565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526306fdde0360005114156101555734156100ba57600080fd5b60008060c052602060c020610180602082540161012060006003818352015b826101205160200211156100ec5761010e565b61012051850154610120516020028501525b81516001018083528114156100d9575b50505050505061018051806101a001818260206001820306601f82010390500336823750506020610160526040610180510160206001820306601f8201039050610160f350005b5b60006000fd5b61012261027e0361012260003961012261027e036000f3",
-  "deployedBytecode": "0x600436101561000d57610156565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a0526306fdde0360005114156101555734156100ba57600080fd5b60008060c052602060c020610180602082540161012060006003818352015b826101205160200211156100ec5761010e565b61012051850154610120516020028501525b81516001018083528114156100d9575b50505050505061018051806101a001818260206001820306601f82010390500336823750506020610160526040610180510160206001820306601f8201039050610160f350005b5b60006000fd",
-  "source": "# @title Factory\r\n# \r\n# @notice Controls creation of\r\n# \r\n# @author Alexander Angel\r\n# \r\n# @dev Instrument Controller manages this contract\r\n#\r\n# @version 0.1.0b14\r\n\r\n\r\nname: public(string[64])\r\n\r\n\r\n@public\r\ndef __init__():\r\n    self.name = 'Factory'",
+  "bytecode": "0x740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052602061054c6101403934156100a157600080fd5b602061054c60c03960c05160205181106100ba57600080fd5b506007610160527f466163746f7279000000000000000000000000000000000000000000000000006101805261016080600060c052602060c020602082510161012060006002818352015b826101205160200211156101185761013a565b61012051602002850151610120518501555b8151600101808352811415610105575b5050505050506101405160015561053456600436101561000d576103e2565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263075febff600051141561032d5734156100ba57600080fd5b60606004356004016101403760406004356004013511156100da57600080fd5b60606024356004016101c03760406024356004013511156100fa57600080fd5b606435602051811061010b57600080fd5b50608435602051811061011d57600080fd5b506000331861012b57600080fd5b60006001541861013a57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610260526c010000000000000000000000006001540261027b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061028f5260606102606000f0806101ac57600080fd5b610240526102405161030052610240513b6101c657600080fd5b6102405130186101d557600080fd5b600060006101e461012063d73abe8e610320528061034052610140808051602001808461034001828460006004600a8704601201f161021357600080fd5b50508051820160206001820306601f820103905060200191505080610360526101c0808051602001808461034001828460006004600a8704601201f161025857600080fd5b50508051820160206001820306601f8201039050602001915050604435610380526064356103a0526084356103c0526103e060a480358252806020013582602001528060400135826040015280606001358260600152505061033c90506000610240515af16102c657600080fd5b6102405160023360e05260c052604060c020553360036102405160e05260c052604060c0205560443561056052610240517fbd6a0c683f08ab33e76bfdf6d722a8be524d79a5ea200b104cb099b99263bf976020610560a26102405160005260206000f350005b6306fdde0360005114156103e157341561034657600080fd5b60008060c052602060c020610180602082540161012060006003818352015b826101205160200211156103785761039a565b61012051850154610120516020028501525b8151600101808352811415610365575b50505050505061018051806101a001818260206001820306601f82010390500336823750506020610160526040610180510160206001820306601f8201039050610160f350005b5b60006000fd5b61014c6105340361014c60003961014c610534036000f3",
+  "deployedBytecode": "0x600436101561000d576103e2565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a05263075febff600051141561032d5734156100ba57600080fd5b60606004356004016101403760406004356004013511156100da57600080fd5b60606024356004016101c03760406024356004013511156100fa57600080fd5b606435602051811061010b57600080fd5b50608435602051811061011d57600080fd5b506000331861012b57600080fd5b60006001541861013a57600080fd5b7f6033600c60003960336000f33660006000376110006000366000730000000000610260526c010000000000000000000000006001540261027b527f5af4602c57600080fd5b6110006000f30000000000000000000000000000000061028f5260606102606000f0806101ac57600080fd5b610240526102405161030052610240513b6101c657600080fd5b6102405130186101d557600080fd5b600060006101e461012063d73abe8e610320528061034052610140808051602001808461034001828460006004600a8704601201f161021357600080fd5b50508051820160206001820306601f820103905060200191505080610360526101c0808051602001808461034001828460006004600a8704601201f161025857600080fd5b50508051820160206001820306601f8201039050602001915050604435610380526064356103a0526084356103c0526103e060a480358252806020013582602001528060400135826040015280606001358260600152505061033c90506000610240515af16102c657600080fd5b6102405160023360e05260c052604060c020553360036102405160e05260c052604060c0205560443561056052610240517fbd6a0c683f08ab33e76bfdf6d722a8be524d79a5ea200b104cb099b99263bf976020610560a26102405160005260206000f350005b6306fdde0360005114156103e157341561034657600080fd5b60008060c052602060c020610180602082540161012060006003818352015b826101205160200211156103785761039a565b61012051850154610120516020028501525b8151600101808352811415610365575b50505050505061018051806101a001818260206001820306601f82010390500336823750506020610160526040610180510160206001820306601f8201039050610160f350005b5b60006000fd",
+  "source": "# @title Factory\r\n# \r\n# @notice Controls creation of\r\n# \r\n# @author Alexander Angel\r\n# \r\n# @dev Instrument Controller manages this contract\r\n#\r\n# @version 0.1.0b14\r\n\r\n\r\n\r\ncontract Genesis():\r\n    def setup(     \r\n        _name: string[64],\r\n        _symbol: string[64],\r\n        _ratio: uint256,\r\n        _strike_address: address,\r\n        _underlying_address: address,\r\n        _set: timestamp[4]\r\n    ): modifying\r\n\r\n\r\nNewcontract: event({\r\n                contract_addr: indexed(address), \r\n                strike: uint256,\r\n                })\r\n\r\nError: event({message: string[50]})\r\nPayment: event({amount: wei_value, _from: indexed(address)})\r\n\r\n\r\nname: public(string[64])\r\ngenesisTemplate: address\r\nuser_to_genesis: map(address, address)\r\ncontract_to_user: map(address, address)\r\n\r\n\r\n@public\r\ndef __init__(_genesisTemplate: address):\r\n    self.name = 'Factory'\r\n    self.genesisTemplate = _genesisTemplate\r\n\r\n\r\n@public\r\ndef createInstrument(\r\n        _name: string[64],\r\n        _symbol: string[64],\r\n        _ratio: uint256,\r\n        _saddr: address,\r\n        _uaddr: address,\r\n        _set: timestamp[4]\r\n    ) -> address:\r\n    assert msg.sender != ZERO_ADDRESS\r\n    assert self.genesisTemplate != ZERO_ADDRESS\r\n\r\n    genesis: address = create_forwarder_to(self.genesisTemplate)\r\n    _genesis: address = genesis\r\n    Genesis(genesis).setup( \r\n        _name,\r\n        _symbol,\r\n        _ratio,\r\n        _saddr,\r\n        _uaddr,\r\n        _set,\r\n    )\r\n    self.user_to_genesis[msg.sender] = genesis\r\n    self.contract_to_user[genesis] = msg.sender\r\n    log.Newcontract(genesis,\r\n                    _ratio,\r\n                    )\r\n    return genesis",
   "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/factories/InstrumentFactory.vy",
   "compiler": {
     "name": "vyper",
@@ -33,13 +124,64 @@
   },
   "networks": {
     "5777": {
-      "events": {},
+      "events": {
+        "0xbd6a0c683f08ab33e76bfdf6d722a8be524d79a5ea200b104cb099b99263bf97": {
+          "name": "Newcontract",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "contract_addr",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "strike",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xbd6a0c683f08ab33e76bfdf6d722a8be524d79a5ea200b104cb099b99263bf97"
+        },
+        "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa": {
+          "name": "Error",
+          "inputs": [
+            {
+              "type": "string",
+              "name": "message",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x08c379a0afcc32b1a39302f7cb8073359698411ab5fd6e3edb2c02c0b5fba8aa"
+        },
+        "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e": {
+          "name": "Payment",
+          "inputs": [
+            {
+              "type": "uint256",
+              "name": "amount",
+              "indexed": false,
+              "unit": "wei"
+            },
+            {
+              "type": "address",
+              "name": "_from",
+              "indexed": true
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xf817bef87c74de34ab725f43b121c1dff5324aa363f7b9ac176b9aee5115230e"
+        }
+      },
       "links": {},
-      "address": "0xBD67678CF8C0ba0e8dD3eb6616EA5095EBa36EC9",
-      "transactionHash": "0xf3e7a71e598966910446dea1ddf37f71a50504d9f877218bad1f9a62f3428ee5"
+      "address": "0x538d3353198eF5d8842488dc0597f097B9067d75",
+      "transactionHash": "0x2325df4ff21aff764e23a97c022388f15bb473bcd518bc8243b02674c1b81973"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-25T09:13:32.698Z",
+  "updatedAt": "2019-11-25T20:32:17.924Z",
   "networkType": "ethereum"
 }

@@ -40,7 +40,8 @@ struct Token:
     symbol: string[64]
     strike: Asset
     underlying: Asset
-    set: Set
+    expiration: timestamp
+    taddress: address
 
 struct AssetPair: # Entangles two Assets
     strike_asset: Asset
@@ -51,7 +52,7 @@ struct Instrument:
     symbol: string[64] # String to represent the instrument
     assets: AssetPair # Assets that the instrument is in charge of
     set: Set # Set that the instrument is a part of (A cohort)
-    instrumentAddress: address
+    iaddress: address
 
 struct InstrumentRegistry:
     symbol: string[64] # String to represent types of instruments
@@ -92,8 +93,9 @@ struct Registry:
 
 contract AssetFactory():
     def name() -> string[64]:constant
-    def createPair(_symbol: string[64], _strike: address, _underlying: address, _ratio: uint256) -> bool:modifying
-    def getPair(_symbol: string[64]) -> uint256:constant
+    def createPair(_symbol: string[64], _strike: address, _underlying: address, _ratio: uint256) -> AssetPair:modifying
+    def getStrikeAsset(_symbol: string[64]) -> (string[64], string[64], uint256, address):modifying
+    def strikeAsset(_symbol: string[64]) -> Asset:modifying
 
 contract SetFactory():
     def name() -> string[64]:constant
@@ -101,15 +103,37 @@ contract SetFactory():
 
 contract TokenFactory():
     def name() -> string[64]:constant
+    def createToken(
+        _name: string[64],
+        _symbol: string[64],
+        _decimals: uint256,
+        _supply: uint256,
+        _template: address,
+        _expiration: timestamp,
+    ) -> address:modifying
+
 
 contract InstrumentFactory():
     def name() -> string[64]:constant
+    def createInstrument(
+        _name: string[64],
+        _symbol: string[64],
+        _ratio: uint256,
+        _saddr: address,
+        _uaddr: address,
+        _set: timestamp[4]
+    ) -> address:modifying
 
-
-
-
-
-
+contract Erc20():
+    def totalSupply() -> uint256:constant
+    def balanceOf(_owner: address) -> uint256:constant
+    def allowance(_owner: address, _spender: address) -> uint256:constant
+    def transfer(_to: address, _value: uint256) -> bool:modifying
+    def transferFrom(_from: address, _to: address, _value: uint256) -> bool:modifying
+    def approve(_spender: address, _value: uint256) -> bool:modifying
+    def name() -> string[64]:constant
+    def symbol() -> string[64]:constant
+    def decimals() -> uint256:constant
 
 # Interfaces
 
@@ -137,10 +161,11 @@ depreciation: public(timestamp)
 
 
 sets: public(map(string[64], Set))
-set: public(Set)
-assets: public(map(string[64], Asset))
-tokens: map(string[64], Token)
+assets: map(string[64], map(uint256, Asset)) # Maps a string to two assets: [0] = strike, [1] = underlying
+tokens: public(map(string[64], Token))
 assetPair: public(map(string[64], AssetPair))
+instruments: public(map(string[64], Instrument))
+
 instrumentFactory: InstrumentFactory
 assetFactory: AssetFactory
 setFactory: SetFactory
@@ -148,11 +173,8 @@ tokenFactory: TokenFactory
 factoryRegistry: FactoryRegistry
 instrumentsRegistry: InstrumentRegistry
 registry: Registry
-instruments: map(uint256, Instrument)
-instrumentIndex: uint256
 
-dummyAsset: Asset
-dummyPair: public(AssetPair)
+
 
 
 # Fallback and Utility Functions
@@ -194,17 +216,91 @@ def __init__(   _instrumentFactory: address,
     self.registry = Registry({symbol: _symbol, factories: self.factoryRegistry, instruments: self.instrumentsRegistry})
 
 
+@private
+def createAssetPair(_symbol: string[64], _strikeAddress: address, _underlyingAddress: address, _ratio: uint256) -> bool:
+    """
+    @dev Creates an asset pair to use in an instrument
+    """
+    strikeName: string[64] = Erc20(_strikeAddress).name()
+    strikeSymbol: string[64] = Erc20(_strikeAddress).symbol()
+    strikeDecimals: uint256 = Erc20(_strikeAddress).decimals()
+    self.assets[_symbol][0] = Asset({
+        name: strikeName, 
+        symbol: strikeSymbol, 
+        decimals: strikeDecimals,
+        assetAddress: _strikeAddress,
+        })
+    underlyingName: string[64] = Erc20(_underlyingAddress).name()
+    underlyingSymbol: string[64] = Erc20(_underlyingAddress).symbol()
+    underlyingDecimals: uint256 = Erc20(_underlyingAddress).decimals()
+    self.assets[_symbol][1] = Asset({
+        name: underlyingName, 
+        symbol: underlyingSymbol, 
+        decimals: underlyingDecimals,
+        assetAddress: _underlyingAddress,
+        })
 
+    self.assetPair[_symbol] = AssetPair({
+        strike_asset: self.assets[_symbol][0],
+        underlying_asset: self.assets[_symbol][1],
+        ratio: _ratio
+    })
+    return True
+
+
+@private
+def createToken(_symbol: string[64], _tokenTemplate: address, _expiration: timestamp) -> bool:
+    #_set: Set = self.sets[_symbol]
+    _saddr: Asset = self.assetPair[_symbol].strike_asset
+    _uaddr: Asset = self.assetPair[_symbol].underlying_asset
+    self.tokens[_symbol] = Token({
+        symbol: _symbol,
+        strike: _saddr,
+        underlying: _uaddr,
+        expiration: _expiration,
+        taddress: self.tokenFactory.createToken(
+                _symbol, # Name
+                _symbol, # Symbol
+                convert(18, uint256), # Decimals
+                convert(0, uint256), # Initial Amt
+                _tokenTemplate, # Address of erc 20 token contract
+                _expiration,
+            ),
+    })
+    return True
 
 @public
-def createInstrument(_symbol: string[64], _strikeAddress: address, _underlyingAddress: address, _ratio: uint256) -> bool:
+def createInstrument(
+        _symbol: string[64], 
+        _strikeAddress: address,
+        _underlyingAddress: address, 
+        _ratio: uint256,
+        _tokenTemplate: address
+    ) -> bool:
     """
     @dev Creates a new instrument with an asset pair, sets, and tokens
     """
     self.sets[_symbol] = self.setFactory.createSet(_symbol, self.depreciation, MONTH_IN_SECONDS)
-    #self.assetPair[_symbol] = self.assetFactory.createPair(_symbol, _strikeAddress, _underlyingAddress, _ratio)
-    self.assetFactory.createPair(_symbol, _strikeAddress, _underlyingAddress, _ratio)
-    self.assetFactory.getPair(_symbol)
-    #num: uint256 = self.assetFactory.assetPair(_symbol).ratio
+    self.createAssetPair(_symbol, _strikeAddress, _underlyingAddress, _ratio)
+
+    _set: Set = self.sets[_symbol]
+    _assets: AssetPair = self.assetPair[_symbol]
+    _saddr: Asset = self.assetPair[_symbol].strike_asset
+    _uaddr: Asset = self.assetPair[_symbol].underlying_asset
     
+    self.instruments[_symbol] = Instrument({
+        symbol: _symbol,
+        assets: _assets,
+        set: _set,
+        iaddress: self.instrumentFactory.createInstrument(
+                _symbol,
+                _symbol,
+                _ratio,
+                _saddr.assetAddress,
+                _uaddr.assetAddress,
+                self.sets[_symbol].expiration
+            )
+        })
+    
+    self.createToken(_symbol, _tokenTemplate, _set.expiration[1])
     return True

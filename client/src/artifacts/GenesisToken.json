@@ -1,0 +1,362 @@
+{
+  "contractName": "GenesisToken",
+  "abi": [
+    {
+      "name": "Transfer",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_from",
+          "indexed": true
+        },
+        {
+          "type": "address",
+          "name": "_to",
+          "indexed": true
+        },
+        {
+          "type": "uint256",
+          "name": "_value",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "Approval",
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_owner",
+          "indexed": true
+        },
+        {
+          "type": "address",
+          "name": "_spender",
+          "indexed": true
+        },
+        {
+          "type": "uint256",
+          "name": "_value",
+          "indexed": false
+        }
+      ],
+      "anonymous": false,
+      "type": "event"
+    },
+    {
+      "name": "setup",
+      "outputs": [],
+      "inputs": [
+        {
+          "type": "string",
+          "name": "_name"
+        },
+        {
+          "type": "string",
+          "name": "_symbol"
+        },
+        {
+          "type": "uint256",
+          "name": "_decimals"
+        },
+        {
+          "type": "uint256",
+          "name": "_supply"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 319513
+    },
+    {
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 581
+    },
+    {
+      "name": "allowance",
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_owner"
+        },
+        {
+          "type": "address",
+          "name": "_spender"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 919
+    },
+    {
+      "name": "transfer",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_to"
+        },
+        {
+          "type": "uint256",
+          "name": "_value"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 73602
+    },
+    {
+      "name": "transferFrom",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_from"
+        },
+        {
+          "type": "address",
+          "name": "_to"
+        },
+        {
+          "type": "uint256",
+          "name": "_value"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 109296
+    },
+    {
+      "name": "approve",
+      "outputs": [
+        {
+          "type": "bool",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_spender"
+        },
+        {
+          "type": "uint256",
+          "name": "_value"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 37883
+    },
+    {
+      "name": "mint",
+      "outputs": [],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_to"
+        },
+        {
+          "type": "uint256",
+          "name": "_value"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 73933
+    },
+    {
+      "name": "burn",
+      "outputs": [],
+      "inputs": [
+        {
+          "type": "uint256",
+          "name": "_value"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 74405
+    },
+    {
+      "name": "burnFrom",
+      "outputs": [],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "_to"
+        },
+        {
+          "type": "uint256",
+          "name": "_value"
+        }
+      ],
+      "constant": false,
+      "payable": false,
+      "type": "function",
+      "gas": 110095
+    },
+    {
+      "name": "name",
+      "outputs": [
+        {
+          "type": "string",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 5453
+    },
+    {
+      "name": "symbol",
+      "outputs": [
+        {
+          "type": "string",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 5106
+    },
+    {
+      "name": "decimals",
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": "out"
+        }
+      ],
+      "inputs": [],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 911
+    },
+    {
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "type": "uint256",
+          "name": "out"
+        }
+      ],
+      "inputs": [
+        {
+          "type": "address",
+          "name": "arg0"
+        }
+      ],
+      "constant": true,
+      "payable": false,
+      "type": "function",
+      "gas": 1095
+    }
+  ],
+  "bytecode": "0x61096056600436101561000d57610956565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052633764e2be600051141561024a5734156100ba57600080fd5b60606004356004016101403760406004356004013511156100da57600080fd5b60406024356004016101c03760206024356004013511156100fa57600080fd5b606435600a60443580820a8210811560018314171761011857600080fd5b80820a90509050808202821582848304141761013357600080fd5b809050905090506102205261014080600060c052602060c020602082510161012060006003818352015b8261012051602002111561017057610192565b61012051602002850151610120518501555b815160010180835281141561015d575b5050505050506101c080600160c052602060c020602082510161012060006002818352015b826101205160200211156101ca576101ec565b61012051602002850151610120518501555b81516001018083528114156101b7575b5050505050506044356002556102205160033360e05260c052604060c02055610220516005553360065561022051610240523360007fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef6020610240a3005b6318160ddd600051141561027157341561026357600080fd5b60055460005260206000f350005b63dd62ed3e60005114156102d857341561028a57600080fd5b600435602051811061029b57600080fd5b5060243560205181106102ad57600080fd5b50600460043560e05260c052604060c02060243560e05260c052604060c0205460005260206000f350005b63a9059cbb600051141561039a5734156102f157600080fd5b600435602051811061030257600080fd5b5060033360e05260c052604060c02080546024358082101561032357600080fd5b80820390509050815550600360043560e05260c052604060c020805460243581818301101561035157600080fd5b8082019050905081555060243561014052600435337fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef6020610140a3600160005260206000f350005b6323b872dd60005114156104aa5734156103b357600080fd5b60043560205181106103c457600080fd5b5060243560205181106103d657600080fd5b50600360043560e05260c052604060c0208054604435808210156103f957600080fd5b80820390509050815550600360243560e05260c052604060c020805460443581818301101561042757600080fd5b80820190509050815550600460043560e05260c052604060c0203360e05260c052604060c02080546044358082101561045f57600080fd5b80820390509050815550604435610140526024356004357fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef6020610140a3600160005260206000f350005b63095ea7b360005114156105345734156104c357600080fd5b60043560205181106104d457600080fd5b5060243560043360e05260c052604060c02060043560e05260c052604060c0205560243561014052600435337f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b9256020610140a3600160005260206000f350005b6340c10f1960005114156105ff57341561054d57600080fd5b600435602051811061055e57600080fd5b50600654331461056d57600080fd5b60006004351861057c57600080fd5b6005805460243581818301101561059257600080fd5b80820190509050815550600360043560e05260c052604060c02080546024358181830110156105c057600080fd5b808201905090508155506024356101405260043560007fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef6020610140a3005b6000156106ab575b6101805261014052610160526000610140511861062357600080fd5b60058054610160518082101561063857600080fd5b8082039050905081555060036101405160e05260c052604060c0208054610160518082101561066657600080fd5b80820390509050815550610160516101a0526000610140517fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef60206101a0a361018051565b6342966c6860005114156106ef5734156106c457600080fd5b636161eb1861014052336101605260043561018052610180516101605160065801610607565b600050005b6379cc6790600051141561077f57341561070857600080fd5b600435602051811061071957600080fd5b50600460043560e05260c052604060c0203360e05260c052604060c02080546024358082101561074857600080fd5b80820390509050815550636161eb18610140526004356101605260243561018052610180516101605160065801610607565b600050005b6306fdde03600051141561083357341561079857600080fd5b60008060c052602060c020610180602082540161012060006003818352015b826101205160200211156107ca576107ec565b61012051850154610120516020028501525b81516001018083528114156107b7575b50505050505061018051806101a001818260206001820306601f82010390500336823750506020610160526040610180510160206001820306601f8201039050610160f350005b6395d89b4160005114156108e757341561084c57600080fd5b60018060c052602060c020610180602082540161012060006002818352015b8261012051602002111561087e576108a0565b61012051850154610120516020028501525b815160010180835281141561086b575b50505050505061018051806101a001818260206001820306601f82010390500336823750506020610160526040610180510160206001820306601f8201039050610160f350005b63313ce567600051141561090e57341561090057600080fd5b60025460005260206000f350005b6370a08231600051141561095557341561092757600080fd5b600435602051811061093857600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b5b60006000fd5b61000461096003610004600039610004610960036000f3",
+  "deployedBytecode": "0x600436101561000d57610956565b600035601c52740100000000000000000000000000000000000000006020526f7fffffffffffffffffffffffffffffff6040527fffffffffffffffffffffffffffffffff8000000000000000000000000000000060605274012a05f1fffffffffffffffffffffffffdabf41c006080527ffffffffffffffffffffffffed5fa0e000000000000000000000000000000000060a052633764e2be600051141561024a5734156100ba57600080fd5b60606004356004016101403760406004356004013511156100da57600080fd5b60406024356004016101c03760206024356004013511156100fa57600080fd5b606435600a60443580820a8210811560018314171761011857600080fd5b80820a90509050808202821582848304141761013357600080fd5b809050905090506102205261014080600060c052602060c020602082510161012060006003818352015b8261012051602002111561017057610192565b61012051602002850151610120518501555b815160010180835281141561015d575b5050505050506101c080600160c052602060c020602082510161012060006002818352015b826101205160200211156101ca576101ec565b61012051602002850151610120518501555b81516001018083528114156101b7575b5050505050506044356002556102205160033360e05260c052604060c02055610220516005553360065561022051610240523360007fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef6020610240a3005b6318160ddd600051141561027157341561026357600080fd5b60055460005260206000f350005b63dd62ed3e60005114156102d857341561028a57600080fd5b600435602051811061029b57600080fd5b5060243560205181106102ad57600080fd5b50600460043560e05260c052604060c02060243560e05260c052604060c0205460005260206000f350005b63a9059cbb600051141561039a5734156102f157600080fd5b600435602051811061030257600080fd5b5060033360e05260c052604060c02080546024358082101561032357600080fd5b80820390509050815550600360043560e05260c052604060c020805460243581818301101561035157600080fd5b8082019050905081555060243561014052600435337fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef6020610140a3600160005260206000f350005b6323b872dd60005114156104aa5734156103b357600080fd5b60043560205181106103c457600080fd5b5060243560205181106103d657600080fd5b50600360043560e05260c052604060c0208054604435808210156103f957600080fd5b80820390509050815550600360243560e05260c052604060c020805460443581818301101561042757600080fd5b80820190509050815550600460043560e05260c052604060c0203360e05260c052604060c02080546044358082101561045f57600080fd5b80820390509050815550604435610140526024356004357fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef6020610140a3600160005260206000f350005b63095ea7b360005114156105345734156104c357600080fd5b60043560205181106104d457600080fd5b5060243560043360e05260c052604060c02060043560e05260c052604060c0205560243561014052600435337f8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b9256020610140a3600160005260206000f350005b6340c10f1960005114156105ff57341561054d57600080fd5b600435602051811061055e57600080fd5b50600654331461056d57600080fd5b60006004351861057c57600080fd5b6005805460243581818301101561059257600080fd5b80820190509050815550600360043560e05260c052604060c02080546024358181830110156105c057600080fd5b808201905090508155506024356101405260043560007fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef6020610140a3005b6000156106ab575b6101805261014052610160526000610140511861062357600080fd5b60058054610160518082101561063857600080fd5b8082039050905081555060036101405160e05260c052604060c0208054610160518082101561066657600080fd5b80820390509050815550610160516101a0526000610140517fddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef60206101a0a361018051565b6342966c6860005114156106ef5734156106c457600080fd5b636161eb1861014052336101605260043561018052610180516101605160065801610607565b600050005b6379cc6790600051141561077f57341561070857600080fd5b600435602051811061071957600080fd5b50600460043560e05260c052604060c0203360e05260c052604060c02080546024358082101561074857600080fd5b80820390509050815550636161eb18610140526004356101605260243561018052610180516101605160065801610607565b600050005b6306fdde03600051141561083357341561079857600080fd5b60008060c052602060c020610180602082540161012060006003818352015b826101205160200211156107ca576107ec565b61012051850154610120516020028501525b81516001018083528114156107b7575b50505050505061018051806101a001818260206001820306601f82010390500336823750506020610160526040610180510160206001820306601f8201039050610160f350005b6395d89b4160005114156108e757341561084c57600080fd5b60018060c052602060c020610180602082540161012060006002818352015b8261012051602002111561087e576108a0565b61012051850154610120516020028501525b815160010180835281141561086b575b50505050505061018051806101a001818260206001820306601f82010390500336823750506020610160526040610180510160206001820306601f8201039050610160f350005b63313ce567600051141561090e57341561090057600080fd5b60025460005260206000f350005b6370a08231600051141561095557341561092757600080fd5b600435602051811061093857600080fd5b50600360043560e05260c052604060c0205460005260206000f350005b5b60006000fd",
+  "source": "# @dev Implementation of ERC-20 token standard.\r\n# @author Takayuki Jimba (@yudetamago)\r\n# https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md\r\n\r\nfrom vyper.interfaces import ERC20\r\n\r\nimplements: ERC20\r\n\r\nTransfer: event({_from: indexed(address), _to: indexed(address), _value: uint256})\r\nApproval: event({_owner: indexed(address), _spender: indexed(address), _value: uint256})\r\n\r\nname: public(string[64])\r\nsymbol: public(string[32])\r\ndecimals: public(uint256)\r\n\r\n# NOTE: By declaring `balanceOf` as public, vyper automatically generates a 'balanceOf()' getter\r\n#       method to allow access to account balances.\r\n#       The _KeyType will become a required parameter for the getter and it will return _ValueType.\r\n#       See: https://vyper.readthedocs.io/en/v0.1.0-beta.8/types.html?highlight=getter#mappings\r\nbalanceOf: public(map(address, uint256))\r\nallowances: map(address, map(address, uint256))\r\ntotal_supply: uint256\r\nminter: address\r\n\r\n\r\n@public\r\ndef setup(_name: string[64], _symbol: string[32], _decimals: uint256, _supply: uint256):\r\n    init_supply: uint256 = _supply * 10 ** _decimals\r\n    self.name = _name\r\n    self.symbol = _symbol\r\n    self.decimals = _decimals\r\n    self.balanceOf[msg.sender] = init_supply\r\n    self.total_supply = init_supply\r\n    self.minter = msg.sender\r\n    log.Transfer(ZERO_ADDRESS, msg.sender, init_supply)\r\n\r\n\r\n@public\r\n@constant\r\ndef totalSupply() -> uint256:\r\n    \"\"\"\r\n    @dev Total number of tokens in existence.\r\n    \"\"\"\r\n    return self.total_supply\r\n\r\n\r\n@public\r\n@constant\r\ndef allowance(_owner : address, _spender : address) -> uint256:\r\n    \"\"\"\r\n    @dev Function to check the amount of tokens that an owner allowed to a spender.\r\n    @param _owner The address which owns the funds.\r\n    @param _spender The address which will spend the funds.\r\n    @return An uint256 specifying the amount of tokens still available for the spender.\r\n    \"\"\"\r\n    return self.allowances[_owner][_spender]\r\n\r\n\r\n@public\r\ndef transfer(_to : address, _value : uint256) -> bool:\r\n    \"\"\"\r\n    @dev Transfer token for a specified address\r\n    @param _to The address to transfer to.\r\n    @param _value The amount to be transferred.\r\n    \"\"\"\r\n    # NOTE: vyper does not allow underflows\r\n    #       so the following subtraction would revert on insufficient balance\r\n    self.balanceOf[msg.sender] -= _value\r\n    self.balanceOf[_to] += _value\r\n    log.Transfer(msg.sender, _to, _value)\r\n    return True\r\n\r\n\r\n@public\r\ndef transferFrom(_from : address, _to : address, _value : uint256) -> bool:\r\n    \"\"\"\r\n     @dev Transfer tokens from one address to another.\r\n          Note that while this function emits a Transfer event, this is not required as per the specification,\r\n          and other compliant implementations may not emit the event.\r\n     @param _from address The address which you want to send tokens from\r\n     @param _to address The address which you want to transfer to\r\n     @param _value uint256 the amount of tokens to be transferred\r\n    \"\"\"\r\n    # NOTE: vyper does not allow underflows\r\n    #       so the following subtraction would revert on insufficient balance\r\n    self.balanceOf[_from] -= _value\r\n    self.balanceOf[_to] += _value\r\n    # NOTE: vyper does not allow underflows\r\n    #      so the following subtraction would revert on insufficient allowance\r\n    self.allowances[_from][msg.sender] -= _value\r\n    log.Transfer(_from, _to, _value)\r\n    return True\r\n\r\n\r\n@public\r\ndef approve(_spender : address, _value : uint256) -> bool:\r\n    \"\"\"\r\n    @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.\r\n         Beware that changing an allowance with this method brings the risk that someone may use both the old\r\n         and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this\r\n         race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:\r\n         https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\r\n    @param _spender The address which will spend the funds.\r\n    @param _value The amount of tokens to be spent.\r\n    \"\"\"\r\n    self.allowances[msg.sender][_spender] = _value\r\n    log.Approval(msg.sender, _spender, _value)\r\n    return True\r\n\r\n\r\n@public\r\ndef mint(_to: address, _value: uint256):\r\n    \"\"\"\r\n    @dev Mint an amount of the token and assigns it to an account. \r\n         This encapsulates the modification of balances such that the\r\n         proper events are emitted.\r\n    @param _to The account that will receive the created tokens.\r\n    @param _value The amount that will be created.\r\n    \"\"\"\r\n    assert msg.sender == self.minter\r\n    assert _to != ZERO_ADDRESS\r\n    self.total_supply += _value\r\n    self.balanceOf[_to] += _value\r\n    log.Transfer(ZERO_ADDRESS, _to, _value)\r\n\r\n\r\n@private\r\ndef _burn(_to: address, _value: uint256):\r\n    \"\"\"\r\n    @dev Internal function that burns an amount of the token of a given\r\n         account.\r\n    @param _to The account whose tokens will be burned.\r\n    @param _value The amount that will be burned.\r\n    \"\"\"\r\n    assert _to != ZERO_ADDRESS\r\n    self.total_supply -= _value\r\n    self.balanceOf[_to] -= _value\r\n    log.Transfer(_to, ZERO_ADDRESS, _value)\r\n\r\n\r\n@public\r\ndef burn(_value: uint256):\r\n    \"\"\"\r\n    @dev Burn an amount of the token of msg.sender.\r\n    @param _value The amount that will be burned.\r\n    \"\"\"\r\n    self._burn(msg.sender, _value)\r\n\r\n\r\n@public\r\ndef burnFrom(_to: address, _value: uint256):\r\n    \"\"\"\r\n    @dev Burn an amount of the token from a given account.\r\n    @param _to The account whose tokens will be burned.\r\n    @param _value The amount that will be burned.\r\n    \"\"\"\r\n    self.allowances[_to][msg.sender] -= _value\r\n    self._burn(_to, _value)",
+  "sourcePath": "C:/Users/alexa/OneDrive/Documents/Master/Blockchain/Projects/Emerald_Project/contracts/GenesisToken.vy",
+  "compiler": {
+    "name": "vyper",
+    "version": "0.1.0b14+commit.49b201c"
+  },
+  "networks": {
+    "5777": {
+      "events": {
+        "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef": {
+          "name": "Transfer",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "_from",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "_to",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "_value",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef"
+        },
+        "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925": {
+          "name": "Approval",
+          "inputs": [
+            {
+              "type": "address",
+              "name": "_owner",
+              "indexed": true
+            },
+            {
+              "type": "address",
+              "name": "_spender",
+              "indexed": true
+            },
+            {
+              "type": "uint256",
+              "name": "_value",
+              "indexed": false
+            }
+          ],
+          "anonymous": false,
+          "type": "event",
+          "signature": "0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925"
+        }
+      },
+      "links": {},
+      "address": "0xFdE7AfcE9e0d0232e4497D98c309b618cb0eeD22",
+      "transactionHash": "0xc2926aa9f853b66c27b5dad1fed8707387b5f6269b99db64747fc09c5e5e7cdf"
+    }
+  },
+  "schemaVersion": "3.0.19",
+  "updatedAt": "2019-11-25T20:32:17.926Z",
+  "networkType": "ethereum"
+}

@@ -21,7 +21,19 @@ struct AssetPair: # Entangles two Assets
     ratio: uint256 # Amount of strike tokens relative to 1 underlying token
 
 
+contract GenesisToken():
+    def setup(
+        _name: string[64],
+        _symbol: string[64],
+        _decimals: uint256,
+        _supply: uint256,
+        _expiration: timestamp,
+    ):modifying
+
+
 name: public(string[64])
+user_to_genesisToken: public(map(address, address))
+
 
 
 @public
@@ -46,3 +58,26 @@ def pairTest() -> bool:
         ratio: 10**10,
     })
     return True
+
+@public
+def createToken(
+        _name: string[64],
+        _symbol: string[64],
+        _decimals: uint256,
+        _supply: uint256,
+        _template: address,
+        _expiration: timestamp
+    ) -> address:
+    assert msg.sender != ZERO_ADDRESS
+    assert _template != ZERO_ADDRESS
+
+    genesisToken: address = create_forwarder_to(_template)
+    GenesisToken(genesisToken).setup( 
+        _name,
+        _symbol,
+        _decimals,
+        _supply,
+        _expiration
+    )
+    self.user_to_genesisToken[msg.sender] = genesisToken
+    return genesisToken

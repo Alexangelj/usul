@@ -16,8 +16,8 @@ struct Asset: # ERC-20 Token
     assetAddress: address
 
 struct AssetPair: # Entangles two Assets
-    strike_asset: Asset
-    underlying_asset: Asset
+    strike_asset: address
+    underlying_asset: address
     ratio: uint256 # Amount of strike tokens relative to 1 underlying token
 
 
@@ -37,40 +37,19 @@ name: public(string[64])
 assetPair: public(map(string[64], AssetPair))
 strikeToken: Erc20
 underlyingToken: Erc20
-strikeAsset: map(string[64], Asset)
+strikeAsset: public(map(string[64], Asset))
 underlyingAsset: map(string[64], Asset)
-dummyAsset: Asset
-dummyPair: AssetPair
+
 
 
 @public
 def __init__():
     self.name = 'Factory'
-    self.dummyAsset = Asset({
-        name:'1', 
-        symbol: '1', 
-        decimals: 10**18,
-        assetAddress: self,
-        })
-    self.dummyPair = AssetPair({
-        strike_asset: Asset({
-        name:'1', 
-        symbol: '1', 
-        decimals: 10**18,
-        assetAddress: self,
-        }),
-        underlying_asset: Asset({
-        name:'1', 
-        symbol: '1', 
-        decimals: 10**18,
-        assetAddress: self,
-        }),
-        ratio: 10**10
-    })
+
 
 
 @public
-def createPair(_symbol: string[64], _strike: address, _underlying: address, _ratio: uint256) -> bool:
+def createPair(_symbol: string[64], _strike: address, _underlying: address, _ratio: uint256) -> AssetPair:
     """
     @dev Creates a struct Asset Pair
     """
@@ -96,13 +75,14 @@ def createPair(_symbol: string[64], _strike: address, _underlying: address, _rat
         })
 
     self.assetPair[_symbol] = AssetPair({
-        strike_asset: self.strikeAsset[_symbol],
-        underlying_asset: self.underlyingAsset[_symbol],
+        strike_asset: _strike,
+        underlying_asset: _underlying,
         ratio: _ratio
     })
 
-    return True
+    return self.assetPair[_symbol]
 
 @public
-def getPair(_symbol: string[64]) -> uint256:
-    return self.assetPair[_symbol].ratio
+def getStrikeAsset(_symbol: string[64]) -> (string[64], string[64], uint256, address):
+    assetStruct: Asset = self.strikeAsset[_symbol]
+    return (assetStruct.name, assetStruct.symbol, assetStruct.decimals, assetStruct.assetAddress)

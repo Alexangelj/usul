@@ -17,6 +17,8 @@ const Udr = artifacts.require('UDR') // Underlying Asset
 const cMoat = artifacts.require('cMoat') // Optionality Purchase Transfer Right -> Purchaser underlying for strike
 const pMoat = artifacts.require('pMoat') // Optionality Sale Transfer Right -> Sell underlying for strike
 const InstrumentController = artifacts.require('InstrumentController')
+const Genesis = artifacts.require('Genesis')
+const GenesisToken = artifacts.require('GenesisToken')
 
 
 contract('Controller', accounts => {
@@ -72,13 +74,21 @@ contract('Controller', accounts => {
         let instance = await InstrumentController.deployed()
         let udr = await Udr.deployed()
         let stk = await Stk.deployed()
+        let genesisToken = await GenesisToken.deployed()
         
-        let createInstrument = await instance.createInstrument(symbol, udr.address, stk.address, ratio)
+        let createInstrument = await instance.createInstrument(symbol, udr.address, stk.address, ratio, genesisToken.address)
         await getGas(createInstrument, 'Create Instrument')
+        //console.log(instance)
         console.log(gas)
         console.log((await instance.sets__expiration(symbol, 1)).toString())
         console.log((await instance.assetPair__strike_asset__name(symbol)))
-        //console.log((await instance.assetPair__strike_asset(symbol)).toString())
+        console.log((await instance.instruments__iaddress(symbol)))
+        let genesis = await Genesis.at((await instance.instruments__iaddress(symbol)))
+
+        console.log(await genesis.admin())
+        console.log((await genesis.set(1)).toString())
+
+        console.log((await instance.tokens__expiration(symbol)).toString())
     });
 
 })
