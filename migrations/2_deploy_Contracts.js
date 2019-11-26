@@ -21,23 +21,23 @@ var ganache1 = '0x7bFc572Ba5a084C9b09111C3dCB93E9E7283A215'
 
 module.exports = async (deployer, accounts) => {
   // Strike price denominated in Dai tokens -> Slate
-  //await deployer.deploy(Stk, '1000000000000000000000000', 'Strike Asset', 18, 'STK', {from: ganache1})
-  //let STK = await Stk.deployed()
-  //// Underlying asset denominated in Oat -> Stash
-  //await deployer.deploy(Udr, '1000000000000000000000000', 'Underlying Asset', 18, 'UDR')
-  //let UDR = await Udr.deployed()
-//
-  //await deployer.deploy(pMoat)
-  //let pMoat_template = await pMoat.deployed()
-//
-  //await deployer.deploy(cMoat)
-  //let cMoat_template = await cMoat.deployed()
- //
-  //await deployer.deploy(Wax)
-  //let wax = await Wax.deployed()
-//
-//
-  //await deployer.deploy(Factory, pMoat_template.address, cMoat_template.address, STK.address, UDR.address, wax.address)
+  await deployer.deploy(Stk, '1000000000000000000000000', 'Strike Asset', 18, 'STK')
+  let STK = await Stk.deployed()
+  // Underlying asset denominated in Oat -> Stash
+  await deployer.deploy(Udr, '1000000000000000000000000', 'Underlying Asset', 18, 'UDR')
+  let UDR = await Udr.deployed()
+
+  await deployer.deploy(pMoat)
+  let pMoat_template = await pMoat.deployed()
+
+  await deployer.deploy(cMoat)
+  let cMoat_template = await cMoat.deployed()
+ 
+  await deployer.deploy(Wax)
+  let wax = await Wax.deployed()
+
+
+  await deployer.deploy(Factory, pMoat_template.address, cMoat_template.address, STK.address, UDR.address, wax.address)
   
   
 };

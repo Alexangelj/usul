@@ -868,8 +868,8 @@
         }
       },
       "links": {},
-      "address": "0x9787696aBcEb16E1a6318733c2c782B2d6BF5092",
-      "transactionHash": "0xbd4befb2f359610d56bbe966e8d4cfb36834e4766e7fe42773b3b5244a62e3a9"
+      "address": "0x25eeAFe2E528A9356c63c251b9B100feE51317A8",
+      "transactionHash": "0x735b098ec1ae006c33e48f25a330c61a8499e591940b6b9faa362072f6a0e8e2"
     },
     "5777": {
       "events": {
@@ -1022,11 +1022,11 @@
         }
       },
       "links": {},
-      "address": "0xC4ffd316BB3205F10BAc939507f63196E88Ea3EE",
-      "transactionHash": "0x44ab7edcc916aab5f68f86972133d567f43ebcf78f87249a45a1ac3ae9e21d3b"
+      "address": "0x2fBE125d7839bbB5B4aF133be717F5cc0B5e70d9",
+      "transactionHash": "0x19551e5a6ae472d5514c530cefc1e7a0ca9702dd134cd7b1bab1fd8634ede8ee"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-25T20:32:17.915Z",
+  "updatedAt": "2019-11-26T18:31:24.217Z",
   "networkType": "ethereum"
 }
