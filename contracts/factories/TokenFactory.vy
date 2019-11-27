@@ -23,11 +23,13 @@ struct AssetPair: # Entangles two Assets
 
 contract GenesisToken():
     def setup(
+        _controller: address,
         _name: string[64],
         _symbol: string[64],
         _decimals: uint256,
         _supply: uint256,
         _expiration: timestamp,
+        _tokenId: bytes32,
     ):modifying
 
 
@@ -61,23 +63,27 @@ def pairTest() -> bool:
 
 @public
 def createToken(
+        _controller: address,
         _name: string[64],
         _symbol: string[64],
         _decimals: uint256,
         _supply: uint256,
         _template: address,
-        _expiration: timestamp
+        _expiration: timestamp,
+        _tokenId: bytes32,
     ) -> address:
     assert msg.sender != ZERO_ADDRESS
     assert _template != ZERO_ADDRESS
 
     genesisToken: address = create_forwarder_to(_template)
-    GenesisToken(genesisToken).setup( 
+    GenesisToken(genesisToken).setup(
+        _controller, 
         _name,
         _symbol,
         _decimals,
         _supply,
-        _expiration
+        _expiration,
+        _tokenId
     )
     self.user_to_genesisToken[msg.sender] = genesisToken
     return genesisToken

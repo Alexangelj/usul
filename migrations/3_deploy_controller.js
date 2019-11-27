@@ -27,37 +27,37 @@ const factories =[
 
 module.exports = async (deployer, accounts) => {
 
-    //var admin = accounts[0]
-    //
-//
-    //async function deployContracts(list) {
-    //    for(var i = 0; i < list.length; i++ ){
-    //        await deployer.deploy(list[i])
-    //    }
-    //}
-//
-    //await deployContracts(factories)
-    //let assetFactory = await AssetFactory.deployed()
-    //let setFactory = await SetFactory.deployed()
-    //let tokenFactory = await TokenFactory.deployed()
-//
-    //await deployer.deploy(GenesisToken)
-    //let genesisToken = await GenesisToken.deployed()
-    //
-    //await deployer.deploy(Genesis)
-    //let genesis = await Genesis.deployed()
-//
-    //await deployer.deploy(InstrumentFactory, genesis.address)
-    //let instrumentFactory = await InstrumentFactory.deployed()
-//
-    //await deployer.deploy(Stk, '1000000000000000000000000', 'Strike Asset', 18, 'STK')
-    //let STK = await Stk.deployed()
-    //// Underlying asset denominated in Oat -> Stash
-    //await deployer.deploy(Udr, '1000000000000000000000000', 'Underlying Asset', 18, 'UDR')
-    //let UDR = await Udr.deployed()
-    //
-    //
-    //await deployer.deploy(InstrumentController, instrumentFactory.address, tokenFactory.address, assetFactory.address, setFactory.address, 1577678400, 'v0.0.1')
-    //let instrumentController = await InstrumentController.deployed()
+    var admin = accounts[0]
+    
+
+    async function deployContracts(list) {
+        for(var i = 0; i < list.length; i++ ){
+            await deployer.deploy(list[i])
+        }
+    }
+
+    await deployContracts(factories)
+    let assetFactory = await AssetFactory.deployed()
+    let setFactory = await SetFactory.deployed()
+    let tokenFactory = await TokenFactory.deployed()
+
+    await deployer.deploy(GenesisToken)
+    let genesisToken = await GenesisToken.deployed()
+    
+    await deployer.deploy(Genesis)
+    let genesis = await Genesis.deployed()
+
+    await deployer.deploy(InstrumentFactory, genesis.address)
+    let instrumentFactory = await InstrumentFactory.deployed()
+
+    await deployer.deploy(Stk, '1000000000000000000000000', 'Strike Asset', 18, 'STK')
+    let STK = await Stk.deployed()
+    // Underlying asset denominated in Oat -> Stash
+    await deployer.deploy(Udr, '1000000000000000000000000', 'Underlying Asset', 18, 'UDR')
+    let UDR = await Udr.deployed()
+    
+    
+    await deployer.deploy(InstrumentController, instrumentFactory.address, tokenFactory.address, assetFactory.address, setFactory.address, 1577678400, 'v0.0.1')
+    let instrumentController = await InstrumentController.deployed()
   
 };

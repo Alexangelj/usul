@@ -104,24 +104,28 @@ contract SetFactory():
 contract TokenFactory():
     def name() -> string[64]:constant
     def createToken(
+        _controller: address,
         _name: string[64],
         _symbol: string[64],
         _decimals: uint256,
         _supply: uint256,
         _template: address,
         _expiration: timestamp,
+        _tokenId: bytes32,
     ) -> address:modifying
 
 
 contract InstrumentFactory():
     def name() -> string[64]:constant
     def createInstrument(
+        _controller: address,
         _name: string[64],
         _symbol: string[64],
         _ratio: uint256,
         _saddr: address,
         _uaddr: address,
-        _set: timestamp[4]
+        _set: timestamp[4],
+        _tokens: address[4],
     ) -> address:modifying
 
 contract Erc20():
@@ -134,6 +138,11 @@ contract Erc20():
     def name() -> string[64]:constant
     def symbol() -> string[64]:constant
     def decimals() -> uint256:constant
+    def mint(_to: address, _value: uint256):modifying
+    def burnFrom(_to: address, _value: uint256):modifying
+
+contract InstrumentContract():
+    def activate() -> bool:modifying
 
 # Interfaces
 
@@ -150,6 +159,7 @@ Payment: event({_from: indexed(address), _value: wei_value})
 # CONSTANTS
 
 MONTH_IN_SECONDS: constant(uint256) = 604800
+EXPIRATION_STAMPS: constant(uint256) = 4
 
 
 
@@ -162,9 +172,10 @@ depreciation: public(timestamp)
 
 sets: public(map(string[64], Set))
 assets: map(string[64], map(uint256, Asset)) # Maps a string to two assets: [0] = strike, [1] = underlying
-tokens: public(map(string[64], Token))
+tokens: public(map(string[64], map(timestamp, Token)))
 assetPair: public(map(string[64], AssetPair))
 instruments: public(map(string[64], Instrument))
+instrumentToken: public(map(string[64], map(address, Instrument))) # Maps symbol to a map of token address to Instrument
 
 instrumentFactory: InstrumentFactory
 assetFactory: AssetFactory
@@ -173,6 +184,7 @@ tokenFactory: TokenFactory
 factoryRegistry: FactoryRegistry
 instrumentsRegistry: InstrumentRegistry
 registry: Registry
+
 
 
 
@@ -215,7 +227,6 @@ def __init__(   _instrumentFactory: address,
     self.factoryRegistry = FactoryRegistry({symbol: _symbol, asset: _assetFactory, set: _setFactory, token: _tokenFactory, instrument: _instrumentFactory})
     self.registry = Registry({symbol: _symbol, factories: self.factoryRegistry, instruments: self.instrumentsRegistry})
 
-
 @private
 def createAssetPair(_symbol: string[64], _strikeAddress: address, _underlyingAddress: address, _ratio: uint256) -> bool:
     """
@@ -249,25 +260,52 @@ def createAssetPair(_symbol: string[64], _strikeAddress: address, _underlyingAdd
 
 
 @private
-def createToken(_symbol: string[64], _tokenTemplate: address, _expiration: timestamp) -> bool:
+def createToken(_symbol: string[64], _tokenTemplate: address, _expiration: timestamp) -> address:
     #_set: Set = self.sets[_symbol]
     _saddr: Asset = self.assetPair[_symbol].strike_asset
     _uaddr: Asset = self.assetPair[_symbol].underlying_asset
-    self.tokens[_symbol] = Token({
+    #_token_symbol: string[64] = concat(keccak256(_symbol), convert(_expiration, bytes32))
+    _tokenId: bytes32 = keccak256(
+        concat(
+            concat(
+                keccak256(_symbol), convert(_expiration, bytes32)
+                ),
+            concat(
+                keccak256(_saddr.symbol), keccak256(_uaddr.symbol)
+                )
+            )
+        )
+    self.tokens[_symbol][_expiration] = Token({
         symbol: _symbol,
         strike: _saddr,
         underlying: _uaddr,
         expiration: _expiration,
         taddress: self.tokenFactory.createToken(
-                _symbol, # Name
-                _symbol, # Symbol
+                self,
+                _symbol, # Name -> Symbol of instrument
+                _symbol, # Symbol -> Represents 'Set' of token
                 convert(18, uint256), # Decimals
                 convert(0, uint256), # Initial Amt
                 _tokenTemplate, # Address of erc 20 token contract
                 _expiration,
+                _tokenId,
             ),
     })
-    return True
+    return self.tokens[_symbol][_expiration].taddress
+
+
+@private
+def getTokens(_symbol: string[64]) -> address[4]:
+    """
+    @dev Gets token addresses entangled with instrument
+    """
+    address_list: address[4] = [ZERO_ADDRESS, ZERO_ADDRESS, ZERO_ADDRESS, ZERO_ADDRESS]
+    instrument_set: Set = self.instruments[_symbol].set
+    for i in range(EXPIRATION_STAMPS):
+        address_list[i] = self.tokens[_symbol][instrument_set.expiration[i]].taddress
+    
+    return address_list
+
 
 @public
 def createInstrument(
@@ -287,20 +325,43 @@ def createInstrument(
     _assets: AssetPair = self.assetPair[_symbol]
     _saddr: Asset = self.assetPair[_symbol].strike_asset
     _uaddr: Asset = self.assetPair[_symbol].underlying_asset
-    
+    token_list: address[4] = [ZERO_ADDRESS, ZERO_ADDRESS, ZERO_ADDRESS, ZERO_ADDRESS]
+
+    for i in range(EXPIRATION_STAMPS):
+        token_list[i] = self.createToken(_symbol, _tokenTemplate, _set.expiration[i])
+
     self.instruments[_symbol] = Instrument({
         symbol: _symbol,
         assets: _assets,
         set: _set,
         iaddress: self.instrumentFactory.createInstrument(
+                self,
                 _symbol,
                 _symbol,
                 _ratio,
                 _saddr.assetAddress,
                 _uaddr.assetAddress,
-                self.sets[_symbol].expiration
+                self.sets[_symbol].expiration,
+                token_list,
             )
         })
-    
-    self.createToken(_symbol, _tokenTemplate, _set.expiration[1])
     return True
+
+@public
+def activateInstrument(_symbol: string[64]) -> bool:
+    """
+    @dev An initialized Instrument needs to be activate its entangled tokens
+    """
+    iaddress: address = self.instruments[_symbol].iaddress
+    return InstrumentContract(iaddress).activate()
+
+@public
+def mint(_instrumentSymbol: string[64], _user: address, _amount: uint256, _tokenId: address):
+    assert self.instruments[_instrumentSymbol].iaddress == msg.sender
+    Erc20(_tokenId).mint(_user, _amount)
+
+@public
+def burn(_instrumentSymbol: string[64], _user: address, _amount: uint256, _tokenId: address):
+    assert self.instruments[_instrumentSymbol].iaddress == msg.sender
+    Erc20(_tokenId).burnFrom(_user, _amount)
+

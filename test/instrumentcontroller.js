@@ -60,6 +60,8 @@ contract('Controller', accounts => {
     var gas = []
     var symbol = 'v0.0.1'
     var ratio = 5
+    var timestamp1 = 1577678400
+    var amount = (10**19).toFixed()
 
     async function getGas(func, name) {
         /*
@@ -76,19 +78,36 @@ contract('Controller', accounts => {
         let stk = await Stk.deployed()
         let genesisToken = await GenesisToken.deployed()
         
-        let createInstrument = await instance.createInstrument(symbol, udr.address, stk.address, ratio, genesisToken.address)
+        let createInstrument = await instance.createInstrument(symbol, stk.address, udr.address, ratio, genesisToken.address)
         await getGas(createInstrument, 'Create Instrument')
         //console.log(instance)
-        console.log(gas)
-        console.log((await instance.sets__expiration(symbol, 1)).toString())
-        console.log((await instance.assetPair__strike_asset__name(symbol)))
-        console.log((await instance.instruments__iaddress(symbol)))
+        
+        //console.log((await instance.sets__expiration(symbol, 1)).toString())
+        //console.log((await instance.assetPair__strike_asset__name(symbol)))
+        //console.log((await instance.instruments__iaddress(symbol)))
         let genesis = await Genesis.at((await instance.instruments__iaddress(symbol)))
 
-        console.log(await genesis.admin())
-        console.log((await genesis.set(1)).toString())
+        //console.log(await genesis.admin())
+        //console.log((await genesis.set(1)).toString())
 
-        console.log((await instance.tokens__expiration(symbol)).toString())
+        //console.log((await instance.tokens__expiration(symbol)).toString())
+        //console.log((await instance.getTokens(symbol)))
+        console.log((await genesis.test()))
+        let byt = await genesis.test()
+        let activate = await instance.activateInstrument(symbol)
+        await getGas(activate, 'Activate Instrument')
+        console.log((await genesis.timestamps(timestamp1)))
+        console.log((await udr.balanceOf(Alice)).toString())
+
+        console.log('Underlying address from js ', await udr.address)
+        console.log('Underlying addr from controller ', await instance.assetPair__underlying_asset__assetAddress(symbol))
+        console.log('Underlying addr from instrument ', await genesis.udr_address())
+        let approve = await udr.approve(genesis.address, amount)
+        let write = await genesis.write(amount, (await genesis.timestamps(timestamp1)))
+        await getGas(write, 'write Instrument')
+
+        
+        console.log(gas)
     });
 
 })

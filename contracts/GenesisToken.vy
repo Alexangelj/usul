@@ -10,8 +10,9 @@ Transfer: event({_from: indexed(address), _to: indexed(address), _value: uint256
 Approval: event({_owner: indexed(address), _spender: indexed(address), _value: uint256})
 
 name: public(string[64])
-symbol: public(string[32])
+symbol: public(string[64])
 decimals: public(uint256)
+tokenId: public(bytes32)
 
 # NOTE: By declaring `balanceOf` as public, vyper automatically generates a 'balanceOf()' getter
 #       method to allow access to account balances.
@@ -24,15 +25,16 @@ minter: address
 
 
 @public
-def setup(_name: string[64], _symbol: string[32], _decimals: uint256, _supply: uint256, _expiration: timestamp):
+def setup(_controller: address, _name: string[64], _symbol: string[64], _decimals: uint256, _supply: uint256, _expiration: timestamp, _tokenId: bytes32,):
     init_supply: uint256 = _supply * 10 ** _decimals
     self.name = _name
     self.symbol = _symbol
     self.decimals = _decimals
-    self.balanceOf[msg.sender] = init_supply
+    self.balanceOf[_controller] = init_supply
     self.total_supply = init_supply
-    self.minter = msg.sender
-    log.Transfer(ZERO_ADDRESS, msg.sender, init_supply)
+    self.minter = _controller
+    self.tokenId = _tokenId
+    log.Transfer(ZERO_ADDRESS, _controller, init_supply)
 
 
 @public

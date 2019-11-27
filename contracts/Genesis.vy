@@ -9,10 +9,6 @@
 # @version 0.1.0b14
 
 
-from vyper.interfaces import ERC20
-implements: ERC20
-
-
 # Structs
 struct Account:
     user: address
@@ -49,10 +45,26 @@ contract UnderlyingAsset():
     def transferFrom(_from: address, _to: address, _value: uint256) -> bool:modifying
     def approve(_spender: address, _value: uint256) -> bool:modifying
 
+contract GenesisToken():
+    def totalSupply() -> uint256:constant
+    def balanceOf(_owner: address) -> uint256:constant
+    def allowance(_owner: address, _spender: address) -> uint256:constant
+    def transfer(_to: address, _value: uint256) -> bool:modifying
+    def transferFrom(_from: address, _to: address, _value: uint256) -> bool:modifying
+    def approve(_spender: address, _value: uint256) -> bool:modifying
+    def mint(_to: address, _value: uint256):modifying
+    def name() -> string[64]: constant
+    def symbol() -> string[64]: constant
+    def tokenId() -> bytes32: constant
+
+
 
 contract Wax():
     def timeToExpiry(time: timestamp) -> bool:constant
 
+contract InstrumentController():
+    def mint(_instrumentSymbol: string[64], _user: address, _amount: uint256, _tokenId: address):modifying
+    def burn(_instrumentSymbol: string[64], _user: address, _amount: uint256, _tokenId: address):modifying
 
 # Events
 Write: event({_from: indexed(address), amount: uint256, key: uint256})
@@ -72,6 +84,8 @@ factory: public(Factory)
 strikeAsset: public(StrikeAsset)
 underlyingAsset: public(UnderlyingAsset)
 wax: public(Wax)
+genesisToken: public(GenesisToken)
+instrumentController: public(InstrumentController)
 
 
 # Administrator - For Early Versions ONLY
@@ -94,7 +108,14 @@ balanceOf: public(map(address, uint256))
 allowances: map(address, map(address, uint256))
 total_supply: public(uint256)
 minter: public(address)
+
+
+# Specifications
 set: public(timestamp[4])
+tokens: public(address[4])
+leg: public(map(bytes32, address)) # Maps a token ID to an address
+timestamps: public(map(timestamp, address)) # Maps a timestamp to a bytes 32 Token ID
+
 
 # User Claims
 lockBook: public(LockBook) # Struct for lists of underlying deposits
@@ -102,8 +123,13 @@ highest_key: public(uint256) # Largest underlying deposit respective key
 user_to_key: public(map(address, uint256)) # Link users to their keys, 1 key per address
 
 
+# Test
+test: public(bytes32)
+udr_address: public(address)
+
 # Constants
 MAX_KEY_LENGTH: constant(uint256) = 2**10-1 # Used for looping over the book
+EXPIRATION_STAMPS: constant(uint256) = 4
 
 
 @public
@@ -115,31 +141,42 @@ def __default__():
 # Initializer
 @public
 def setup(
+        _controller: address,
         _name: string[64],
         _symbol: string[64],
         _ratio: uint256,
         _strikeAsset_address: address,
         _underlyingAsset_address: address,
-        _set: timestamp[4]
+        _set: timestamp[4],
+        _tokens: address[4],
     ):
     """
     @notice                         Setup is called from the factory contract using a contract template address
+    @param _controller              Address of Instrument Controller
     @param _name                    Name of this contract linked to its parameters
     @param _symbol                  Naming convention to represent the paramers -> 
                                     Strike Symbol + Underlying Symbol + UNIX Timestamp + 
                                     Type (C or P) + # of Strike tokens per # of Underlying tokens
     @param _ratio                   Strike:Underlying ratio 
     @param _strikeAsset_address     Address of strike asset contract
-    @param _underlyingAsst_address  Address of underlying asset contract
+    @param _underlyingAsset_address  Address of underlying asset contract
     @param _set                     List of expiration times valid for contract
+    @param _tokens                  Array of addresses of the tokens with respective expirations
     """
     assert(self.factory == ZERO_ADDRESS and self.admin == ZERO_ADDRESS) and msg.sender != ZERO_ADDRESS
     
     
     # Administrative variables
     self.factory = Factory(msg.sender)
-    self.admin = msg.sender
+    self.instrumentController = InstrumentController(_controller)
+    self.admin = _controller
+
+
     self.set = _set
+    self.tokens = _tokens
+
+    self.genesisToken = GenesisToken(_tokens[0])
+    self.test = self.genesisToken.tokenId()
 
     # Interfaces
     self.strikeAsset = StrikeAsset(_strikeAsset_address)
@@ -149,138 +186,30 @@ def setup(
     self.name = _name
     self.symbol = _symbol
     self.decimals = 10**18
-    self.balanceOf[msg.sender] = 0
+    self.balanceOf[_controller] = 0
     self.total_supply = 0
-    self.minter = msg.sender
-    log.Transfer(ZERO_ADDRESS, msg.sender, 0)
+    self.minter = _controller
+    log.Transfer(ZERO_ADDRESS, _controller, 0)
 
     # Set first book account to admin
     self.lockBook.locks[0].user = msg.sender
 
-
-# EIP-20 Functions - Source: https://github.com/ethereum/vyper/blob/master/examples/tokens/ERC20.vy
-@public
-@constant
-def totalSupply() -> uint256:
-    """
-    @dev Total number of tokens in existence.
-    """
-    return self.total_supply
-
-@public
-@constant
-def allowance(_owner : address, _spender : address) -> uint256:
-    """
-    @dev Function to check the amount of tokens that an owner allowed to a spender.
-    @param _owner The address which owns the funds.
-    @param _spender The address which will spend the funds.
-    @return An uint256 specifying the amount of tokens still available for the spender.
-    """
-    return self.allowances[_owner][_spender]
-
-
-@public
-def transfer(_to : address, _value : uint256) -> bool:
-    """
-    @dev Transfer token for a specified address
-    @param _to The address to transfer to.
-    @param _value The amount to be transferred.
-    """
-    # NOTE: vyper does not allow underflows
-    #       so the following subtraction would revert on insufficient balance
-    self.balanceOf[msg.sender] -= _value
-    self.balanceOf[_to] += _value
-    log.Transfer(msg.sender, _to, _value)
-    return True
-
-
-@public
-def transferFrom(_from : address, _to : address, _value : uint256) -> bool:
-    """
-     @dev Transfer tokens from one address to another.
-          Note that while this function emits a Transfer event, this is not required as per the specification,
-          and other compliant implementations may not emit the event.
-     @param _from address The address which you want to send tokens from
-     @param _to address The address which you want to transfer to
-     @param _value uint256 the amount of tokens to be transferred
-    """
-    # NOTE: vyper does not allow underflows
-    #       so the following subtraction would revert on insufficient balance
-    self.balanceOf[_from] -= _value
-    self.balanceOf[_to] += _value
-    # NOTE: vyper does not allow underflows
-    #      so the following subtraction would revert on insufficient allowance
-    self.allowances[_from][msg.sender] -= _value
-    log.Transfer(_from, _to, _value)
-    return True
-
-
-@public
-def approve(_spender : address, _value : uint256) -> bool:
-    """
-    @dev Approve the passed address to spend the specified amount of tokens on behalf of msg.sender.
-         Beware that changing an allowance with this method brings the risk that someone may use both the old
-         and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this
-         race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards:
-         https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
-    @param _spender The address which will spend the funds.
-    @param _value The amount of tokens to be spent.
-    """
-    self.allowances[msg.sender][_spender] = _value
-    log.Approval(msg.sender, _spender, _value)
-    return True
-
-
-@private
-def mint(_to: address, _value: uint256):
-    """
-    @dev Mint an amount of the token and assigns it to an account. 
-         This encapsulates the modification of balances such that the
-         proper events are emitted.
-    @param _to The account that will receive the created tokens.
-    @param _value The amount that will be created.
-    """
-    assert _to != ZERO_ADDRESS
-    self.total_supply += _value
-    self.balanceOf[_to] += _value
-    log.Transfer(ZERO_ADDRESS, _to, _value)
-
-
-@private
-def _burn(_to: address, _value: uint256):
-    """
-    @dev Internal function that burns an amount of the token of a given
-         account.
-    @param _to The account whose tokens will be burned.
-    @param _value The amount that will be burned.
-    """
-    assert _to != ZERO_ADDRESS
-    self.total_supply -= _value
-    self.balanceOf[_to] -= _value
-    log.Transfer(_to, ZERO_ADDRESS, _value)
-
-
-@public
-def burn(_value: uint256):
-    """
-    @dev Burn an amount of the token of msg.sender.
-    @param _value The amount that will be burned.
-    """
-    self._burn(msg.sender, _value)
-
-
-@public
-def burnFrom(_to: address, _value: uint256):
-    """
-    @dev Burn an amount of the token from a given account.
-    @param _to The account whose tokens will be burned.
-    @param _value The amount that will be burned.
-    """
-    self.allowances[_to][msg.sender] -= _value
-    self._burn(_to, _value)
+    # Test
+    self.udr_address = _underlyingAsset_address
 
 
 # Utility
+@public
+def activate() -> bool:
+    for i in range(EXPIRATION_STAMPS):
+        #token: GenesisToken = GenesisToken(self.tokens[i])
+        #tokenId: bytes32 = GenesisToken(self.tokens[i]).tokenId()
+        #self.leg[tokenId] = self.tokens[i]
+        #self.timestamps[self.set[i]] = tokenId
+        self.timestamps[self.set[i]] = self.tokens[i]
+    return True
+
+
 @public
 def isMature() -> bool:
     """
@@ -292,8 +221,7 @@ def isMature() -> bool:
 
 # Core
 @public
-@payable
-def write(deposit: uint256) -> bool:
+def write(deposit: uint256, _tokenAddress: address) -> bool:
     """
     @dev   Writer mints tokens: 
                    Underwritten Amount 
@@ -313,16 +241,15 @@ def write(deposit: uint256) -> bool:
     if(self.lockBook.locks[lock_key].underlying_amount > self.lockBook.highest_lock): # If underlying amount is greater, set new highest_key
         self.lockBook.highest_lock = self.lockBook.locks[lock_key].underlying_amount
         self.highest_key = lock_key
-    token_amount: uint256 = deposit * self.decimals / self.underlying  # Example: Underlying Parameter = 2, so if underwriten amount is  12, 12 / 2 = 6 cMOAT tokens minted
+    token_amount: uint256 = deposit  # Example: Underlying Parameter = 2, so if underwriten amount is  12, 12 / 2 = 6 cMOAT tokens minted
     self.underlyingAsset.transferFrom(msg.sender, self, deposit) # User deposits underwritten amount into contract
-    self.mint(msg.sender, token_amount)
+    self.instrumentController.mint(self.symbol, msg.sender, token_amount, _tokenAddress)
     log.Write(msg.sender, token_amount, lock_key)
     return True
 
 
 @public
-@payable
-def close(amount: uint256) -> bool:
+def close(amount: uint256, _tokenAddress: address) -> bool:
     """
     @dev          Writer can burn cMOAT tokens to redeem their underlying deposits
     @param amount Amount of cMOAT tokens to burn, 18 decimals  
@@ -333,14 +260,13 @@ def close(amount: uint256) -> bool:
     assert self.balanceOf[msg.sender] >= amount # Check user has cMOAT tokens to burn
     self.lockBook.locks[key].underlying_amount -= underlying_redeem 
     self.underlyingAsset.transfer(msg.sender, underlying_redeem) # Underlying asset redeemed to user
-    self._burn(msg.sender, amount) # Burn the cMOAT tokens that were redeemed for underwritten assets
+    self.instrumentController.burn(self.symbol, msg.sender, amount, _tokenAddress) # Burn the cMOAT tokens that were redeemed for underwritten assets
     log.Close(self.lockBook.locks[key].user, amount, key)
     return True
 
 
 @public
-@payable
-def exercise(amount: uint256) -> bool:
+def exercise(amount: uint256, _tokenAddress: address) -> bool:
     """
     @dev   Exercising party exchanges strike asset for underlying asset
     @param Amount of cMOAT tokens being exercised, 18 decimals
@@ -381,13 +307,13 @@ def exercise(amount: uint256) -> bool:
             self.strikeAsset.transfer(user, self.strike / self.decimals * options_exercised ) # Transfer proportional strike payment to entire balance of assigned user
             underlying_payment -= underlying_amount # Update underlying payment leftover   
             log.Exercise(msg.sender, options_exercised, lock_key)
-            self._burn(msg.sender, options_exercised) # Burn amount of tokens proportional to entire underlying balance of user
+            self.instrumentController.burn(self.symbol, msg.sender, options_exercised, _tokenAddress) # Burn amount of tokens proportional to entire underlying balance of user
             self.lockBook.locks[lock_key].underlying_amount -= underlying_amount # Update user's underlying amount
         # We have a user who can pay entire leftover exercised amount
         self.strikeAsset.transfer(assigned_user, self.strike / self.underlying * underlying_payment)
         options_exercised: uint256 = underlying_payment / self.underlying * self.decimals
         log.Exercise(msg.sender, options_exercised, lock_key)
-        self._burn(msg.sender, options_exercised)
+        self.instrumentController.burn(self.symbol, msg.sender, options_exercised, _tokenAddress)
         self.lockBook.locks[lock_key].underlying_amount -= underlying_payment # Assigned user exercises the rest of the underlying payment
         return True
     
@@ -396,7 +322,7 @@ def exercise(amount: uint256) -> bool:
     self.strikeAsset.transfer(assigned_user, strike_payment)
     self.lockBook.locks[lock_key].underlying_amount -= underlying_payment # Assigned user pays the exercised underlying amount
     log.Exercise(msg.sender, amount, lock_key)
-    self._burn(msg.sender, amount)
+    self.instrumentController.burn(self.symbol, msg.sender, amount, _tokenAddress)
     return True
 
 
