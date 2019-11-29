@@ -19,11 +19,17 @@ MONTH_IN_SECONDS: constant(uint256) = 604800
 @public
 def __init__():
     self.name = 'Factory'
-    self.set['1'] = Set({expiration: [1577678400, 1577678400 + MONTH_IN_SECONDS, 1577678400 + MONTH_IN_SECONDS * 2, 1577678400 + MONTH_IN_SECONDS * 3]})
 
 
 @public
 def createSet(_symbol: string[64], _epoch: timestamp, _cycle: uint256) -> timestamp[4]:
+    """
+    @dev Fills an array with timestamps
+    @param _symbol String to represent the set's linked components
+    @param _epoch Starting timestamp
+    @param _cycle Amount of time between timestamps
+    @return Array of 4 timestamps
+    """
     self.set[_symbol] = Set({expiration: [
         _epoch, 
         _epoch + _cycle, 

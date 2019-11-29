@@ -7,6 +7,7 @@ const Udr = artifacts.require('UDR')
 const cMoat = artifacts.require('cMoat')
 const pMoat = artifacts.require('pMoat')
 const Odex = artifacts.require('Odex')
+const Solo = artifacts.require('Solo')
 
 var _buyer = '0xE64aF0A0D319fb613983BB1D00A2baFfEAF1aBE9'
 var admin = '0x9995d8026d970db26C8de1553957f670C2C5707b'
@@ -39,5 +40,5 @@ module.exports = async (deployer, accounts) => {
 
   await deployer.deploy(Factory, pMoat_template.address, cMoat_template.address, STK.address, UDR.address, wax.address)
   
-  
+  await deployer.deploy(Solo, 'Solo Call Option', 'SOLO', 18, 5, STK.address, UDR.address)
 };

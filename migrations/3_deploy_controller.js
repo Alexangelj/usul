@@ -37,6 +37,7 @@ module.exports = async (deployer, accounts) => {
     }
 
     await deployContracts(factories)
+
     let assetFactory = await AssetFactory.deployed()
     let setFactory = await SetFactory.deployed()
     let tokenFactory = await TokenFactory.deployed()
@@ -52,12 +53,11 @@ module.exports = async (deployer, accounts) => {
 
     await deployer.deploy(Stk, '1000000000000000000000000', 'Strike Asset', 18, 'STK')
     let STK = await Stk.deployed()
-    // Underlying asset denominated in Oat -> Stash
+
     await deployer.deploy(Udr, '1000000000000000000000000', 'Underlying Asset', 18, 'UDR')
     let UDR = await Udr.deployed()
     
-    
-    await deployer.deploy(InstrumentController, instrumentFactory.address, tokenFactory.address, assetFactory.address, setFactory.address, 1577678400, 'v0.0.1')
+    await deployer.deploy(InstrumentController, instrumentFactory.address, tokenFactory.address, assetFactory.address, setFactory.address, 1640836800, 'v0.0.1')
     let instrumentController = await InstrumentController.deployed()
   
 };

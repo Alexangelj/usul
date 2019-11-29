@@ -13,6 +13,7 @@ name: public(string[64])
 symbol: public(string[64])
 decimals: public(uint256)
 tokenId: public(bytes32)
+expiration: public(timestamp)
 
 # NOTE: By declaring `balanceOf` as public, vyper automatically generates a 'balanceOf()' getter
 #       method to allow access to account balances.
@@ -22,6 +23,7 @@ balanceOf: public(map(address, uint256))
 allowances: map(address, map(address, uint256))
 total_supply: uint256
 minter: address
+
 
 
 @public
@@ -34,6 +36,7 @@ def setup(_controller: address, _name: string[64], _symbol: string[64], _decimal
     self.total_supply = init_supply
     self.minter = _controller
     self.tokenId = _tokenId
+    self.expiration = _expiration
     log.Transfer(ZERO_ADDRESS, _controller, init_supply)
 
 

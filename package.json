@@ -1,7 +1,7 @@
 {
-    "name": "MOAT",
+    "name": "USUL",
     "version": "0.1.0",
-    "description": "Multilateral Optionality Asset Transfers",
+    "description": "Multilateral Optionality Asset Transfers: MOAT",
     "engines": {
         "node": "8.10.0"
     },
@@ -13,7 +13,7 @@
         "dev": "lite-server"
     },
     "author": "Alexander",
-    "license": "GNU",
+    "license": "Apache-2.0",
     "devDependencies": {
         "lite-server": "^2.5.4"
     },
