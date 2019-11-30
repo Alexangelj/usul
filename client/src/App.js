@@ -11,6 +11,7 @@ import cMoat from './artifacts/cMOAT.json'
 import pMoat from './artifacts/pMOAT.json'
 import Udr from './artifacts/UDR.json'
 import Stk from './artifacts/STK.json'
+import Solo from './artifacts/Solo.json'
 import UdrComponent from './components/UdrComponent'
 import FactoryComponent from './components/FactoryComponent'
 
@@ -82,10 +83,6 @@ class App extends React.Component {
 
     return (
       <div className="App">
-        <Container fluid>
-        <Navigation/>
-        </Container>
-
         <Container fluid>
           <Row>
               <FactoryComponent

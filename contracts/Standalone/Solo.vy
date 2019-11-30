@@ -4,7 +4,7 @@
 # 
 # @author Alexander Angel
 # 
-# @dev Initialized by an administrator to be a standalone instrument
+# @dev Initialized by an administrator to be a standalone instrument - Inspired by a Call Option
 #
 # @version 0.1.0b14
 
@@ -24,6 +24,8 @@ struct LockBook:
     lock_key: uint256
     lock_length: uint256
     highest_lock: uint256
+    lowest_lock: uint256
+    lowest_key: uint256
 
 
 # Interfaces
@@ -45,10 +47,6 @@ contract UnderlyingAsset():
     def approve(_spender: address, _value: uint256) -> bool:modifying
 
 
-contract Wax():
-    def timeToExpiry(time: timestamp) -> bool:constant
-
-
 # Events
 Write: event({_from: indexed(address), amount: uint256, key: uint256})
 Exercise: event({_from: indexed(address), amount: uint256, key: uint256})
@@ -65,8 +63,6 @@ Approval: event({_owner: indexed(address), _spender: indexed(address), _value: u
 # Interface Contracts
 strikeAsset: public(StrikeAsset)
 underlyingAsset: public(UnderlyingAsset)
-wax: public(Wax)
-
 
 
 # Administrator - For Early Versions ONLY
@@ -74,11 +70,8 @@ admin: public(address)
 
 
 # Contract specific parameters
-strike: public(uint256) # Denominated in strike asset
-underlying: public(uint256) # Denominated in underlying asset
 maturity: public(timestamp) # UNIX Timestamp
-premium: public(uint256) # Temporary and initial value per MOAT token
-expired: public(bool) # Expired MOAT tokens are worthless
+expired: public(bool) # Expired tokens are worthless
 ratio: public(uint256)
 
 # EIP-20
@@ -98,7 +91,6 @@ user_to_key: public(map(address, uint256)) # Link users to their keys, 1 key per
 
 
 # Test
-test: public(bytes32)
 udr_address: public(address)
 
 # Constants
@@ -120,6 +112,7 @@ def __init__(
         _ratio: uint256,
         _strikeAsset_address: address,
         _underlyingAsset_address: address,
+        _maturity: timestamp,
     ):
     """
     @notice                         A standalone version of this option is initialized on deploy
@@ -130,7 +123,8 @@ def __init__(
     @param _decimals                Decimals of ERC-20 Native to this contract
     @param _ratio                   Strike:Underlying ratio 
     @param _strikeAsset_address     Address of strike asset contract
-    @param _underlyingAsset_address  Address of underlying asset contract
+    @param _underlyingAsset_address Address of underlying asset contract
+    @param _maturity                Timestamp of expiry date
     """
     assert self.admin == ZERO_ADDRESS and msg.sender != ZERO_ADDRESS
     
@@ -143,6 +137,7 @@ def __init__(
     self.strikeAsset = StrikeAsset(_strikeAsset_address)
     self.underlyingAsset = UnderlyingAsset(_underlyingAsset_address)
 
+
     # EIP-20 Standard
     self.name = _name
     self.symbol = _symbol
@@ -152,10 +147,15 @@ def __init__(
     self.minter = msg.sender
     log.Transfer(ZERO_ADDRESS, msg.sender, 0)
 
+
+    # Contract Specifications
     self.ratio = _ratio
+    self.maturity = _maturity
+
 
     # Set first book account to admin
     self.lockBook.locks[0].user = msg.sender
+
 
     # Test
     self.udr_address = _underlyingAsset_address
@@ -263,24 +263,11 @@ def _burn(_to: address, _value: uint256):
     log.Transfer(_to, ZERO_ADDRESS, _value)
 
 
-# Utility
-@public
-def isMature() -> bool:
-    """
-    @dev Checks maturity conditions
-    """
-    self.expired = self.wax.timeToExpiry(self.maturity)
-    return self.expired
-
-
 # Core
 @public
 def write(deposit: uint256) -> bool:
     """
-    @dev   Writer mints tokens: 
-                   Underwritten Amount 
-           cMOAT = ___________________
-                   Underlying Parameter
+    @dev Writer mints tokens at a 1:1 ratio of deposited assets
     @param deposit Deposit amount of underlying assets, 18 decimal places
     """
     # CHECKS
@@ -303,6 +290,10 @@ def write(deposit: uint256) -> bool:
     if(self.lockBook.locks[lock_key].underlying_amount > self.lockBook.highest_lock): # If underlying amount is greater, set new highest_key
         self.lockBook.highest_lock = self.lockBook.locks[lock_key].underlying_amount
         self.highest_key = lock_key
+    # Set lowest lock key if lowest amount
+    if(self.lockBook.locks[lock_key].underlying_amount < self.lockBook.lowest_lock and self.lockBook.lowest_lock > 0):
+        self.lockBook.lowest_lock = self.lockBook.locks[lock_key].underlying_amount
+        self.lockBook.lowest_key = lock_key
 
     # INERACTIONS
     log.Write(msg.sender, deposit, lock_key)
@@ -341,11 +332,19 @@ def exercise(amount: uint256) -> bool:
     assert self.balanceOf[msg.sender] >= amount
     strike_payment: uint256 = self.ratio * amount  
     underlying_payment: uint256 = amount
-    
+
+    # FIX - Should be at end of interactions phase
+    # Payouts to exerciser
+    self.strikeAsset.transferFrom(msg.sender, self, strike_payment) # Deposit strike asset
+    self.underlyingAsset.transfer(msg.sender, amount) # Withdraw underlying asset from contract
+
+
     assigned_user: address = ZERO_ADDRESS
     lock_key: uint256 = 0
-    
-    
+
+
+    # EFFECTS
+    # Update Underwriter's struct of locked funds
     for x in range(1, MAX_KEY_LENGTH + 1): # Loops over underwriters and depletes underlying_payment outlays
         lock_key = convert(x, uint256)
         if(self.lockBook.highest_lock > underlying_payment): # If the highest underwritten amount > payment, assign that user
@@ -358,7 +357,7 @@ def exercise(amount: uint256) -> bool:
 
     
     if(assigned_user == ZERO_ADDRESS): # If no assigned user, need to assign multiple users
-        for i in range(1, 3):
+        for i in range(1, MAX_KEY_LENGTH + 1):
             lock_key = convert(i, uint256)
             user: address = self.lockBook.locks[lock_key].user # Get user address of lock_key
             underlying_amount: uint256 = self.lockBook.locks[lock_key].underlying_amount # Get underlying amount of user
@@ -366,6 +365,7 @@ def exercise(amount: uint256) -> bool:
             if(underlying_amount > underlying_payment): # If the looped user has underwritten > underlying left, assign that user
                 assigned_user = self.lockBook.locks[lock_key].user
                 break
+            
             # We need to exercise options using multiple underwritten balances
             if(user == ZERO_ADDRESS): # If we pass over all users but there are still options oustanding to be exercised, set previous user as user
                 user = self.lockBook.locks[lock_key - 1].user
@@ -375,6 +375,7 @@ def exercise(amount: uint256) -> bool:
             log.Exercise(msg.sender, options_exercised, lock_key)
             self._burn(msg.sender, options_exercised) # Burn amount of tokens proportional to entire underlying balance of user
             self.lockBook.locks[lock_key].underlying_amount -= underlying_amount # Update user's underlying amount
+        
         # We have a user who can pay entire leftover exercised amount
         self.strikeAsset.transfer(assigned_user, self.ratio * underlying_payment)
         options_exercised: uint256 = underlying_payment
@@ -383,11 +384,8 @@ def exercise(amount: uint256) -> bool:
         self.lockBook.locks[lock_key].underlying_amount -= underlying_payment # Assigned user exercises the rest of the underlying payment
         return True
     
-    
-    self.strikeAsset.transferFrom(msg.sender, self, strike_payment) # Deposit strike asset (10 per option)
-    self.underlyingAsset.transfer(msg.sender, amount) # Withdraw underlying asset (2 per option) from contract
 
-
+    # INTERACTIONS
     # We have a user who can pay entire exercised amount
     self.strikeAsset.transfer(assigned_user, strike_payment)
     self.lockBook.locks[lock_key].underlying_amount -= underlying_payment # Assigned user pays the exercised underlying amount
@@ -399,11 +397,12 @@ def exercise(amount: uint256) -> bool:
 @public
 def expire() -> bool:
     """
-    @notice Any user can call this public function to expire this specific cMOAT token
+    @notice Any user can call this public function to expire this specific token
     @dev    Sets total supply to 0, does not burn any tokens
     """
-    self.expired = True # FIX: temporary test store
-    assert self.expired # cMOAT's UNIX timestamp < block.timestamp
+    if(self.maturity < block.timestamp):
+        self.expired = True
+    assert self.expired # UNIX timestamp < block.timestamp
     key: uint256 = 1 # Temporary key value 
     for x in range(1, MAX_KEY_LENGTH): # For each key, redeem the tokens to their underwriters, burn the cMOAT tokens
         if(self.lockBook.locks[convert(x, uint256)].user == ZERO_ADDRESS): # If we reach end of users in the lock book, end the loop

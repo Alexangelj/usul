@@ -21,12 +21,13 @@ var ganache0 = '0x9cfDd4267225D9D557658e5d758978bEAdAf7B15'
 var ganache1 = '0x7bFc572Ba5a084C9b09111C3dCB93E9E7283A215'
 
 module.exports = async (deployer, accounts) => {
+  var maturity = '1577822400'
   // Strike price denominated in Dai tokens -> Slate
   await deployer.deploy(Stk, '1000000000000000000000000', 'Strike Asset', 18, 'STK')
-  let STK = await Stk.deployed()
+  let stk = await Stk.deployed()
   // Underlying asset denominated in Oat -> Stash
   await deployer.deploy(Udr, '1000000000000000000000000', 'Underlying Asset', 18, 'UDR')
-  let UDR = await Udr.deployed()
+  let udr = await Udr.deployed()
 
   await deployer.deploy(pMoat)
   let pMoat_template = await pMoat.deployed()
@@ -38,7 +39,7 @@ module.exports = async (deployer, accounts) => {
   let wax = await Wax.deployed()
 
 
-  await deployer.deploy(Factory, pMoat_template.address, cMoat_template.address, STK.address, UDR.address, wax.address)
+  await deployer.deploy(Factory, pMoat_template.address, cMoat_template.address, stk.address, udr.address, wax.address)
   
-  await deployer.deploy(Solo, 'Solo Call Option', 'SOLO', 18, 5, STK.address, UDR.address)
+  await deployer.deploy(Solo, 'Solo Call Option', 'SOLO', 18, 5, stk.address, udr.address, maturity)
 };

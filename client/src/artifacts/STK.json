@@ -7831,12 +7831,12 @@
         }
       },
       "links": {},
-      "address": "0xf0a8E47224A269A0C85c8f4bc8dc395bce29aA09",
-      "transactionHash": "0x3cd92df0f96417a4b1d75e65bdb42980e56fad6e6e119b349dab76672f33683e"
+      "address": "0x882A3b436e4c7dc0eAc7a1f0D9Bb8C4A5f7dD85a",
+      "transactionHash": "0xa2906493f138313df8583240001cf62793cd7bfa72d24e009cf079dee80b43fb"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-26T18:31:24.189Z",
+  "updatedAt": "2019-11-29T22:14:25.989Z",
   "networkType": "ethereum",
   "devdoc": {
     "methods": {}

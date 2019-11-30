@@ -61,6 +61,9 @@ contract('Solo Test', accounts => {
     var symbol = 'v0.0.1'
     var ratio = 5
     var hundred = (10**20).toFixed()
+    var deposit = (10**19).toFixed()
+    var close = (5*10**18).toFixed()
+    var exercise = (5*10**18).toFixed()
 
     async function getGas(func, name) {
         /*
@@ -71,9 +74,21 @@ contract('Solo Test', accounts => {
         gas.push([name + ' gas: ', spent])
     }
 
-    it('Creates Instrument Controller', async () => {
+    it('Creates Instrument and Tests functionality', async () => {
         let _solo = await Solo.deployed()
-        
+        let stk = await Stk.deployed()
+        let udr = await Udr.deployed()
+        console.log(((await udr.balanceOf(Alice))/decimals).toString())
+        console.log(await _solo.udr_address())
+        await stk.approve(_solo.address, hundred)
+        await udr.approve(_solo.address, hundred)
+        let _write = await _solo.write(deposit, {from: Alice})
+        let _close = await _solo.close(close)
+        let _exercise = await _solo.exercise(exercise)
+        await getGas(_write, 'write')
+        await getGas(_close, 'close')
+        await getGas(_exercise, 'exercise')
+        console.log(gas)
     });
 
 })

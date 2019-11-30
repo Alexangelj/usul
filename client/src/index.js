@@ -2,12 +2,23 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
+import SoloApp from './SoloApp';
 import * as serviceWorker from './serviceWorker';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { Container } from 'react-bootstrap'
+import Navigation from './components/Navigation'
 
 ReactDOM.render(
     <>
-        <App />
+        <Container fluid>
+            <Navigation/>
+        </Container>
+        <BrowserRouter>
+            <Switch>
+            <Route path='/home' component={App}/>
+            <Route path='/solo' component={SoloApp}/>
+            </Switch>
+        </BrowserRouter>
     </>,
     document.getElementById('root')
 );

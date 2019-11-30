@@ -15,6 +15,7 @@ class UdrComponent extends React.Component {
           transactions: [],
           account: this.props.account,
           web3: this.props.web3,
+          instanceAddress: undefined,
           balanceOf: undefined,
           address: undefined,
           name: undefined,
@@ -68,8 +69,9 @@ class UdrComponent extends React.Component {
           const balance = await this.state.instance.methods.balanceOf(this.state.account).call()
           const name = await this.state.instance.methods.name().call()
           const symbol = await this.state.instance.methods.symbol().call()
+          const instanceAddress = await this.state.instance._address
           var user_balance = this.state.web3.utils.fromWei(balance, 'ether')
-          this.setState({balanceOf: user_balance, name: name, symbol: symbol})
+          this.setState({balanceOf: user_balance, name: name, symbol: symbol, instanceAddress: instanceAddress})
         }
       }
     
@@ -122,6 +124,7 @@ class UdrComponent extends React.Component {
             <Card.Body>
 
                 <h1>{this.state.name}: {this.state.symbol}</h1>
+                <p>Address: {this.state.instanceAddress}</p>
                 <p>Wallet Balance: {this.state.balanceOf} {this.state.symbol} </p>
                 <h2>Transfer Function</h2>
                 <Form onSubmit={this.handleTransfer}>
