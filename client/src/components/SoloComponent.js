@@ -1,9 +1,11 @@
 import React from 'react'
-import { Row, Col, Form, FormGroup, FormControl, Button, Container, Card, Dropdown, ListGroup } from 'react-bootstrap'
+import { Row, Col, Form, FormGroup, FormControl, Container, Card, Dropdown, ListGroup } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Web3 from 'web3';
 import getWeb3 from '../getWeb3'
 import Solo from '../artifacts/Solo'
+import { Button, StyledCard, StyledListGroup, StyledFormControl  } from '../theme/components'
+
 
 class SoloComponent extends React.Component {
     constructor(props){
@@ -199,20 +201,21 @@ class SoloComponent extends React.Component {
         }];
 
         return (
-          <Card>
+          <div><h1>The Solo Contract</h1>
+          <StyledCard>
             <Card.Body>
                 <h3>Name: {this.state.name}</h3>
                 <h5>Address: {this.state.solo_address}</h5>
-                <ListGroup as='ul'>
-                  <ListGroup.Item as='li'>Your Balance: {this.state.userBalance} {this.state.symbol}</ListGroup.Item>
-                  <ListGroup.Item as='li'>Symbol: {this.state.symbol}</ListGroup.Item>
-                  <ListGroup.Item as='li'>Strike to Underlying Ratio: {this.state.ratio}</ListGroup.Item>
-                  <ListGroup.Item as='li'>Maturity: {this.state.maturity}</ListGroup.Item>
-                </ListGroup>
+                <StyledListGroup>
+                  <ListGroup.Item>Your Balance: {this.state.userBalance} {this.state.symbol}</ListGroup.Item>
+                  <ListGroup.Item>Symbol: {this.state.symbol}</ListGroup.Item>
+                  <ListGroup.Item>Strike to Underlying Ratio: {this.state.ratio}</ListGroup.Item>
+                  <ListGroup.Item>Maturity: {this.state.maturity}</ListGroup.Item>
+                </StyledListGroup>
                 <h2>Write Function</h2>
             <Form onSubmit={this.handleWrite}>
               <FormGroup controlId="writesolo">
-                <FormControl 
+                <StyledFormControl 
                   componentclass="textarea"
                   name="underwrite"
                   value={this.state.underwrite}
@@ -222,17 +225,10 @@ class SoloComponent extends React.Component {
                 <Button type='submit'>Write Contract</Button>
               </FormGroup>
             </Form>
-            <BootstrapTable
-                  bootstrap4 striped hover condensed
-                  id='key' 
-                  keyField='key' 
-                  data={this.state.writes} 
-                  columns={columns}
-                />
             <h2>Exercise Function</h2>
             <Form onSubmit={this.handleExercise}>
               <FormGroup controlId="exercisesolo">
-                <FormControl 
+                <StyledFormControl 
                   componentclass="textarea"
                   name="exerciseAmount"
                   value={this.state.exerciseAmount}
@@ -241,18 +237,11 @@ class SoloComponent extends React.Component {
                 />
                 <Button type='submit'>Exercise options</Button>
               </FormGroup>
-            </Form>
-                <BootstrapTable
-                  bootstrap4 striped hover condensed
-                  id='key' 
-                  keyField='key' 
-                  data={this.state.exercises} 
-                  columns={exerciseColumns}
-                />
+            </Form> 
             <h2>Close Function</h2>
             <Form onSubmit={this.handleClose}>
               <FormGroup controlId="closesolo">
-                <FormControl 
+                <StyledFormControl 
                   componentclass="textarea"
                   name="closeAmount"
                   value={this.state.closeAmount}
@@ -262,15 +251,9 @@ class SoloComponent extends React.Component {
                 <Button type='submit'>Close options</Button>
               </FormGroup>
             </Form>
-                <BootstrapTable
-                  bootstrap4 striped hover condensed
-                  id='key' 
-                  keyField='key' 
-                  data={this.state.closes} 
-                  columns={closeColumns}
-                />
             </Card.Body>
-          </Card>
+          </StyledCard>
+          </div>
         )
     }
 }

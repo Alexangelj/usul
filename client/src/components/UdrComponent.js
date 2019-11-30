@@ -1,9 +1,11 @@
 import React from 'react'
-import { Row, Col, Form, FormGroup, FormControl, Button, Container, Card } from 'react-bootstrap'
+import { Row, Col, Form, FormGroup, FormControl, Container, Card } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Web3 from 'web3';
 import getWeb3 from '../getWeb3'
 import Udr from '../artifacts/UDR.json'
+
+import { Button } from '../theme/components'
 
 class UdrComponent extends React.Component {
     constructor(props) {

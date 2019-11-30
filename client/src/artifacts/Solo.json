@@ -856,11 +856,11 @@
         }
       },
       "links": {},
-      "address": "0x04436BEf4514c29885208125E3fDa43E94c7DB43",
-      "transactionHash": "0xc0d19746b1c08132528940d2801b30652e20805cc892b5d6dff33334f4a22b1e"
+      "address": "0xBeAEba38d8D5d93C61EF5dAfFC5da61e4199083a",
+      "transactionHash": "0xcfe7df84dcb55cbde1992fa347483de69804ddaa403ce78cccf965606a2ebd05"
     }
   },
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-11-29T22:14:25.357Z",
+  "updatedAt": "2019-11-30T16:08:17.068Z",
   "networkType": "ethereum"
 }

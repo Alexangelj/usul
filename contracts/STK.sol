@@ -21,6 +21,7 @@ contract EIP20Interface {
     */
     /// total amount of tokens
     uint256 public totalSupply;
+    bool public paused;
 
     /// @param _owner The address from which the balance will be retrieved
     /// @return The balance
@@ -49,6 +50,14 @@ contract EIP20Interface {
     /// @param _spender The address of the account able to transfer the tokens
     /// @return Amount of remaining tokens allowed to spent
     function allowance(address _owner, address _spender) public view returns (uint256 remaining);
+
+    /// @notice mints tokens for testing
+    /// @param _value The amount of tokens to mint
+    /// @return Whether the withdrawal was successfull or not
+    function withdraw(uint256 _value) public returns (bool success);
+
+    /// @notice pauses withdrawals
+    function pause() public returns (bool success);
 
     // solhint-disable-next-line no-simple-event-func-name
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
@@ -116,5 +125,20 @@ contract STK is EIP20Interface {
 
     function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
         return allowed[_owner][_spender];
+    }
+
+    function withdraw(uint256 _value) public returns (bool success) {
+        require(!paused, 'Contract is paused');
+        balances[msg.sender] += _value;
+        totalSupply += _value;
+        emit Transfer(address(0), msg.sender, _value);
+        return true;
+    }
+    function pause() public returns (bool success) {
+        if(paused) {
+            paused = false;
+        }
+        else{paused = true;}
+        return true;
     }
 }

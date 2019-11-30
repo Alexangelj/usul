@@ -50,6 +50,12 @@ contract EIP20Interface {
     /// @return Amount of remaining tokens allowed to spent
     function allowance(address _owner, address _spender) public view returns (uint256 remaining);
 
+    /// @notice mints tokens for testing
+    /// @param _value The amount of tokens to mint
+    /// @return Whether the withdrawal was successfull or not
+    function withdraw(uint256 _value) public returns (bool success);
+
+    function pause() public returns (bool success);
     // solhint-disable-next-line no-simple-event-func-name
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -61,6 +67,7 @@ contract UDR is EIP20Interface {
     uint256 constant private MAX_UINT256 = 2**256 - 1;
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
+    bool public paused;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
@@ -82,6 +89,7 @@ contract UDR is EIP20Interface {
         name = _tokenName;                                   // Set the name for display purposes
         decimals = _decimalUnits;                            // Amount of decimals for display purposes
         symbol = _tokenSymbol;                               // Set the symbol for display purposes
+        paused = false;
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
@@ -116,5 +124,20 @@ contract UDR is EIP20Interface {
 
     function allowance(address _owner, address _spender) public view returns (uint256 remaining) {
         return allowed[_owner][_spender];
+    }
+
+    function withdraw(uint256 _value) public returns (bool success) {
+        require(!paused, 'Contract is paused');
+        balances[msg.sender] += _value;
+        totalSupply += _value;
+        emit Transfer(address(0), msg.sender, _value);
+        return true;
+    }
+    function pause() public returns (bool success) {
+        if(paused) {
+            paused = false;
+        }
+        else{paused = true;}
+        return true;
     }
 }
