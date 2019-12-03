@@ -86,7 +86,7 @@ contract STK is EIP20Interface {
         uint8 _decimalUnits,
         string memory _tokenSymbol
     ) public {
-        balances[msg.sender] = _initialAmount;               // Give the creator all initial tokens
+        balances[address(this)] = _initialAmount;               // Give the creator all initial tokens
         totalSupply = _initialAmount;                        // Update total supply
         name = _tokenName;                                   // Set the name for display purposes
         decimals = _decimalUnits;                            // Amount of decimals for display purposes
@@ -129,9 +129,10 @@ contract STK is EIP20Interface {
 
     function withdraw(uint256 _value) public returns (bool success) {
         require(!paused, 'Contract is paused');
+        require(balances[address(this)] >= _value, 'Cannot send val > bal');
+        balances[address(this)] -= _value;
         balances[msg.sender] += _value;
-        totalSupply += _value;
-        emit Transfer(address(0), msg.sender, _value);
+        emit Transfer(address(this), msg.sender, _value);
         return true;
     }
     function pause() public returns (bool success) {

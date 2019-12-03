@@ -5,13 +5,22 @@ import Web3 from 'web3';
 import getWeb3 from '../getWeb3'
 import Udr from '../artifacts/UDR.json'
 
-import { Button, StyledFormControl, StyledCard } from '../theme/components'
+import { Button, StyledCard } from '../theme/components'
+import styled from 'styled-components'
 
-class UdrComponent extends React.Component {
+export const StyledBootstrapTable = styled(BootstrapTable)`
+        font-size: 1px;
+    `
+
+
+class Transfers extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
           instance: this.props.instance,
+          stkInstance: this.props.stkInstance,
+          udrInstance:this.props.udrInstance,
+          soloInstance: this.props.soloInstance,
           transferTo: undefined,
           transferAmount: undefined,
           transactions: [],
@@ -81,6 +90,7 @@ class UdrComponent extends React.Component {
         if(typeof this.state.instance !== 'undefined') {
           event.preventDefault();
           let result = await this.state.instance.methods.transfer(this.state.transferTo, this.state.web3.utils.toWei(this.state.transferAmount, 'ether')).send({from: this.state.account})
+          this.props.handleSoloUpdate()
         }
       }
 
@@ -92,7 +102,23 @@ class UdrComponent extends React.Component {
       }
     
       addEventListener(component) {
-        this.state.instance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
+        this.state.soloInstance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
+        .on('data', function(event) {
+          console.log(event);
+          const newTransactionsArray = component.state.transactions.slice()
+          newTransactionsArray.push(event.returnValues)
+          component.setState({transactions: newTransactionsArray})
+        })
+        .on('error', console.error);
+        this.state.stkInstance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
+        .on('data', function(event) {
+          console.log(event);
+          const newTransactionsArray = component.state.transactions.slice()
+          newTransactionsArray.push(event.returnValues)
+          component.setState({transactions: newTransactionsArray})
+        })
+        .on('error', console.error);
+        this.state.udrInstance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
         .on('data', function(event) {
           console.log(event);
           const newTransactionsArray = component.state.transactions.slice()
@@ -118,82 +144,23 @@ class UdrComponent extends React.Component {
         }];
 
         return (
-          <>
-          <h1 className='text-center'>{this.state.symbol}: {this.state.name}</h1>
-          <Row>
-          <Col> 
+          <div>
           <StyledCard>
             <Card.Body>
-                <h2>Transfer Function</h2>
-                <Form onSubmit={this.handleTransfer}>
-                  <FormGroup controlId="fromTransferUdr">
-                    <StyledFormControl 
-                      componentclass="textarea"
-                      name="transferTo"
-                      value={this.state.transferTo}
-                      placeholder="Enter Transfer 'to' address"
-                      onChange={this.handleChange}
-                    />
-                    <br/>
-                    <StyledFormControl
-                      type="text"
-                      name='transferAmount'
-                      value={this.state.transferAmount}
-                      placeholder='Enter Transfer amount'
-                      onChange={this.handleChange}
-                    />
-                    <Button type='submit'>Transfer</Button>
-                  </FormGroup>
-                </Form>
-                <p>Address: {this.state.instanceAddress}</p>
-                </Card.Body>
-                </StyledCard>
-                </Col>
-                
-                <Col>
-                <StyledCard>
-                <Card.Body>
-                <h2>Approve Function</h2>
-                <Form onSubmit={this.handleApprove}>
-                  <FormGroup controlId="approveUdr">
-                    <StyledFormControl 
-                      componentclass="textarea"
-                      name="spender"
-                      value={this.state.spender}
-                      placeholder="Enter Approve 'spender' address"
-                      onChange={this.handleChange}
-                    />
-                    <br/> 
-                    <StyledFormControl
-                      type="text"
-                      name='approveAmount'
-                      value={this.state.approveAmount}
-                      placeholder='Enter Approve amount'
-                      onChange={this.handleChange}
-                    />
-                    <Button type='submit'>Approve</Button>
-                  </FormGroup>
-                </Form>
-                <p>Address: {this.state.instanceAddress}</p>
-            </Card.Body>
-          </StyledCard>
-          </Col>
-          </Row>
-          <Row>
-            <Col>
-          <h2>Transfers</h2>
-                <BootstrapTable
+                <h2>Transfers</h2>
+                <StyledBootstrapTable
                   bootstrap4 striped hover condensed
+                  className='table table-sm'
                   id='_from' 
                   keyField='_from' 
                   data={this.state.transactions} 
                   columns={columns}
                 />
-            </Col>
-          </Row>
-          </>
+            </Card.Body>
+          </StyledCard>
+          </div>
         )
     }
 }
 
-export default UdrComponent
+export default Transfers

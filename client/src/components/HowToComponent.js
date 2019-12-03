@@ -1,6 +1,6 @@
 import React from 'react'
-import { Card, CardDeck } from 'react-bootstrap'
-import { StyledCard } from '../theme/components'
+import { Card, CardDeck, Accordion } from 'react-bootstrap'
+import { StyledCard, Button } from '../theme/components'
 
 
 class HowToComponent extends React.Component {
@@ -12,7 +12,11 @@ class HowToComponent extends React.Component {
     render() {
         return (
             <div>
-                <h2 className="text-center">How do I use this contract?</h2>
+                <Accordion defaultActiveKey="1">
+                <Accordion.Toggle as={Button} variant="link" eventKey="0">
+                How do I use this contract?
+                  </Accordion.Toggle>
+                  <Accordion.Collapse eventKey="0">
                   <CardDeck>
                     <StyledCard>
                       <Card.Body>
@@ -22,9 +26,6 @@ class HowToComponent extends React.Component {
                           of the Strike and Underlying assets.
                         </Card.Text>
                       </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">1</small>
-                      </Card.Footer>
                     </StyledCard>
                     <StyledCard>
                       <Card.Body>
@@ -37,9 +38,6 @@ class HowToComponent extends React.Component {
                             to deposit Amount.{' '}
                         </Card.Text>
                       </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">2</small>
-                      </Card.Footer>
                     </StyledCard>
                     <StyledCard>
                       <Card.Body>
@@ -53,11 +51,10 @@ class HowToComponent extends React.Component {
                             <b>Close.</b> Withdraw your locked UDR tokens by burning SOLO tokens.{' '}
                         </Card.Text>
                       </Card.Body>
-                      <Card.Footer>
-                        <small className="text-muted">3</small>
-                      </Card.Footer>
                     </StyledCard>
                   </CardDeck>
+                  </Accordion.Collapse>
+                  </Accordion>
         </div>
         )
     }

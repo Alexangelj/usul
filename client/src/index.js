@@ -5,13 +5,26 @@ import App from './App';
 import SoloApp from './SoloApp';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
-import { Container } from 'react-bootstrap'
+import { Container} from 'react-bootstrap'
 import Navigation from './components/Navigation'
 
 import {ThemeProvider} from 'styled-components'
 import colors from './theme/colors'
 import {createGlobalStyle} from 'styled-components'
 
+import { DrizzleProvider } from "drizzle-react"
+import { LoadingContainer } from 'drizzle-react-components'
+import drizzleOptions from "./drizzleOptions"
+import SoloAppContainer from './containers/SoloAppContainer'
+
+import {createStore} from 'redux'
+import allReducers from './reducers/index'
+import {Provider} from 'react-redux'
+
+import ProductList from './containers/productList'
+import FaqComponent from './components/FaqComponent'
+import Footer from './components/Footer'
+import AdminComponent from './components/AdminComponent'
 
 const white = '#FFFFFF'
 const black = '#000000'
@@ -112,21 +125,32 @@ export const GlobalStyle = createGlobalStyle`
 `
 
 
-
+const store = createStore(allReducers);
 
 ReactDOM.render(
-    <ThemeProvider theme={theme}>
+    <DrizzleProvider options={drizzleOptions}>
+      <Provider store={store}>
+      <ThemeProvider theme={theme}>
         <GlobalStyle />
-        <Container fluid>
-            <Navigation/>
-        </Container>
-            <BrowserRouter>
-                <Switch>
-                <Route path='/home' component={App}/>
-                <Route path='/solo' component={SoloApp}/>
-                </Switch>
-            </BrowserRouter>
-    </ThemeProvider>,
+          <Container fluid>
+              <Navigation/>
+          </Container>
+              <BrowserRouter>
+                  <Switch>
+                    <Route exact path='/' component={ProductList}/>
+                    <Route path='/home' component={ProductList}/>
+                    <Route path='/solo' component={SoloAppContainer}/>
+                    <Route path='/faq' component={FaqComponent}/>
+                    <Route path='/admin' component={AdminComponent}/>
+                  </Switch>
+              </BrowserRouter>
+              <Container fluid>
+              <Footer />
+          </Container>
+      </ThemeProvider>
+      </Provider>
+    </DrizzleProvider>
+    ,
     document.getElementById('root')
 );
 

@@ -1,8 +1,7 @@
-import Factory from './artifacts/Factory.json'
-import cMoat from './artifacts/cMOAT.json'
-import pMoat from './artifacts/pMOAT.json'
-import Stk from './artifacts/STK.json'
+import web3 from 'web3'
 import Udr from './artifacts/UDR.json'
+import Stk from './artifacts/STK.json'
+import Solo from './artifacts/Solo.json'
 
 
 const drizzleOptions = {
@@ -14,13 +13,14 @@ const drizzleOptions = {
         },
       },
     contracts: [
-        Factory,
-        cMoat,
-        pMoat,
+        Udr,
         Stk,
-        Udr
+        Solo,
     ],
     events: {
+      Udr: ['Transfer', 'Approve'],
+      Stk: ['Transfer', 'Approve'],
+      Solo: ['Transfer', 'Approve'],
     },
     polls: {
         // set polling interval to 30secs so we don't get buried in poll events

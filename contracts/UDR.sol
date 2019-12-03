@@ -21,6 +21,7 @@ contract EIP20Interface {
     */
     /// total amount of tokens
     uint256 public totalSupply;
+    bool public paused;
 
     /// @param _owner The address from which the balance will be retrieved
     /// @return The balance
@@ -55,7 +56,9 @@ contract EIP20Interface {
     /// @return Whether the withdrawal was successfull or not
     function withdraw(uint256 _value) public returns (bool success);
 
+    /// @notice pauses withdrawals
     function pause() public returns (bool success);
+
     // solhint-disable-next-line no-simple-event-func-name
     event Transfer(address indexed _from, address indexed _to, uint256 _value);
     event Approval(address indexed _owner, address indexed _spender, uint256 _value);
@@ -67,7 +70,6 @@ contract UDR is EIP20Interface {
     uint256 constant private MAX_UINT256 = 2**256 - 1;
     mapping (address => uint256) public balances;
     mapping (address => mapping (address => uint256)) public allowed;
-    bool public paused;
     /*
     NOTE:
     The following variables are OPTIONAL vanities. One does not have to include them.
@@ -84,12 +86,11 @@ contract UDR is EIP20Interface {
         uint8 _decimalUnits,
         string memory _tokenSymbol
     ) public {
-        balances[msg.sender] = _initialAmount;               // Give the creator all initial tokens
+        balances[address(this)] = _initialAmount;               // Give the creator all initial tokens
         totalSupply = _initialAmount;                        // Update total supply
         name = _tokenName;                                   // Set the name for display purposes
         decimals = _decimalUnits;                            // Amount of decimals for display purposes
         symbol = _tokenSymbol;                               // Set the symbol for display purposes
-        paused = false;
     }
 
     function transfer(address _to, uint256 _value) public returns (bool success) {
@@ -128,9 +129,10 @@ contract UDR is EIP20Interface {
 
     function withdraw(uint256 _value) public returns (bool success) {
         require(!paused, 'Contract is paused');
+        require(balances[address(this)] >= _value, 'Cannot send val > bal');
+        balances[address(this)] -= _value;
         balances[msg.sender] += _value;
-        totalSupply += _value;
-        emit Transfer(address(0), msg.sender, _value);
+        emit Transfer(address(this), msg.sender, _value);
         return true;
     }
     function pause() public returns (bool success) {

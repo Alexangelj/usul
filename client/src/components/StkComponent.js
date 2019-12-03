@@ -7,7 +7,7 @@ import Udr from '../artifacts/UDR.json'
 
 import { Button, StyledFormControl, StyledCard } from '../theme/components'
 
-class UdrComponent extends React.Component {
+class StkComponent extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
@@ -180,7 +180,6 @@ class UdrComponent extends React.Component {
           </Col>
           </Row>
           <Row>
-            <Col>
           <h2>Transfers</h2>
                 <BootstrapTable
                   bootstrap4 striped hover condensed
@@ -189,11 +188,10 @@ class UdrComponent extends React.Component {
                   data={this.state.transactions} 
                   columns={columns}
                 />
-            </Col>
           </Row>
           </>
         )
     }
 }
 
-export default UdrComponent
+export default StkComponent

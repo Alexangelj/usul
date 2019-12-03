@@ -15,7 +15,6 @@ const Udr = artifacts.require('UDR') // Underlying Asset
 const Solo = artifacts.require('Solo')
 
 
-
 contract('Solo Test', accounts => {
 
 
@@ -82,12 +81,39 @@ contract('Solo Test', accounts => {
         console.log(await _solo.udr_address())
         await stk.approve(_solo.address, hundred)
         await udr.approve(_solo.address, hundred)
+
+        let withdrawStk = await stk.withdraw((deposit * ratio).toString())
+        let withdrawUdr = await udr.withdraw(deposit)
+        let withdrawUdr2 = await udr.withdraw(deposit)
+
         let _write = await _solo.write(deposit, {from: Alice})
         let _close = await _solo.close(close)
         let _exercise = await _solo.exercise(exercise)
         await getGas(_write, 'write')
         await getGas(_close, 'close')
         await getGas(_exercise, 'exercise')
+        
+        let _write2 = await _solo.write(deposit, {from: Alice})
+        let _tx = await _solo.transfer(_solo.address, deposit, {from: Alice})
+        let ethPrice = await _solo.ethPrice()
+        let ether = ethPrice * deposit / decimals
+        let cost = (ether).toFixed()
+        console.log((await _solo.lockBook__locks__underlying_amount(0)).toString())
+        console.log('before: ', (await _solo.balanceOf(Alice)).toString())
+        let _buy = await _solo.purchaseSolo(deposit, {value: ether})
+        console.log('after: ', (await _solo.balanceOf(Alice)).toString())
+        assert.strictEqual((await _solo.balanceOf(Alice)).toString(), deposit, 'deposit and buy are not equal')
+        await getGas(_tx, 'tx')
+        await getGas(_buy, 'buy')
+        
+        console.log('before eth ', (await web3.eth.getBalance(Alice)).toString())
+        let soloEth = await web3.eth.getBalance(_solo.address)
+        let withdrawEth = await _solo.withdrawEth(soloEth)
+        console.log('after eth ', (await web3.eth.getBalance(Alice)).toString())
+
+        //let expire = await _solo.expire()
+        //console.log('supply ', web3.utils.fromWei(await _solo.totalSupply()))
+
         console.log(gas)
     });
 

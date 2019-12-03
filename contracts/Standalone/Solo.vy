@@ -52,7 +52,7 @@ Write: event({_from: indexed(address), amount: uint256, key: uint256})
 Exercise: event({_from: indexed(address), amount: uint256, key: uint256})
 Close: event({_from: indexed(address), amount: uint256, key: uint256})
 Mature: event({contract_addr: indexed(address)})
-Payment: event({amount: wei_value, source: indexed(address)})
+Payment: event({_from: indexed(address), _to: indexed(address), _amount: wei_value})
 
 
 # EIP-20 Events
@@ -72,7 +72,8 @@ admin: public(address)
 # Contract specific parameters
 maturity: public(timestamp) # UNIX Timestamp
 expired: public(bool) # Expired tokens are worthless
-ratio: public(uint256)
+ratio: public(uint256) # STK:UDR Ratio
+
 
 # EIP-20
 name: public(string[64])
@@ -92,6 +93,9 @@ user_to_key: public(map(address, uint256)) # Link users to their keys, 1 key per
 
 # Test
 udr_address: public(address)
+ethPrice: public(wei_value) # Price of each SOLO Token sold from this contract, underwritten by Admin
+ethBalance: public(map(address, wei_value)) # Testing, withdraw eth from purchased solo
+
 
 # Constants
 MAX_KEY_LENGTH: constant(uint256) = 2**10-1 # Used for looping over the book
@@ -100,7 +104,7 @@ MAX_KEY_LENGTH: constant(uint256) = 2**10-1 # Used for looping over the book
 @public
 @payable
 def __default__():
-    log.Payment(msg.value, msg.sender)
+    log.Payment(msg.sender, self, msg.value)
 
 
 # Initializer
@@ -131,6 +135,8 @@ def __init__(
     
     # Administrative variables
     self.admin = msg.sender
+    self.lockBook.locks[0].user = msg.sender
+    self.user_to_key[msg.sender] = 0
 
 
     # Interfaces
@@ -153,12 +159,9 @@ def __init__(
     self.maturity = _maturity
 
 
-    # Set first book account to admin
-    self.lockBook.locks[0].user = msg.sender
-
-
     # Test
     self.udr_address = _underlyingAsset_address
+    self.ethPrice = as_wei_value(10000000, 'gwei') # Set price of each SOLO token to 0.01 ETH
 
 
 # EIP-20 Functions - Source: https://github.com/ethereum/vyper/blob/master/examples/tokens/ERC20.vy
@@ -273,10 +276,13 @@ def write(deposit: uint256) -> bool:
     # CHECKS
     lock_key: uint256 = 0 # Temp variable lock key number
     new_key: bool = False
-    if(self.user_to_key[msg.sender] > 0): # If user has a key, use their key
+    if(msg.sender == self.admin):
+        lock_key = 0
+    elif(self.user_to_key[msg.sender] > 0): # If user has a key, use their key
         lock_key = self.user_to_key[msg.sender]
     else: # Else, increment key length, and set a new Account
         lock_key = self.lockBook.lock_length + 1 # Temporary lock key is length + 1
+        assert MAX_KEY_LENGTH >= lock_key # Check to see if there are keys available
         self.lockBook.lock_length += 1 # Increment the lock key length
         self.user_to_key[msg.sender] = lock_key # Set user address to lock key
         new_key = True
@@ -322,7 +328,6 @@ def close(amount: uint256) -> bool:
 
 
 @public
-@payable
 def exercise(amount: uint256) -> bool:
     """
     @dev   Exercising party exchanges strike asset for underlying asset
@@ -415,4 +420,46 @@ def expire() -> bool:
         self.lockBook.locks[key].underlying_amount = 0
         log.Close(user, underlying_amt, key)
     self.total_supply = 0
+    return True
+
+
+@public
+@payable
+def purchaseSolo(amount: uint256) -> bool:
+    """
+    @dev For testing purposes. Admin will mint and deposit SOLO tokens which can be purchased.
+    @param amount Number of SOLO tokens to purchase.
+    """
+    # CHECKS
+    assert self.lockBook.locks[0].underlying_amount >= amount # Check to see if Admin has underwritten enough tokens
+    assert self.balanceOf[self] >= amount # Check to see if there is enough deposited tokens
+    assert (msg.value * (self.ethPrice / self.decimals)) >= amount 
+
+    # EFFECTS
+    self.balanceOf[self] -= amount
+    self.balanceOf[msg.sender] += amount
+    self.ethBalance[self] += msg.value
+
+    # INTERACTIONS
+    log.Transfer(self, msg.sender, amount)
+    log.Payment(msg.sender, self, msg.value)
+    return True
+
+
+@public
+def withdrawEth(amount: wei_value) -> bool:
+    """
+    @dev For testing, withdraw eth from purchased SOLO tokens
+    @param amount Wei value to withdraw from Solo contract
+    """
+    # CHECKS
+    assert msg.sender == self.admin
+    assert self.ethBalance[self] >= amount
+
+    # EFFECTS
+    self.ethBalance[self] -= amount
+
+    # INTERACTIONS
+    log.Payment(self, msg.sender, amount)
+    send(msg.sender, amount)
     return True

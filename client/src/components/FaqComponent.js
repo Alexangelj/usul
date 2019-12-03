@@ -1,5 +1,5 @@
 import React from 'react'
-import { Nav, Navbar, ButtonToolbar, Card } from 'react-bootstrap'
+import { Nav, Navbar, ButtonToolbar, Card, Container, Col, Row } from 'react-bootstrap'
 import { Button } from '../theme/components'
 import { StyledTable, StyledCard } from '../theme/components'
 
@@ -10,7 +10,11 @@ class FaqComponent extends React.Component {
       }
     render() {
         return (
-            <div>
+            <Container>
+              
+              <Col></Col>
+              <Row>
+              <Col>
             <h1>F.A.Q</h1>
                 <StyledCard>
                       <Card.Body>
@@ -27,7 +31,7 @@ class FaqComponent extends React.Component {
                             <p>
                             The Solo Contract is a contractual agreement between a <i>Writer </i>
                             and a <i>Buyer</i> that gives the <i>Buyer</i> the right to purchase <strong>1 UDR</strong> token
-                            for <strong>{this.props.soloRatio} STK</strong> tokens.
+                            for <strong>5 STK</strong> tokens.
                             </p>
                             <br/>
                             <h3> How are SOLO tokens created?</h3>
@@ -40,8 +44,8 @@ class FaqComponent extends React.Component {
                             <h3> What is valuable about SOLO tokens?</h3>
                             <p>
                             Users who own the <strong>SOLO</strong> tokens can <strong>Exercise</strong> their Right
-                            to Purchase an Underlying token for a price equal to {this.props.soloRatio} Strike 
-                            tokens. Exercising this right will expend the <i>Buyer's</i> token by burning it.
+                            to Purchase an Underlying token for a price equal of 5 Strike 
+                            tokens each. Exercising this right will expend the <i>Buyer's</i> token by burning it.
                             </p>
                             <br/>
                             <h3> Can we estimate a SOLO token's value?</h3>
@@ -74,9 +78,9 @@ class FaqComponent extends React.Component {
                             In the next versions of this contract,
                             the Underlying and Strike assets can be any ERC-20 Token. For example,
                             the Strike asset could be DAI, and the Underlying asset could be MKR. 
-                            The contract has a ratio of 550. A SOLO token owner then has the Right
+                            The contract could be initialized with a ratio of 550. A SOLO token owner then has the Right
                             to Purchase 1 MKR token for 550 DAI tokens. They benefit from any price appreciation
-                            of the MKR tokens. Instead of buying MKR tokens for 600 DAI on the market, they can
+                            of the MKR tokens. For example, if MKR tokens later went up to 600 DAI, instead of buying MKR tokens for 600 DAI on the market, they can
                             exercise their SOLO token and purchase it for 550 DAI. Or, instead of exercising,
                             they could sell their SOLO token on the market. Since the market rate of MKR is 50 DAI
                             more than the SOLO token's ratio, the SOLO token has an <i>intrinsic</i> value of 50 DAI.
@@ -87,7 +91,11 @@ class FaqComponent extends React.Component {
                         </Card.Text>
                       </Card.Body>
                     </StyledCard>
-        </div>
+                    </Col>
+                    </Row>
+                    <Col></Col>
+                    
+        </Container>
         )
     }
 }
