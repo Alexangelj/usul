@@ -2,25 +2,16 @@ import React from 'react'
 import { Row, Col, Form, FormGroup, FormControl, Container, Card } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Web3 from 'web3';
-import getWeb3 from '../getWeb3'
-import Udr from '../artifacts/UDR.json'
+import getWeb3 from '../../utils/getWeb3'
+import Udr from '../../artifacts/UDR.json'
 
-import { Button, StyledCard } from '../theme/components'
-import styled from 'styled-components'
+import { Button, StyledFormControl, StyledCard } from '../../theme/components'
 
-export const StyledBootstrapTable = styled(BootstrapTable)`
-        font-size: 1px;
-    `
-
-
-class Transfers extends React.Component {
+class TransferComponent extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
           instance: this.props.instance,
-          stkInstance: this.props.stkInstance,
-          udrInstance:this.props.udrInstance,
-          soloInstance: this.props.soloInstance,
           transferTo: undefined,
           transferAmount: undefined,
           transactions: [],
@@ -90,7 +81,6 @@ class Transfers extends React.Component {
         if(typeof this.state.instance !== 'undefined') {
           event.preventDefault();
           let result = await this.state.instance.methods.transfer(this.state.transferTo, this.state.web3.utils.toWei(this.state.transferAmount, 'ether')).send({from: this.state.account})
-          this.props.handleSoloUpdate()
         }
       }
 
@@ -102,23 +92,7 @@ class Transfers extends React.Component {
       }
     
       addEventListener(component) {
-        this.state.soloInstance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
-        .on('data', function(event) {
-          console.log(event);
-          const newTransactionsArray = component.state.transactions.slice()
-          newTransactionsArray.push(event.returnValues)
-          component.setState({transactions: newTransactionsArray})
-        })
-        .on('error', console.error);
-        this.state.stkInstance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
-        .on('data', function(event) {
-          console.log(event);
-          const newTransactionsArray = component.state.transactions.slice()
-          newTransactionsArray.push(event.returnValues)
-          component.setState({transactions: newTransactionsArray})
-        })
-        .on('error', console.error);
-        this.state.udrInstance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
+        this.state.instance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
         .on('data', function(event) {
           console.log(event);
           const newTransactionsArray = component.state.transactions.slice()
@@ -132,35 +106,42 @@ class Transfers extends React.Component {
         if(!this.state.web3) {
           return <div>Loading Web3, accounts, and contract...</div>
         }
-        const columns = [{
-          dataField: '_from',
-          text: 'From Address',
-        }, {
-          dataField: '_to',
-          text: 'To Address',
-        }, {
-          dataField: '_value',
-          text: 'Value',
-        }];
 
         return (
-          <div>
+          <>
+          <Row>
+          <Col> 
           <StyledCard>
             <Card.Body>
-                <h2>Transfers</h2>
-                <StyledBootstrapTable
-                  bootstrap4 striped hover condensed
-                  className='table table-sm'
-                  id='_from' 
-                  keyField='_from' 
-                  data={this.state.transactions} 
-                  columns={columns}
-                />
-            </Card.Body>
-          </StyledCard>
-          </div>
+                <h2>Transfer <strong>{this.state.symbol}</strong></h2>
+                <Form onSubmit={this.handleTransfer}>
+                  <FormGroup controlId="fromTransferUdr">
+                    <StyledFormControl 
+                      componentclass="textarea"
+                      name="transferTo"
+                      value={this.state.transferTo}
+                      placeholder="Enter Transfer 'to' address"
+                      onChange={this.handleChange}
+                    />
+                    <br/>
+                    <StyledFormControl
+                      type="text"
+                      name='transferAmount'
+                      value={this.state.transferAmount}
+                      placeholder='Enter Transfer amount'
+                      onChange={this.handleChange}
+                    />
+                    <Button type='submit'>Transfer</Button>
+                  </FormGroup>
+                </Form>
+                <p>Address: {this.state.instanceAddress}</p>
+                </Card.Body>
+                </StyledCard>
+                </Col>
+          </Row>
+          </>
         )
     }
 }
 
-export default Transfers
+export default TransferComponent

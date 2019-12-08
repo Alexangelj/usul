@@ -1,29 +1,29 @@
 import React from 'react';
-import './App.css';
-//import logo from './logo.svg';
 import { Container, Col, Row, Form, FormGroup, FormControl, HelpBlock, ButtonToolbar, Modal, Table, Tab, Tabs, Card, CardDeck, CardGroup, Nav } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import Web3 from 'web3';
-import getWeb3 from './getWeb3'
-import Udr from './artifacts/UDR.json'
-import Stk from './artifacts/STK.json'
-import Solo from './artifacts/Solo.json'
-import SoloComponent from './components/SoloComponent'
-import UdrComponent from './components/UdrComponent'
-import StkComponent from './components/StkComponent'
+import getWeb3 from '../../../utils/getWeb3'
+import Udr from '../../../artifacts/UDR.json'
+import Stk from '../../../artifacts/STK.json'
+import Solo from '../../../artifacts/Solo.json'
+import SoloComponent from '../../ContractInterfaces/SoloComponent'
+import UdrComponent from '../../ContractInterfaces/UdrComponent'
+import StkComponent from '../../ContractInterfaces/StkComponent'
 import { bool } from 'prop-types';
-import { Button, StyledRow, H1, StyledCol } from './theme/components'
+import { Button, StyledRow, H1, StyledCol } from '../../../theme/components'
 import styled from 'styled-components'
-import WalletComponent from './components/WalletComponent'
-import FaqComponent from './components/FaqComponent'
-import HowToComponent from './components/HowToComponent'
-import ChainComponent from './components/ChainComponent'
-import AdminComponent from './components/AdminComponent'
-import TransferComponent from './components/TransferComponent'
-import Transfers from './components/Transfers'
+import WalletComponent from '../../Wallet/WalletComponent'
+import FaqComponent from '../FAQ/FaqComponent'
+import HowToComponent from '../../Tooltips/HowToComponent'
+import ChainComponent from '../../Chain/ChainComponent'
+import AdminComponent from '../Admin/AdminComponent'
+import TransferComponent from '../../ContractInterfaces/TransferComponent'
+import Transfers from '../../ContractInterfaces/Transfers'
 
 import ToggleButton from 'react-toggle-button'
+
+import { drizzleConnect } from 'drizzle-react';
 
 class SoloApp extends React.Component {
     constructor(props) {
@@ -96,11 +96,6 @@ class SoloApp extends React.Component {
               soloInstance: soloInstance,
               solo_address: soloDeployedNetwork.address,
             }, this.constants);
-        
-        fetch('https://api.etherscan.io/api?module=stats&action=ethsupply&apikey=YourApiKey')
-        .then(result => this.setState({ data: result}))
-        .catch(error => this.setState({ error }));
-        console.log('data', this.state.data)
       } catch (error) {
         alert(
           'Failed to load web3, accounts, or contract.'
@@ -291,7 +286,8 @@ class SoloApp extends React.Component {
       }
       let contract = <h1 className='text-center'>Choose an Option Above</h1>;
       let admin = <Button className='text-center'>Admin</Button>
-      
+      console.log(this.props.drizzleStatus, this.props.drizzle, this.props.drizzleState, this.props.contracts, this.props.accounts, this.props.Udr, this.props.Solo, this.props.web3)
+      console.log('solo', this.props.Solo)
       if(this.state.activeSymbol == this.state.stkSymbol) {
         contract =  <StkComponent
                       instance={this.state.stkInstance}
@@ -490,4 +486,4 @@ class SoloApp extends React.Component {
     }
 }
 
-export default SoloApp
+export default SoloApp;

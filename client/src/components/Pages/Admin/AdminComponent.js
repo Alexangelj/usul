@@ -2,21 +2,28 @@ import React from 'react'
 import { Row, Col, Form, FormGroup, FormControl, Container, Card } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Web3 from 'web3';
-import getWeb3 from '../getWeb3'
-import Udr from '../artifacts/UDR.json'
+import getWeb3 from '../../../utils/getWeb3'
+import Udr from '../../../artifacts/UDR.json'
+import Stk from '../../../artifacts/STK.json'
+import Solo from '../../../artifacts/Solo.json'
 
-import { Button, StyledFormControl, StyledCard } from '../theme/components'
+import { Button, StyledFormControl, StyledCard } from '../../../theme/components'
 
-class UdrComponent extends React.Component {
+class AdminComponent extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
-          instance: this.props.instance,
+          instance: undefined,
+          udrInstance: undefined,
+          stkInstance: undefined,
+          udr_address: undefined,
+          stk_address: undefined,
+          solo_address: undefined,
           transferTo: undefined,
           transferAmount: undefined,
           transactions: [],
-          account: this.props.account,
-          web3: this.props.web3,
+          account: undefined,
+          web3: undefined,
           instanceAddress: undefined,
           balanceOf: undefined,
           address: undefined,
@@ -28,12 +35,43 @@ class UdrComponent extends React.Component {
         this.handleTransfer = this.handleTransfer.bind(this)
         this.handleChange = this.handleChange.bind(this)
         this.handleApprove = this.handleApprove.bind(this)
+        this.constants = this.constants.bind(this)
       }
 
       componentDidMount = async () => {
         try {
-          this.addEventListener(this)
-          this.setState(this.constants)
+          const web3 = await getWeb3();
+          const accounts = await web3.eth.getAccounts();
+          const networkId = await web3.eth.net.getId();
+          const udrDeployedNetwork = Udr.networks[networkId];
+          const udrInstance = new web3.eth.Contract(
+            Udr.abi,
+            udrDeployedNetwork && udrDeployedNetwork.address,
+          );
+          const stkDeployedNetwork = Stk.networks[networkId];
+          const stkInstance = new web3.eth.Contract(
+            Stk.abi,
+            stkDeployedNetwork && stkDeployedNetwork.address,
+          )
+  
+          const soloDeployedNetwork = Solo.networks[networkId];
+          const soloInstance = new web3.eth.Contract(
+            Solo.abi,
+            soloDeployedNetwork && soloDeployedNetwork.address,
+          )
+  
+          this.setState({
+                web3: web3, 
+                account: accounts[0], 
+                udrInstance: udrInstance,
+                udr_address: udrDeployedNetwork.address,
+                stkInstance: stkInstance, 
+                stk_address: stkDeployedNetwork.address,
+                soloInstance: soloInstance,
+                solo_address: soloDeployedNetwork.address,
+                instance: soloInstance,
+              }, this.constants);
+          
         } catch (error) {
           alert(
             'Failed to load web3, accounts, or contract.'
@@ -41,6 +79,35 @@ class UdrComponent extends React.Component {
           console.error(error);
         }
       };
+  
+      
+      async constants() {
+        if(typeof this.state.soloInstance !== 'undefined') {
+          const soloSymbol = await this.state.soloInstance.methods.symbol().call()
+          const soloBalance = await this.state.soloInstance.methods.balanceOf(this.state.account).call()
+          const soloRatio = await this.state.soloInstance.methods.ratio().call()
+          const admin = await this.state.soloInstance.methods.admin().call()
+          this.setState({
+            name: soloSymbol,
+            symbol: soloSymbol, 
+            soloBalance: this.state.web3.utils.fromWei(soloBalance, 'ether'),
+            soloRatio: soloRatio,
+            admin: admin,
+          });
+          console.log(this.state.admin, this.state.account)
+
+          const decimals = await this.state.instance.methods.decimals().call()
+          const balance = await this.state.instance.methods.balanceOf(this.state.account).call()
+          const name = await this.state.instance.methods.name().call()
+          const symbol = await this.state.instance.methods.symbol().call()
+          const instanceAddress = await this.state.instance._address
+          var user_balance = this.state.web3.utils.fromWei(balance, 'ether')
+          this.setState({balanceOf: user_balance, name: name, symbol: symbol, instanceAddress: instanceAddress})
+
+        }
+        console.log('admin', this.state.admin, 'account', this.state.account)
+
+      }
 
       
       handleChange(event){
@@ -65,34 +132,34 @@ class UdrComponent extends React.Component {
         }
       }
 
-      async constants() {
-        if(typeof this.state.instance !== 'undefined') {
-          const decimals = await this.state.instance.methods.decimals().call()
-          const balance = await this.state.instance.methods.balanceOf(this.state.account).call()
-          const name = await this.state.instance.methods.name().call()
-          const symbol = await this.state.instance.methods.symbol().call()
-          const instanceAddress = await this.state.instance._address
-          var user_balance = this.state.web3.utils.fromWei(balance, 'ether')
-          this.setState({balanceOf: user_balance, name: name, symbol: symbol, instanceAddress: instanceAddress})
-        }
-      }
+      //async constants() {
+      //  if(typeof this.state.instance !== 'undefined') {
+      //    const decimals = await this.state.instance.methods.decimals().call()
+      //    const balance = await this.state.instance.methods.balanceOf(this.state.account).call()
+      //    const name = await this.state.instance.methods.name().call()
+      //    const symbol = await this.state.instance.methods.symbol().call()
+      //    const instanceAddress = await this.state.instance._address
+      //    var user_balance = this.state.web3.utils.fromWei(balance, 'ether')
+      //    this.setState({balanceOf: user_balance, name: name, symbol: symbol, instanceAddress: instanceAddress})
+      //  }
+      //}
     
       async handleTransfer(event) {
-        if(typeof this.state.instance !== 'undefined') {
+        if(typeof this.state.soloInstance !== 'undefined') {
           event.preventDefault();
-          let result = await this.state.instance.methods.transfer(this.state.transferTo, this.state.web3.utils.toWei(this.state.transferAmount, 'ether')).send({from: this.state.account})
+          let result = await this.state.soloInstance.methods.transfer(this.state.transferTo, this.state.web3.utils.toWei(this.state.transferAmount, 'ether')).send({from: this.state.account})
         }
       }
 
       async handleApprove(event) {
-        if(typeof this.state.instance !== 'undefined') {
+        if(typeof this.state.soloInstance !== 'undefined') {
           event.preventDefault();
           let result = await this.state.instance.methods.approve(this.state.spender, this.state.web3.utils.toWei(this.state.approveAmount, 'ether')).send({from: this.state.account})
         }
       }
     
       addEventListener(component) {
-        this.state.instance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
+        this.state.soloInstance.events.Transfer({fromBlock: 0, toBlock: 'latest'})
         .on('data', function(event) {
           console.log(event);
           const newTransactionsArray = component.state.transactions.slice()
@@ -117,8 +184,14 @@ class UdrComponent extends React.Component {
           text: 'Value',
         }];
 
+        if(this.state.account != this.state.admin) {
+            return (
+                    <h1 className='text-center'>For Admin Only </h1>
+            )
+        }
+
         return (
-          <>
+          <Container>
           <h1 className='text-center'>{this.state.symbol}: {this.state.name}</h1>
           <Row>
           <Col> 
@@ -180,7 +253,6 @@ class UdrComponent extends React.Component {
           </Col>
           </Row>
           <Row>
-            <Col>
           <h2>Transfers</h2>
                 <BootstrapTable
                   bootstrap4 striped hover condensed
@@ -189,11 +261,10 @@ class UdrComponent extends React.Component {
                   data={this.state.transactions} 
                   columns={columns}
                 />
-            </Col>
           </Row>
-          </>
+          </Container>
         )
     }
 }
 
-export default UdrComponent
+export default AdminComponent

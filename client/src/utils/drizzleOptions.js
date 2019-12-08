@@ -1,7 +1,7 @@
-import web3 from 'web3'
-import Udr from './artifacts/UDR.json'
-import Stk from './artifacts/STK.json'
-import Solo from './artifacts/Solo.json'
+import Web3 from "web3";
+import UDR from '../artifacts/UDR.json'
+import STK from '../artifacts/STK.json'
+import Solo from '../artifacts/Solo.json'
 
 
 const drizzleOptions = {
@@ -9,17 +9,18 @@ const drizzleOptions = {
         block: false,
         fallback: {
           type: "ws",
-          url: "ws://127.0.0.1:9545",
+          url: "ws://127.0.0.1:7545",
         },
+        customProvider: new Web3.providers.HttpProvider(
+          "http://127.0.0.1:7545"
+        ),
       },
     contracts: [
-        Udr,
-        Stk,
+        UDR,
+        STK,
         Solo,
     ],
     events: {
-      Udr: ['Transfer', 'Approve'],
-      Stk: ['Transfer', 'Approve'],
       Solo: ['Transfer', 'Approve'],
     },
     polls: {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Nav, Navbar, ButtonToolbar, Card, Container, Col, Row } from 'react-bootstrap'
-import { Button } from '../theme/components'
-import { StyledTable, StyledCard } from '../theme/components'
+import { Button } from '../../../theme/components'
+import { StyledTable, StyledCard } from '../../../theme/components'
 
 
 class FaqComponent extends React.Component {

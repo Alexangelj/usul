@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card, CardDeck, Accordion } from 'react-bootstrap'
-import { StyledCard, Button } from '../theme/components'
+import { StyledCard, Button } from '../../theme/components'
 
 
 class HowToComponent extends React.Component {

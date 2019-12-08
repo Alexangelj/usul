@@ -2,10 +2,10 @@ import React from 'react'
 import { Row, Col, Form, FormGroup, FormControl, Container, Card } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Web3 from 'web3';
-import getWeb3 from '../getWeb3'
-import Udr from '../artifacts/UDR.json'
+import getWeb3 from '../../utils/getWeb3'
+import Udr from '../../artifacts/UDR.json'
 
-import { Button, StyledFormControl, StyledCard } from '../theme/components'
+import { Button, StyledFormControl, StyledCard } from '../../theme/components'
 
 class UdrComponent extends React.Component {
     constructor(props) {
@@ -106,14 +106,25 @@ class UdrComponent extends React.Component {
         if(!this.state.web3) {
           return <div>Loading Web3, accounts, and contract...</div>
         }
+        const columns = [{
+          dataField: '_from',
+          text: 'From Address',
+        }, {
+          dataField: '_to',
+          text: 'To Address',
+        }, {
+          dataField: '_value',
+          text: 'Value',
+        }];
 
         return (
           <>
+          <h1 className='text-center'>{this.state.symbol}: {this.state.name}</h1>
           <Row>
           <Col> 
           <StyledCard>
             <Card.Body>
-                <h2>Transfer <strong>{this.state.symbol}</strong></h2>
+                <h2>Transfer Function</h2>
                 <Form onSubmit={this.handleTransfer}>
                   <FormGroup controlId="fromTransferUdr">
                     <StyledFormControl 
@@ -138,6 +149,47 @@ class UdrComponent extends React.Component {
                 </Card.Body>
                 </StyledCard>
                 </Col>
+                
+                <Col>
+                <StyledCard>
+                <Card.Body>
+                <h2>Approve Function</h2>
+                <Form onSubmit={this.handleApprove}>
+                  <FormGroup controlId="approveUdr">
+                    <StyledFormControl 
+                      componentclass="textarea"
+                      name="spender"
+                      value={this.state.spender}
+                      placeholder="Enter Approve 'spender' address"
+                      onChange={this.handleChange}
+                    />
+                    <br/> 
+                    <StyledFormControl
+                      type="text"
+                      name='approveAmount'
+                      value={this.state.approveAmount}
+                      placeholder='Enter Approve amount'
+                      onChange={this.handleChange}
+                    />
+                    <Button type='submit'>Approve</Button>
+                  </FormGroup>
+                </Form>
+                <p>Address: {this.state.instanceAddress}</p>
+            </Card.Body>
+          </StyledCard>
+          </Col>
+          </Row>
+          <Row>
+            <Col>
+          <h2>Transfers</h2>
+                <BootstrapTable
+                  bootstrap4 striped hover condensed
+                  id='_from' 
+                  keyField='_from' 
+                  data={this.state.transactions} 
+                  columns={columns}
+                />
+            </Col>
           </Row>
           </>
         )

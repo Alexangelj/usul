@@ -3,17 +3,17 @@ import './App.css';
 //import logo from './logo.svg';
 import { Container, Col, Row, Form, FormGroup, FormControl, HelpBlock, Button, Modal, Table, Tab, Tabs } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
-import Navigation from './components/Navigation'
+import Navigation from '../../components/Header/Navigation'
 import Web3 from 'web3';
-import getWeb3 from './getWeb3'
-import Factory from './artifacts/Factory.json'
-import cMoat from './artifacts/cMOAT.json'
-import pMoat from './artifacts/pMOAT.json'
-import Udr from './artifacts/UDR.json'
-import Stk from './artifacts/STK.json'
-import Solo from './artifacts/Solo.json'
-import UdrComponent from './components/UdrComponent'
-import FactoryComponent from './components/FactoryComponent'
+import getWeb3 from '../../utils/getWeb3'
+import Factory from '../../artifacts/Factory.json'
+import cMoat from '../../artifacts/cMOAT.json'
+import pMoat from '../../artifacts/pMOAT.json'
+import Udr from '../../artifacts/UDR.json'
+import Stk from '../../artifacts/STK.json'
+import Solo from '../../artifacts/Solo.json'
+import UdrComponent from '../../components/ContractInterfaces/UdrComponent'
+import FactoryComponent from '../../components/ContractInterfaces/FactoryComponent'
 
 class App extends React.Component {
   constructor(props) {

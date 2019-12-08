@@ -1,10 +1,7 @@
 import React from 'react'
 import './styles.scss'
-import {bindActionCreators} from 'redux'
-import {connect} from 'react-redux'
-import {StyledCard} from '../theme/components'
 import {Container, Col} from 'react-bootstrap'
-import { Link } from 'react-router-dom';
+
 
 class ProductList extends React.Component {
 
@@ -45,10 +42,4 @@ class ProductList extends React.Component {
     }
 }
 
-function mapStateToProps(state) {
-    return {
-        product: state.product
-    }
-}
-
-export default connect(mapStateToProps)(ProductList);
+export default ProductList;

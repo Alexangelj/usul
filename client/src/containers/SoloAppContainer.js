@@ -1,4 +1,4 @@
-import SoloApp from "../SoloApp";
+import SoloApp from "../components/Pages/Solo/SoloApp";
 import { drizzleConnect } from 'drizzle-react';
 
 const mapStateToProps = state => {

@@ -1,12 +1,12 @@
 import React, { useEffect }  from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import App from './App';
-import SoloApp from './SoloApp';
+import App from './.legacy/v0-Drizzle/App';
+import SoloApp from './components/Pages/Solo/SoloApp';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { Container} from 'react-bootstrap'
-import Navigation from './components/Navigation'
+import Navigation from './components/Header/Navigation'
 
 import {ThemeProvider} from 'styled-components'
 import colors from './theme/colors'
@@ -14,17 +14,33 @@ import {createGlobalStyle} from 'styled-components'
 
 import { DrizzleProvider } from "drizzle-react"
 import { LoadingContainer } from 'drizzle-react-components'
-import drizzleOptions from "./drizzleOptions"
+import drizzleOptions from "./utils/drizzleOptions"
 import SoloAppContainer from './containers/SoloAppContainer'
 
-import {createStore} from 'redux'
+import { createStore, applyMiddleware, vanillaPromise } from 'redux'
 import allReducers from './reducers/index'
 import {Provider} from 'react-redux'
+import thunk from 'redux-thunk'
 
-import ProductList from './containers/productList'
-import FaqComponent from './components/FaqComponent'
-import Footer from './components/Footer'
-import AdminComponent from './components/AdminComponent'
+import ProductList from './containers/ProductListContainer'
+import FaqComponent from './components/Pages/FAQ/FaqComponent'
+import Footer from './components/Footer/Footer'
+import AdminComponent from './components/Pages/Admin/AdminComponent'
+import SoloAppDrizzle from './.drizzleStuff/SoloAppDrizzle'
+import ApproveComponent from './.drizzleStuff/ApproveComponent'
+
+import { DrizzleContext } from 'drizzle-react'
+import { Drizzle, generateStore } from 'drizzle'
+
+// V2
+import SoloV2 from './components/Pages/Solo/SoloV2'
+
+
+const drizzleStore = generateStore(drizzleOptions)
+const drizzle = new Drizzle(drizzleOptions, drizzleStore)
+
+
+
 
 const white = '#FFFFFF'
 const black = '#000000'
@@ -125,30 +141,39 @@ export const GlobalStyle = createGlobalStyle`
 `
 
 
-const store = createStore(allReducers);
+const store = createStore(
+    allReducers,
+    applyMiddleware(thunk)
+  );
+
 
 ReactDOM.render(
-    <DrizzleProvider options={drizzleOptions}>
-      <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
-          <Container fluid>
-              <Navigation/>
-          </Container>
-              <BrowserRouter>
+  <DrizzleProvider options={drizzleOptions}>
+        <Provider store={store}>
+          <ThemeProvider theme={theme}>
+            <GlobalStyle />
+
+              <Container fluid>
+                <Navigation/>
+              </Container>
+
+                <BrowserRouter>
                   <Switch>
                     <Route exact path='/' component={ProductList}/>
                     <Route path='/home' component={ProductList}/>
                     <Route path='/solo' component={SoloAppContainer}/>
                     <Route path='/faq' component={FaqComponent}/>
                     <Route path='/admin' component={AdminComponent}/>
+                    <Route path='/solo2' component={SoloV2}/>
                   </Switch>
-              </BrowserRouter>
+                </BrowserRouter>
+
               <Container fluid>
-              <Footer />
-          </Container>
-      </ThemeProvider>
-      </Provider>
+                <Footer />
+              </Container>
+
+          </ThemeProvider>
+        </Provider>
     </DrizzleProvider>
     ,
     document.getElementById('root')

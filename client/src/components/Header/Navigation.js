@@ -16,6 +16,7 @@ class Navigation extends React.Component {
                         <Nav.Link href="https://github.com/Alexangelj/usul">Github</Nav.Link>
                         <Nav.Link href="/faq">F.A.Q.</Nav.Link>
                         <Nav.Link href="/admin">Admin</Nav.Link>
+                        <Nav.Link href="/solo2">Solo Beta</Nav.Link>
                       </Nav>
                     </Navbar.Collapse>
             </Navbar>

@@ -9899,7 +9899,7 @@
   },
   "networks": {},
   "schemaVersion": "3.0.19",
-  "updatedAt": "2019-12-02T23:59:18.119Z",
+  "updatedAt": "2019-12-07T05:37:03.487Z",
   "devdoc": {
     "methods": {
       "allowance(address,address)": {

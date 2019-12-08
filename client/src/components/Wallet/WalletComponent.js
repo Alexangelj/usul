@@ -1,6 +1,6 @@
 import React from 'react'
 import { Nav, Navbar, ButtonToolbar, Form, FormGroup, FormControl } from 'react-bootstrap'
-import { Button, StyledTable, StyledFormControl } from '../theme/components'
+import { Button, StyledTable, StyledFormControl } from '../../theme/components'
 import ToggleButton from 'react-toggle-button'
 import styled from 'styled-components'
 

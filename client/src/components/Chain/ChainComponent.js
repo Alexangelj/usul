@@ -2,9 +2,9 @@ import React from 'react'
 import { Row, Col, Form, FormGroup, FormControl, Container, Card, Dropdown, ListGroup } from 'react-bootstrap'
 import BootstrapTable from 'react-bootstrap-table-next'
 import Web3 from 'web3';
-import getWeb3 from '../getWeb3'
-import Solo from '../artifacts/Solo'
-import { Button, StyledCard, StyledListGroup, StyledFormControl, StyledTable  } from '../theme/components'
+import getWeb3 from '../../utils/getWeb3'
+import Solo from '../../artifacts/Solo'
+import { Button, StyledCard, StyledListGroup, StyledFormControl, StyledTable  } from '../../theme/components'
 import styled from 'styled-components'
 
 export const StyledButton = styled(Button)`
