@@ -21,39 +21,48 @@ import AdminComponent from '../Admin/AdminComponent'
 import TransferComponent from '../../ContractInterfaces/TransferComponent'
 import Transfers from '../../ContractInterfaces/Transfers'
 
+
 import ToggleButton from 'react-toggle-button'
 
-import { drizzleConnect, DrizzleContext } from 'drizzle-react';
 
 import { connect } from 'react-redux'
 import { web3Connect } from '../../../reducers/web3Reducer'
-import { stkConnect } from '../../../reducers/contractReducer'
-import { getSymbol } from '../../../reducers/contractReducer'
+import { 
+  getSymbol, 
+  transferToken, 
+  withdrawToken, 
+} from '../../../actions/contractActions'
+
+import ChainComponentV2 from '../../Chain/ChainComponentV2'
+
+const STK_INDEX = 0
+const UDR_INDEX = 1
+const SOLO_INDEX = 2
 
 class SoloV2Component extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
             web3: undefined,
-            accounts: this.props.accounts,
-            solo: this.props.solo,
-            udr: this.props.udr,
-            stk: this.props.stk,
-
         }
-
+        this.handleTransfer = this.handleTransfer.bind(this)
+        this.getAccount = this.getAccount.bind(this)
+        this.getSymbol = this.getSymbol.bind(this)
+        this.handleWithdraw = this.handleWithdraw.bind(this)
       }
     
       
     componentDidMount = async () => {
         try {
-          this.props.web3Connect() // Initialize Web3
-
+          await this.props.web3Connect() // Initialize Web3
+          
           this.setState({
             web3: this.props.web3Wrapper,
-          })
-
-          this.props.getSymbol({account: this.props.accounts[0]})
+          }, 
+          this.getAccount,
+          this.getSymbol
+          )
+          
         } catch (error) {
             alert(
               'Failed to load web3, accounts, or contract.'
@@ -63,27 +72,73 @@ class SoloV2Component extends React.Component {
     };
 
 
-    createListItems = async () => {
-      return this.props.context.map((context) => {
-          return (
-              <>
-              <div>
-                Hi
-              </div>
-              </>
-            );
-        })
+    async getAccount() {
+      if(this.props.web3Wrapper.isConnected){
+        let accounts = await this.props.web3Wrapper.web3.eth.getAccounts()
+        let account = accounts[0]
+        console.log(account);
+        if(account !== 'undefined'){
+          this.setState({
+            account: account,
+          })
+          return account
+        }
+      }
     }
 
+
+    async getSymbol() {
+      let acc = await this.getAccount()
+      this.props.getSymbol({account: acc, contract_index: UDR_INDEX})
+    }
+
+
+    async handleTransfer() {
+      await this.props.transferToken({
+        account: this.state.account,
+        contract_index: STK_INDEX,
+        _from: this.state.account,
+        _to: '0x7bFc572Ba5a084C9b09111C3dCB93E9E7283A215',
+        _value: 10,
+      })
+    }
+
+
+    async handleWithdraw() {
+      await this.props.withdrawToken({
+        account: this.state.account,
+        contract_index: STK_INDEX,
+        _from: this.state.account,
+        _value: 1000000000,
+      })
+      console.log(this.props.withdraw)
+      this.setState({
+        withdraw: this.props.withdraw
+      })
+    }
+
+    handleOptionSelect(symbol) {
+      console.log('Clicked Row', symbol)
+      this.setState({
+        activeSymbol: symbol}, () => {
+        console.log('State finished setting, ', this.state.activeSymbol)
+      })
+    }
 
     render() {
       if(!this.props.web3Wrapper) {
         return <div>Loading Web3, accounts, and contract...</div>
       }
 
-
       return (
-          <div className='text-center'>{this.props.symbol}</div>
+          <div className='text-center'>
+            {this.props.symbol}
+            <Button onClick={this.handleTransfer}>Transfer</Button>
+            <Button onClick={this.handleWithdraw}>Withdraw</Button>
+            <ChainComponent
+              
+            />
+          </div>
       );
     }
 }
@@ -91,16 +146,31 @@ class SoloV2Component extends React.Component {
 
 const mapDispatchToProps = {
   web3Connect,
-  getSymbol
+  getSymbol,
+  transferToken,
+  withdrawToken,
 }
 
 const mapStateToProps = state => {
   return {
-    context: state.context,
     web3Wrapper: state.web3Wrapper,
-    symbol: state.contract.result,
+    symbol: state.contract.symbol,
     accounts: (state.web3Wrapper.web3 && state.web3Wrapper.web3.eth) ? state.web3Wrapper.web3.eth.accounts : [],
     isConnected: state.web3Wrapper.isConnected,
+    symbols: state.contract.symbols,
+    account: state.contract.account,
+    index: state.contract.index,
+    
+    name: state.contract.state,
+    decimals: state.contract.decimals,
+    totalSupply: state.contract.totalSupply,
+
+    transfer: state.contract.transfer,
+    isTransferred: state.contract.isTransferred,
+
+    withdraw: state.contract.withdraw,
+    isWithdrawn: state.contract.isWithdrawn,
+
   };
 };
 
