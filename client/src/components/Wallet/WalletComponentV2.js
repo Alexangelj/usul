@@ -37,7 +37,7 @@ export const StyledToggleButton = styled(ToggleButton)`
     justify-content: center;
   `
 
-
+// FIX
 class WalletComponent extends React.Component {
     constructor(props) {
         super(props)
