@@ -6,8 +6,23 @@ import getWeb3 from '../../utils/getWeb3'
 import Solo from '../../artifacts/Solo'
 import { Button, StyledCard, StyledListGroup, StyledFormControl, StyledTable  } from '../../theme/components'
 import styled from 'styled-components'
+
+
 import { connect } from 'react-redux'
 import { web3Connect } from '../../reducers/web3Reducer'
+import { 
+    fetchContract, 
+    getSymbol,
+    getRatio,
+    getMaturity,
+    getAddress,
+} from '../../actions/contractActions'
+import { 
+    STK_INDEX,
+    UDR_INDEX,
+    SOLO_INDEX
+} from '../Pages/Solo/SoloV2'
+
 
 
 export const StyledButton = styled(Button)`
@@ -30,12 +45,7 @@ class ChainComponent extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            soloinstance: this.props.soloInstance,
-            udrInstance: this.props.udrInstance,
-            stkInstance: this.props.stkInstance,
-            solo_address: this.props.solo_address,
-            udr_address: this.props.udr_address,
-            stk_address: this.props.stk_address,
+
             contracts: [],
             name: undefined,
             symbol: undefined,
@@ -43,8 +53,7 @@ class ChainComponent extends React.Component {
             udrSymbol: undefined,
             ratio: undefined,
             maturity: undefined,
-            web3: this.props.web3,
-            account: this.props.account,
+
             writes: [],
             underwrite: undefined,
             userBalance: undefined,
@@ -52,17 +61,29 @@ class ChainComponent extends React.Component {
             exerciseAmount: undefined,
             closes: [],
             closeAmount: undefined,
+
+
+            account: this.props.account,
+            getAccount: this.props.getAccount,
         }
+        this.constants = this.constants.bind(this)
+        this.getSymbols = this.getSymbols.bind(this)
+        this.getDateFromTimestamp = this.getDateFromTimestamp.bind(this)
+        this.getMaturity = this.getMaturity.bind(this)
     }
+
 
     componentDidMount = async () => {
         try {
-            await this.props.web3Connect()
+            await this.props.web3Connect();
+            let account = await this.props.getAccount();
 
             this.setState({
-                web3: this.props.web3Wrapper.web3
-            })
-            this.addEventListener(this)
+                web3: this.props.web3Wrapper.web3,
+                account: account,
+            },
+                this.constants
+            )
           } catch (error) {
             alert(
               'Failed to load web3, accounts, or contract.'
@@ -72,42 +93,82 @@ class ChainComponent extends React.Component {
         
     }
 
-    async constants() {
-        if(typeof this.state.soloInstance !== 'undefined') {
-          const name = await this.state.soloInstance.methods.name().call()
-          const symbol = await this.state.soloInstance.methods.symbol().call()
-          const bal = await this.state.soloInstance.methods.balanceOf(this.state.account).call()
-          const ratio = await this.state.soloInstance.methods.ratio().call()
-          const maturity_timestamp = await this.state.soloInstance.methods.maturity().call()
 
-          const stkSymbol = await this.state.stkInstance.methods.symbol().call()
-          const udrSymbol = await this.state.udrInstance.methods.symbol().call()
-          
-          var date = new Date(maturity_timestamp*1000);
-          var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-          var year = date.getFullYear();
-          var month = months[date.getMonth()];
-          var day = date.getDate();
-          var hours = date.getHours();
-          var minutes = '0' + date.getMinutes();
-          var seconds = '0' + date.getSeconds();
-          var maturity = day + ' ' + month + ' ' + year + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-          
-          this.setState({name: name, 
-            symbol: symbol, 
-            userBalance: this.state.web3.utils.fromWei(bal, 'ether'),
-            ratio: ratio,
-            maturity: maturity,
-            stkSymbol: stkSymbol,
-            udrSymbol: udrSymbol,
-          })
-        } 
-      }
+    async constants() {
+        await this.getSymbols();
+        await this.props.getRatio({contract_index: SOLO_INDEX})
+        .then(() => {
+            console.log('get ratio ', this.props.ratio)
+            this.setState({
+                ratio: this.props.ratio
+            });
+        })
+        await this.getMaturity();
+        await this.props.getAddress({contract_index: SOLO_INDEX})
+        .then(() => {
+            console.log('get address ', this.props.address)
+            this.setState({
+                address: this.props.address
+            });
+        })
+    }
+
+
+    async getSymbols() {
+        await this.props.getSymbol({contract_index: SOLO_INDEX})
+        .then(() => {
+            this.setState({
+                soloSymbol: this.props.symbol
+            })
+        })
+        await this.props.getSymbol({contract_index: STK_INDEX})
+        .then(() => {
+            this.setState({
+                stkSymbol: this.props.symbol
+            })
+        })
+        await this.props.getSymbol({contract_index: UDR_INDEX})
+        .then(() => {
+            this.setState({
+                udrSymbol: this.props.symbol
+            })
+        })
+    }
+
+    
+    async getMaturity() {
+        await this.props.getMaturity({contract_index: SOLO_INDEX})
+        .then(() => {
+            console.log('get maturity', this.props.maturity)
+            this.setState({
+                maturity: this.props.maturity
+            });
+        })
+        let maturityTimestamp = this.state.maturity
+        let maturityDate = this.getDateFromTimestamp(maturityTimestamp)
+        this.setState({
+            maturity: maturityDate
+        })
+    }
+
+
+    getDateFromTimestamp(timestamp) {
+        const date = new Date(this.state.maturity*1000);
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const year = date.getFullYear();
+        const month = months[date.getMonth()];
+        const day = date.getDate();
+        const hours = date.getHours();
+        const minutes = '0' + date.getMinutes();
+        const seconds = '0' + date.getSeconds();
+        const maturity = day + ' ' + month + ' ' + year + ' ' + hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+        return maturity
+    }
 
 
     render() {
-        if(!this.props.web3) {
-            return <div>Loading Web3, accounts, and contract... Are you connected to MetaMask?</div>
+        if(!this.props.web3Wrapper) {
+            return <div>Loading Web3, accounts, and contract... Are you connected to MetaMask? From Chain :)</div>
           }
 
         return (
@@ -127,7 +188,7 @@ class ChainComponent extends React.Component {
                     </thead>
                     <tbody>
                         <tr>
-                            <td onClick={() => this.props.handleOptionSelect(this.state.symbol)} style={{cursor: 'pointer'}}>{this.state.symbol}</td>
+                            <td onClick={() => this.props.handleOptionSelect(this.state.soloSymbol)} style={{cursor: 'pointer'}}>{this.state.soloSymbol}</td>
                             <td onClick={() => this.props.handleOptionSelect(this.state.stkSymbol)} style={{cursor: 'pointer'}}>{this.state.stkSymbol}</td>
                             <td onClick={() => this.props.handleOptionSelect(this.state.udrSymbol)} style={{cursor: 'pointer'}}>{this.state.udrSymbol}</td>
                             <td>{this.state.ratio}</td>
@@ -138,7 +199,7 @@ class ChainComponent extends React.Component {
                                 the Maturity Date.
                             </td>
                             <td>
-                                {this.state.solo_address}
+                                {this.state.address}
                             </td>
                         </tr>
                     </tbody>
@@ -151,6 +212,11 @@ class ChainComponent extends React.Component {
 
 const mapDispatchToProps = {
     web3Connect,
+    fetchContract,
+    getSymbol,
+    getRatio,
+    getMaturity,
+    getAddress,
 }
 
 
@@ -158,11 +224,15 @@ const mapStateToProps = state => {
     return {
         web3Wrapper: state.web3Wrapper,
         isConnected: state.web3Wrapper.isConnected,
+        contract: state.contract.contract,
+        symbol: state.contract.symbol,
+        ratio: state.contract.ratio,
+        maturity: state.contract.maturity,
+        address: state.contract.address,
     };
 };
 
 
 const ChainComponentV2 = connect(mapStateToProps, mapDispatchToProps)(ChainComponent);
-
 
 export default ChainComponentV2
