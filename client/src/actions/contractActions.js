@@ -157,6 +157,31 @@ export const getRatio = ({ contract_index }) => {
 }}
 
 
+export const getBalance = ({ account, contract_index }) => {
+    return (dispatch, getState) => {
+        return new Promise((resolve, reject) => {
+            if(!getState().web3Wrapper.isConnected) {
+                return Promise.resolve();
+            }
+            getContracts({ getState })
+            .then(function(instances) {
+                let from = getDefaultAccount({ getState })
+                instances[contract_index].methods.balanceOf(account).call({from: from})
+                .then(function (result) {
+                        dispatch({
+                            type: FETCH_BALANCE,
+                            payload: {balance: result}
+                    });
+                    resolve();
+                }).catch(function (e) {
+                        console.log(e);
+                        reject();
+                });
+            });  
+    });
+}}
+
+
 export const getMaturity = ({ contract_index }) => {
     return (dispatch, getState) => {
         return new Promise((resolve, reject) => {
@@ -437,6 +462,7 @@ export const actions = [
     getRatio,
     getMaturity,
     getAddress,
+    getBalance,
 
     transferToken,
     approveToken,

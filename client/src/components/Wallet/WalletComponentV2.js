@@ -11,9 +11,11 @@ import { STK_INDEX, UDR_INDEX, SOLO_INDEX } from '../Pages/Solo/SoloV2';
 import { web3Connect } from '../../reducers/web3Reducer'
 import {
   fetchContract, 
-  getSymbol, 
+  getSymbol,
+  getBalance, 
   transferToken,
-  approveToken, 
+  approveToken,
+  withdrawToken, 
 } from '../../actions/contractActions'
 
 
@@ -47,6 +49,8 @@ class WalletComponent extends React.Component {
           account: this.props.account,
           getAccount: this.props.getAccount,
         }
+        this.handleWithdraw = this.handleWithdraw.bind(this);
+        this.handleApprove = this.handleApprove.bind(this);
       }
 
 
@@ -70,6 +74,7 @@ class WalletComponent extends React.Component {
 
     async constants() {
       await this.getSymbols();
+      await this.getBalances();
       //await this.props.getRatio({contract_index: SOLO_INDEX})
       //.then(() => {
       //    console.log('get ratio ', this.props.ratio)
@@ -109,11 +114,74 @@ class WalletComponent extends React.Component {
     }
 
 
+    async getBalances() {
+      await this.props.getBalance({
+        account: this.state.account, 
+        contract_index: SOLO_INDEX
+      })
+      .then(() => {
+          this.setState({
+              soloBalance: this.props.balance
+          })
+      })
+      await this.props.getBalance({
+        account: this.state.account,
+        contract_index: STK_INDEX
+      })
+      .then(() => {
+          this.setState({
+              stkBalance: this.props.balance
+          })
+      })
+      await this.props.getBalance({
+        account: this.state.account,
+        contract_index: UDR_INDEX
+      })
+      .then(() => {
+          this.setState({
+              udrBalance: this.props.balance
+          })
+      })
+    }
+
+    async handleWithdraw() {
+       console.log('account ', this.state.account)
+      await this.props.withdrawToken({
+        account: this.state.account,
+        contract_index: UDR_INDEX,
+        _from: this.state.account,
+        _value: 100,
+      })
+      console.log(this.props.withdraw)
+      this.setState({
+        withdraw: this.props.withdraw
+      })
+    }
+
+    async handleApprove() {
+       console.log('account ', this.state.account)
+      await this.props.withdrawToken({
+        account: this.state.account,
+        contract_index: UDR_INDEX,
+        _from: this.state.account,
+        _value: 100,
+      })
+      console.log(this.props.withdraw)
+      this.setState({
+        withdraw: this.props.withdraw
+      })
+    }
+
+
     render() {
-      const { handleApproveStk, handleApproveUdr, handleLock,  handleWithdrawStk, handleWithdrawUdr } = this.props;
+      if(!this.props.web3Wrapper) {
+        return <div>Loading Web3, accounts, and contract...</div>
+      }
+      //
         return (
             <div>
             <h1 className='text-center'>Wallet Balance</h1>
+            <h5 className='text-center'>Account: {this.state.account}</h5>
                   <StyledTable>
                     <thead>
                       <tr>
@@ -126,29 +194,29 @@ class WalletComponent extends React.Component {
                     <tbody>
                       <tr>
                         <td>{this.state.soloSymbol}</td>
-                        <td>{Math.floor(this.props.soloBalance * 100) / 100}</td>
+                        <td>{Math.floor(this.state.soloBalance * 100) / 100}</td>
                       </tr>
                       <tr>
                         <td>{this.state.udrSymbol}</td>
-                        <td>{Math.floor(this.props.udrBalance * 100) / 100}</td>
+                        <td>{Math.floor(this.state.udrBalance * 100) / 100}</td>
                         <td><StyledToggleButton
                         inactiveLabel={'O'}
                         activeLabel={'|'} 
-                        onToggle={handleApproveUdr}
-                        value={this.props.udrUnlocked || false}
+                        onToggle={this.handleApprove}
+                        value={this.state.udrUnlocked || false}
                       /></td>
-                        <td><StyledButton onClick={handleWithdrawUdr}>Withdraw</StyledButton></td>
+                        <td><StyledButton onClick={this.handleWithdraw}>Withdraw</StyledButton></td>
                       </tr>
                       <tr>
                         <td>{this.state.stkSymbol}</td>
-                        <td>{Math.floor(this.props.stkBalance * 100) / 100}</td>
+                        <td>{Math.floor(this.state.stkBalance * 100) / 100}</td>
                         <td><StyledToggleButton
                         inactiveLabel={'O'}
                         activeLabel={'|'} 
-                        onToggle={handleApproveStk}
-                        value={this.props.stkUnlocked || false}
+                        onToggle={this.handleApprove}
+                        value={this.state.stkUnlocked || false}
                       /></td>
-                        <td><StyledButton onClick={handleWithdrawStk}>Withdraw</StyledButton></td>
+                        <td><StyledButton onClick={this.handleWithdraw}>Withdraw</StyledButton></td>
                       </tr>
                     </tbody>
                   </StyledTable>
@@ -161,7 +229,9 @@ const mapDispatchToProps = {
   fetchContract,
   approveToken,
   transferToken,
+  withdrawToken,
   getSymbol,
+  getBalance,
 }
 
 
@@ -171,6 +241,7 @@ const mapStateToProps = state => {
       isConnected: state.web3Wrapper.isConnected,
       contract: state.contract.contract,
       symbol: state.contract.symbol,
+      balance: state.contract.balance,
 
       transfer: state.contract.transfer,
       isTransferred: state.contract.isTransferred,

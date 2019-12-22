@@ -6,7 +6,7 @@ import {
     FETCH_SYMBOL, 
     FETCH_NAME, 
     FETCH_DECIMALS, 
-    FETCH_TOTAL_SUPPLY, 
+    FETCH_TOTAL_SUPPLY,
     TRANSFER_TOKEN, 
     WITHDRAW_TOKEN, 
     FETCH_RATIO,
@@ -16,7 +16,8 @@ import {
     BUY_TOKEN,
     WRITE_TOKEN,
     CLOSE_TOKEN,
-    EXERCISE_TOKEN
+    EXERCISE_TOKEN,
+    FETCH_BALANCE
 } from '../actions/contractActions'
 
 
@@ -38,6 +39,9 @@ const ACTION_HANDLERS = {
         return Object.assign({}, state, action.payload)
     },
     [FETCH_TOTAL_SUPPLY]: (state, action) => {
+        return Object.assign({}, state, action.payload)
+    },
+    [FETCH_BALANCE]: (state, action) => {
         return Object.assign({}, state, action.payload)
     },
     [FETCH_RATIO]: (state, action) => {
@@ -79,6 +83,7 @@ const initialState = {
     name: null,
     decimals: null,
     totalSupply: null,
+    balance: null,
 
     transfer: null,
     isTransferred: false,
@@ -96,9 +101,9 @@ const initialState = {
     isClosed: null,
     exercise: null,
     isExercised: null,
-
-    
 }
+
+
 export default function contractReducer(state = initialState, action) {
     const handler = ACTION_HANDLERS[action.type]
     return handler ? handler(state, action) : state
